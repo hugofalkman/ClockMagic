@@ -9,17 +9,43 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    
+    // MARK: - Properties
+    
+    private var clockView: ClockView? {
+        willSet {
+            let clockView = self.clockView
+            clockView?.removeFromSuperview()
+        }
+        
+        didSet {
+            if let clockView = clockView {
+                clockView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                view.addSubview(clockView)
+            }
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        let preferences = Preferences()
+        let subview = preferences.model.init(frame: view.bounds)
+        subview.styleName = preferences.styleName
+        clockView = subview
+        
+        Timer.scheduledTimer(timeInterval: 0.25, target: self, selector: #selector(updateUI), userInfo: nil, repeats: true)
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    @objc private func updateUI() {
+        if let clockView = clockView {
+            clockView.
+            clockView.setNeedsDisplay(clockView.clockFrame)
+        }
     }
-
-
 }
+
+
+
+
 
