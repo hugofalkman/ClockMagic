@@ -19,6 +19,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="m9k-WX-omO">
+                                <rect key="frame" x="614" y="0.0" width="409.5" height="768"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="YLq-od-qOT">
+                                        <rect key="frame" x="0.0" y="28" width="409.5" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="YLq-od-qOT" id="3ut-wf-9Zz">
+                                            <rect key="frame" x="0.0" y="0.0" width="409.5" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K8H-XV-U8S">
                                 <rect key="frame" x="0.0" y="0.0" width="614.5" height="768"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -29,7 +43,11 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="m9k-WX-omO" firstAttribute="leading" secondItem="K8H-XV-U8S" secondAttribute="trailing" id="5Ri-My-Kkq"/>
+                            <constraint firstItem="m9k-WX-omO" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="CHB-vF-G3X"/>
+                            <constraint firstItem="m9k-WX-omO" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="Qxi-5Y-9bt"/>
                             <constraint firstItem="K8H-XV-U8S" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="R9Y-YB-MJH"/>
+                            <constraint firstItem="m9k-WX-omO" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="SfB-0m-K56"/>
                             <constraint firstItem="K8H-XV-U8S" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="bFA-Fi-YZX"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="K8H-XV-U8S" secondAttribute="bottom" id="i4e-ey-aLH"/>
                         </constraints>
@@ -37,6 +55,7 @@
                     </view>
                     <connections>
                         <outlet property="subView" destination="K8H-XV-U8S" id="I14-Tg-4jd"/>
+                        <outlet property="tableView" destination="m9k-WX-omO" id="o0d-a7-Dme"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
