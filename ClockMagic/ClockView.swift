@@ -96,9 +96,9 @@ class ClockView: UIView {
     
     func clockFrame(forBounds bounds: CGRect) -> CGRect {
         let size = bounds.size
-        let clockSize = min(size.width, size.height) * 0.75
+        let clockSize = min(size.width, size.height) * 0.85
         
-        let rect = CGRect(x: (size.height - clockSize) / 4.0, y: (size.height - clockSize) / 2.0, width: clockSize, height: clockSize)
+        let rect = CGRect(x: (size.width - clockSize) / 2.0, y: (size.height - clockSize) / 2.0, width: clockSize, height: clockSize)
         return rect.integral
     }
     

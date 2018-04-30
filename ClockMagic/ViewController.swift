@@ -12,6 +12,8 @@ class ViewController: UIViewController {
     
     // MARK: - Properties
     
+    @IBOutlet weak var subView: UIView!
+    
     private var clockView: ClockView? {
         willSet {
             let clockView = self.clockView
@@ -21,7 +23,7 @@ class ViewController: UIViewController {
         didSet {
             if let clockView = clockView {
                 clockView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                view.addSubview(clockView)
+                subView.addSubview(clockView)
             }
         }
     }
@@ -30,7 +32,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         let preferences = Preferences()
-        let subview = preferences.model.init(frame: view.bounds)
+        let subview = preferences.model.init(frame: subView.bounds)
         subview.styleName = preferences.styleName
         clockView = subview
         
