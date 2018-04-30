@@ -39,7 +39,6 @@ class ViewController: UIViewController {
     
     @objc private func updateUI() {
         if let clockView = clockView {
-            clockView.
             clockView.setNeedsDisplay(clockView.clockFrame)
         }
     }

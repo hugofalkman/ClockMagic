@@ -96,7 +96,7 @@ class ClockView: UIView {
     
     func clockFrame(forBounds bounds: CGRect) -> CGRect {
         let size = bounds.size
-        let clockSize = min(size.width, size.height) * 0.55
+        let clockSize = min(size.width, size.height) * 0.75
         
         let rect = CGRect(x: (size.width - clockSize) / 2.0, y: (size.height - clockSize) / 2.0, width: clockSize, height: clockSize)
         return rect.integral
@@ -121,9 +121,9 @@ class ClockView: UIView {
     
     func draw(day: Int, hours: Double, minutes: Double, seconds: Double) {
         draw(day: day)
-        draw(hours: -(.pi * 2 * hours) + .pi / 2)
-        draw(minutes: -(.pi * 2 * minutes) + .pi / 2)
-        draw(seconds: -(.pi * 2 * seconds) + .pi / 2)
+        draw(hours: (.pi * 2 * hours) - .pi / 2)
+        draw(minutes: (.pi * 2 * minutes) - .pi / 2)
+        draw(seconds: (.pi * 2 * seconds) - .pi / 2)
     }
     
     func draw(day: Int) {}
@@ -232,7 +232,7 @@ class ClockView: UIView {
             let isMajor = (i % 5) == 0
             let tickLength = clockWidth * CGFloat(isMajor ? majorLength : minorLength)
             let progress = Double(i) / 60.0
-            let angle = CGFloat(-(progress * .pi * 2) + .pi / 2)
+            let angle = CGFloat((progress * .pi * 2) - .pi / 2)
             
             let tickColor = isMajor ? majorColor : minorColor
             tickColor.setStroke()
@@ -268,7 +268,7 @@ class ClockView: UIView {
                 ])
             
             let stringSize = string.size()
-            let angle = CGFloat((Double(i) / 12.0 * .pi * 2.0) + .pi / 2)
+            let angle = CGFloat(-(Double(i) / 12.0 * .pi * 2.0) - .pi / 2)
             let rect = CGRect(
                 x: (center.x + cos(angle) * (textRadius - (stringSize.width / 2.0))) - (stringSize.width / 2.0),
                 y: center.y + sin(angle) * (textRadius - (stringSize.height / 2.0)) - (stringSize.height / 2.0),

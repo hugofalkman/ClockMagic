@@ -85,7 +85,7 @@ final class BN0032: ClockView {
         let dateWidth = clockWidth * 0.057416268
         let dateFrame = CGRect(
             x: clockFrame.origin.x + ((clockWidth - dateWidth) / 2.0),
-            y: clockFrame.origin.y + (clockWidth * 0.199362041),
+            y: clockFrame.origin.y + (clockWidth * (1 - 0.199362041 - 0.071770335)),
             width: dateWidth,
             height: clockWidth * 0.071770335
         )
@@ -106,21 +106,21 @@ final class BN0032: ClockView {
             ])
         
         var stringFrame = dateFrame
-        stringFrame.origin.y -= dateFrame.size.height * 0.12
+        stringFrame.origin.y += dateFrame.size.height * 0.12
         string.draw(in: stringFrame)
         
         dateArrowColor.setFill()
-        let y = dateFrame.maxY + (clockWidth * 0.015948963)
+        let y = dateFrame.minY - (clockWidth * 0.015948963)
         let height = clockWidth * 0.022328549
         let pointDip = clockWidth * 0.009569378
         
         let path = UIBezierPath()
         path.move(to: CGPoint(x: dateFrame.minX, y: y))
-        path.addLine(to: CGPoint(x: dateFrame.minX, y: y - height))
-        path.addLine(to: CGPoint(x: dateFrame.midX, y: y - height - pointDip))
-        path.addLine(to: CGPoint(x: dateFrame.maxX, y: y - height))
+        path.addLine(to: CGPoint(x: dateFrame.minX, y: y + height))
+        path.addLine(to: CGPoint(x: dateFrame.midX, y: y + height + pointDip))
+        path.addLine(to: CGPoint(x: dateFrame.maxX, y: y + height))
         path.addLine(to: CGPoint(x: dateFrame.maxX, y: y))
-        path.addLine(to: CGPoint(x: dateFrame.midX, y: y - pointDip))
+        path.addLine(to: CGPoint(x: dateFrame.midX, y: y + pointDip))
         path.fill()
     }
 }
