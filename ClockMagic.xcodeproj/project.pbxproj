@@ -12,6 +12,11 @@
 		B1FD215F20971D7E00AF26E0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B1FD215D20971D7E00AF26E0 /* Main.storyboard */; };
 		B1FD216120971D7F00AF26E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1FD216020971D7F00AF26E0 /* Assets.xcassets */; };
 		B1FD216420971D7F00AF26E0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B1FD216220971D7F00AF26E0 /* LaunchScreen.storyboard */; };
+		B1FD216E2097206F00AF26E0 /* ClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD216D2097206F00AF26E0 /* ClockView.swift */; };
+		B1FD21702097210200AF26E0 /* ClockStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD216F2097210200AF26E0 /* ClockStyle.swift */; };
+		B1FD2172209723F900AF26E0 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD2171209723F900AF26E0 /* Color.swift */; };
+		B1FD217420973EA500AF26E0 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD217320973EA500AF26E0 /* Preferences.swift */; };
+		B1FD21762097411D00AF26E0 /* BN0032.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD21752097411D00AF26E0 /* BN0032.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +27,11 @@
 		B1FD216020971D7F00AF26E0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B1FD216320971D7F00AF26E0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B1FD216520971D7F00AF26E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B1FD216D2097206F00AF26E0 /* ClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockView.swift; sourceTree = "<group>"; };
+		B1FD216F2097210200AF26E0 /* ClockStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockStyle.swift; sourceTree = "<group>"; };
+		B1FD2171209723F900AF26E0 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
+		B1FD217320973EA500AF26E0 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
+		B1FD21752097411D00AF26E0 /* BN0032.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BN0032.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +67,11 @@
 				B1FD215920971D7E00AF26E0 /* AppDelegate.swift */,
 				B1FD215B20971D7E00AF26E0 /* ViewController.swift */,
 				B1FD215D20971D7E00AF26E0 /* Main.storyboard */,
+				B1FD216D2097206F00AF26E0 /* ClockView.swift */,
+				B1FD21752097411D00AF26E0 /* BN0032.swift */,
+				B1FD217320973EA500AF26E0 /* Preferences.swift */,
+				B1FD216F2097210200AF26E0 /* ClockStyle.swift */,
+				B1FD2171209723F900AF26E0 /* Color.swift */,
 				B1FD216020971D7F00AF26E0 /* Assets.xcassets */,
 				B1FD216220971D7F00AF26E0 /* LaunchScreen.storyboard */,
 				B1FD216520971D7F00AF26E0 /* Info.plist */,
@@ -135,7 +150,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B1FD21702097210200AF26E0 /* ClockStyle.swift in Sources */,
 				B1FD215C20971D7E00AF26E0 /* ViewController.swift in Sources */,
+				B1FD217420973EA500AF26E0 /* Preferences.swift in Sources */,
+				B1FD216E2097206F00AF26E0 /* ClockView.swift in Sources */,
+				B1FD21762097411D00AF26E0 /* BN0032.swift in Sources */,
+				B1FD2172209723F900AF26E0 /* Color.swift in Sources */,
 				B1FD215A20971D7E00AF26E0 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -283,6 +303,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = CAE4XXMP5G;
 				INFOPLIST_FILE = ClockMagic/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -301,6 +322,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = CAE4XXMP5G;
 				INFOPLIST_FILE = ClockMagic/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
