@@ -98,7 +98,7 @@ class ClockView: UIView {
         let size = bounds.size
         let clockSize = min(size.width, size.height) * 0.75
         
-        let rect = CGRect(x: (size.width - clockSize) / 2.0, y: (size.height - clockSize) / 2.0, width: clockSize, height: clockSize)
+        let rect = CGRect(x: (size.height - clockSize) / 4.0, y: (size.height - clockSize) / 2.0, width: clockSize, height: clockSize)
         return rect.integral
     }
     
@@ -145,13 +145,14 @@ class ClockView: UIView {
         // Counterweight
         drawHand(length: -0.076555024, thickness: 0.028708134, angle: angle, lineCapStyle: .round)
         let nubSize = clockFrame.size.width * 0.052631579
-        let nubFrame = CGRect(x: (bounds.size.width - nubSize) / 2.0, y: (bounds.size.height - nubSize) / 2.0, width: nubSize, height: nubSize)
+        let center = CGPoint(x: clockFrame.midX, y: clockFrame.midY)
+        let nubFrame = CGRect(x: (center.x - nubSize / 2.0) , y: (center.y - nubSize / 2.0), width: nubSize, height: nubSize)
         UIBezierPath(ovalIn: nubFrame).fill()
         
         // Screw
         let dotSize = clockFrame.size.width * 0.006379585
         Color.black.setFill()
-        let screwFrame = CGRect(x: (bounds.size.width - dotSize) / 2.0, y: (bounds.size.height - dotSize) / 2.0, width: dotSize, height: dotSize)
+        let screwFrame = CGRect(x: (center.x - dotSize / 2.0) , y: (center.y - dotSize / 2.0) , width: dotSize, height: dotSize)
         let screwPath = UIBezierPath(ovalIn: screwFrame.integral)
         screwPath.fill()
     }
