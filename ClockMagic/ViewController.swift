@@ -60,7 +60,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         tableView.delegate = self
         tableView.dataSource = self
         tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 60
+        tableView.estimatedRowHeight = 100
         
         let preferences = Preferences()
         let subview = preferences.model.init(frame: subView.bounds)
@@ -127,12 +127,18 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                 let start = event.start!.dateTime ?? event.start!.date!
                 
                 let dateFormatter = DateFormatter()
-                dateFormatter.dateStyle = .medium
-                dateFormatter.timeStyle = .short
                 dateFormatter.locale = Locale(identifier: "sv")
-                let startString = dateFormatter.string(from: start.date)
                 
-                eventTitle.append(startString + " - " + event.summary!)
+                dateFormatter.dateStyle = .medium
+                dateFormatter.timeStyle = .none
+                var startDate = dateFormatter.string(from: start.date)
+                startDate = String(startDate.dropLast(5))
+                
+                dateFormatter.dateStyle = .none
+                dateFormatter.timeStyle = .short
+                let startTime = dateFormatter.string(from: start.date)
+                
+                eventTitle.append(startDate + " " + startTime + " - " + event.summary!)
                 eventDetail.append(event.descriptionProperty!)
             }
         } else {

@@ -23,22 +23,22 @@
                                 <rect key="frame" x="575.5" y="0.0" width="448" height="768"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" textLabel="EZS-EG-Q1M" detailTextLabel="gY7-sI-w49" style="IBUITableViewCellStyleSubtitle" id="YLq-od-qOT">
-                                        <rect key="frame" x="0.0" y="28" width="448" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" textLabel="EZS-EG-Q1M" detailTextLabel="gY7-sI-w49" rowHeight="100" style="IBUITableViewCellStyleSubtitle" id="YLq-od-qOT">
+                                        <rect key="frame" x="0.0" y="28" width="448" height="100"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="YLq-od-qOT" id="3ut-wf-9Zz">
-                                            <rect key="frame" x="0.0" y="0.0" width="448" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="448" height="99.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="EZS-EG-Q1M">
-                                                    <rect key="frame" x="15" y="-6" width="48" height="30"/>
+                                                    <rect key="frame" x="15" y="17.5" width="48" height="30"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="25"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Detail" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="gY7-sI-w49">
-                                                    <rect key="frame" x="15" y="24" width="55" height="26.5"/>
+                                                    <rect key="frame" x="15" y="52" width="55" height="26.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                     <nil key="textColor"/>
