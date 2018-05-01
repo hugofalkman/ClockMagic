@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import GoogleAPIClientForREST
+import GoogleSignIn
 
 class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegate {
 
@@ -30,6 +32,8 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         }
     }
     
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -49,6 +53,8 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             clockView.setNeedsDisplay(clockView.clockFrame)
         }
     }
+    
+    // MARK: - TableView Data Source
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1

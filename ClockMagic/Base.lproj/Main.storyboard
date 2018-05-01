@@ -20,24 +20,24 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="m9k-WX-omO">
-                                <rect key="frame" x="614" y="0.0" width="409.5" height="768"/>
+                                <rect key="frame" x="575.5" y="0.0" width="448" height="768"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="YLq-od-qOT">
-                                        <rect key="frame" x="0.0" y="28" width="409.5" height="44"/>
+                                        <rect key="frame" x="0.0" y="28" width="448" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="YLq-od-qOT" id="3ut-wf-9Zz">
-                                            <rect key="frame" x="0.0" y="0.0" width="409.5" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="448" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K8H-XV-U8S">
-                                <rect key="frame" x="0.0" y="0.0" width="614.5" height="768"/>
+                                <rect key="frame" x="0.0" y="0.0" width="576" height="768"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" secondItem="K8H-XV-U8S" secondAttribute="height" multiplier="4:5" id="hg3-1O-geb"/>
+                                    <constraint firstAttribute="width" secondItem="K8H-XV-U8S" secondAttribute="height" multiplier="3:4" priority="750" id="hg3-1O-geb"/>
                                 </constraints>
                             </view>
                         </subviews>

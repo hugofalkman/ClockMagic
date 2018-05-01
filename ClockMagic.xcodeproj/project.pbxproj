@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		321A4A3E452DEBF298C8B7D9 /* Pods_ClockMagic.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFF974629FC93B4C43D041C6 /* Pods_ClockMagic.framework */; };
 		B1FD215A20971D7E00AF26E0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD215920971D7E00AF26E0 /* AppDelegate.swift */; };
 		B1FD215C20971D7E00AF26E0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD215B20971D7E00AF26E0 /* ViewController.swift */; };
 		B1FD215F20971D7E00AF26E0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B1FD215D20971D7E00AF26E0 /* Main.storyboard */; };
@@ -32,6 +33,9 @@
 		B1FD2171209723F900AF26E0 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		B1FD217320973EA500AF26E0 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		B1FD21752097411D00AF26E0 /* BN0032.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BN0032.swift; sourceTree = "<group>"; };
+		C4DF63C9CB488A6D6AA7C7FB /* Pods-ClockMagic.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ClockMagic.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ClockMagic/Pods-ClockMagic.debug.xcconfig"; sourceTree = "<group>"; };
+		E2D50931A74739B0833252EF /* Pods-ClockMagic.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ClockMagic.release.xcconfig"; path = "Pods/Target Support Files/Pods-ClockMagic/Pods-ClockMagic.release.xcconfig"; sourceTree = "<group>"; };
+		FFF974629FC93B4C43D041C6 /* Pods_ClockMagic.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ClockMagic.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				321A4A3E452DEBF298C8B7D9 /* Pods_ClockMagic.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -50,6 +55,8 @@
 			children = (
 				B1FD215820971D7E00AF26E0 /* ClockMagic */,
 				B1FD215720971D7E00AF26E0 /* Products */,
+				C8EEF4B180168CABE47AE372 /* Pods */,
+				D0F74C116F76B009B15136EB /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -79,6 +86,23 @@
 			path = ClockMagic;
 			sourceTree = "<group>";
 		};
+		C8EEF4B180168CABE47AE372 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				C4DF63C9CB488A6D6AA7C7FB /* Pods-ClockMagic.debug.xcconfig */,
+				E2D50931A74739B0833252EF /* Pods-ClockMagic.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		D0F74C116F76B009B15136EB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FFF974629FC93B4C43D041C6 /* Pods_ClockMagic.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -86,9 +110,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B1FD216820971D7F00AF26E0 /* Build configuration list for PBXNativeTarget "ClockMagic" */;
 			buildPhases = (
+				E541D00A74934F2D43ADAC98 /* [CP] Check Pods Manifest.lock */,
 				B1FD215220971D7E00AF26E0 /* Sources */,
 				B1FD215320971D7E00AF26E0 /* Frameworks */,
 				B1FD215420971D7E00AF26E0 /* Resources */,
+				3D25A7BBBBA08A05E187C5F3 /* [CP] Embed Pods Frameworks */,
+				42A3A4DE962102008056A5A3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -144,6 +171,69 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3D25A7BBBBA08A05E187C5F3 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-ClockMagic/Pods-ClockMagic-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/GTMOAuth2/GTMOAuth2.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleAPIClientForREST/GoogleAPIClientForREST.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMOAuth2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleAPIClientForREST.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ClockMagic/Pods-ClockMagic-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		42A3A4DE962102008056A5A3 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-ClockMagic/Pods-ClockMagic-resources.sh",
+				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ClockMagic/Pods-ClockMagic-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E541D00A74934F2D43ADAC98 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ClockMagic-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B1FD215220971D7E00AF26E0 /* Sources */ = {
@@ -298,6 +388,7 @@
 		};
 		B1FD216920971D7F00AF26E0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C4DF63C9CB488A6D6AA7C7FB /* Pods-ClockMagic.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -317,6 +408,7 @@
 		};
 		B1FD216A20971D7F00AF26E0 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E2D50931A74739B0833252EF /* Pods-ClockMagic.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
