@@ -21,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ClockMagic-bridging-header.h"; sourceTree = "<group>"; };
 		B1FD215620971D7E00AF26E0 /* ClockMagic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClockMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1FD215920971D7E00AF26E0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B1FD215B20971D7E00AF26E0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -79,6 +80,7 @@
 				B1FD217320973EA500AF26E0 /* Preferences.swift */,
 				B1FD216F2097210200AF26E0 /* ClockStyle.swift */,
 				B1FD2171209723F900AF26E0 /* Color.swift */,
+				B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */,
 				B1FD216020971D7F00AF26E0 /* Assets.xcassets */,
 				B1FD216220971D7F00AF26E0 /* LaunchScreen.storyboard */,
 				B1FD216520971D7F00AF26E0 /* Info.plist */,
@@ -403,6 +405,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.hhugofalkman.ClockMagic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "ClockMagic/ClockMagic-bridging-header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -425,6 +428,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.hhugofalkman.ClockMagic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "ClockMagic/ClockMagic-bridging-header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
