@@ -37,9 +37,9 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     // If modifying these scopes, delete your previously saved credentials by
     // resetting the iOS simulator or uninstall the app.
-    private let scopes = [kGTLRAuthScopeCalendarReadonly]
-    
+    private let scopes = [kGTLRAuthScopeCalendarReadonly, kGTLRAuthScopePeopleServiceContactsReadonly]
     private let service = GTLRCalendarService()
+    private let service2 = GTLRPeopleServiceService()
     let signInButton = GIDSignInButton()
     let output = UITextView()
     
@@ -87,6 +87,8 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             self.signInButton.isHidden = true
             self.output.isHidden = false
             self.service.authorizer = user.authentication.fetcherAuthorizer()
+            self.service2.authorizer = self.service.authorizer
+            fetchContacts()
             fetchEvents()
             Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(fetchEvents), userInfo: nil, repeats: true)
         }
@@ -105,6 +107,43 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             query,
             delegate: self,
             didFinish: #selector(displayResultWithTicket(ticket:finishedWithObject:error:)))
+    }
+    
+    // MARK: - Get Google Contacts
+    
+    @objc func fetchContacts() {
+        let query = GTLRPeopleServiceQuery_PeopleConnectionsList.query(withResourceName: "people/me")
+        query.personFields = "names,emailAddresses"
+        service2.executeQuery(
+            query,
+            delegate: self,
+            didFinish: #selector(getCreatorFromTicket(ticket:finishedWithObject:error:)))
+    }
+    
+    @objc func getCreatorFromTicket(
+        ticket: GTLRServiceTicket,
+        finishedWithObject response: GTLRPeopleService_ListConnectionsResponse,
+        error: NSError?) {
+        
+        if let error = error {
+            showAlert(title: "Error", message: error.localizedDescription)
+            return
+        }
+        
+        if let connections = response.connections, !connections.isEmpty {
+            for connection in connections {
+                if let names = connection.names, !names.isEmpty {
+                    for name in names {
+                        print(name.displayName ?? "")
+                    }
+                }
+                if let emailAddresses = connection.emailAddresses, !emailAddresses.isEmpty {
+                    for email in connection.emailAddresses! {
+                        print(email.value ?? "")
+                    }
+                }
+            }
+        }
     }
     
     // MARK: - Display events in TableView
@@ -138,8 +177,8 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                 dateFormatter.timeStyle = .short
                 let startTime = dateFormatter.string(from: start.date)
                 
-                eventTitle.append(startDate + " " + startTime + " - " + event.summary!)
-                eventDetail.append(event.descriptionProperty!)
+                eventTitle.append(startDate + " " + startTime + " - " + (event.summary ?? ""))
+                eventDetail.append(event.descriptionProperty ?? "")
             }
         } else {
             eventTitle = ["Inga kommande händelser"]
