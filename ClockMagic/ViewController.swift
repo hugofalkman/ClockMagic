@@ -20,6 +20,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     private var eventTitle: [String] = []
     private var eventDetail: [String] = []
+    private var eventCreator: [String] = []
     
     private var clockView: ClockView? {
         willSet {
@@ -113,7 +114,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     @objc func fetchContacts() {
         let query = GTLRPeopleServiceQuery_PeopleConnectionsList.query(withResourceName: "people/me")
-        query.personFields = "names,emailAddresses"
+        query.personFields = "names,emailAddresses,photos"
         service2.executeQuery(
             query,
             delegate: self,
@@ -134,12 +135,23 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             for connection in connections {
                 if let names = connection.names, !names.isEmpty {
                     for name in names {
-                        print(name.displayName ?? "")
+                        if let _ = name.metadata?.primary {
+                            print(name.displayName ?? "")
+                        }
                     }
                 }
                 if let emailAddresses = connection.emailAddresses, !emailAddresses.isEmpty {
                     for email in emailAddresses {
+                            if let _ = email.metadata?.primary {
                         print(email.value ?? "")
+                        }
+                    }
+                }
+                if let photos = connection.photos, !photos.isEmpty {
+                    for photo in photos {
+                        if let _ = photo.metadata?.primary {
+                            print(photo.url ?? "")
+                        }
                     }
                 }
             }
@@ -161,6 +173,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         
         eventTitle = []
         eventDetail = []
+        eventCreator = []
         if let events = response.items, !events.isEmpty {
             for event in events {
                 let start = event.start!.dateTime ?? event.start!.date!
@@ -179,6 +192,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                 
                 eventTitle.append(startDate + " " + startTime + " - " + (event.summary ?? ""))
                 eventDetail.append(event.descriptionProperty ?? "")
+                eventCreator.append(event.creator?.email ?? "")
             }
         } else {
             eventTitle = ["Inga kommande händelser"]
