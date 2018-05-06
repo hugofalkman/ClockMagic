@@ -138,7 +138,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                     }
                 }
                 if let emailAddresses = connection.emailAddresses, !emailAddresses.isEmpty {
-                    for email in connection.emailAddresses! {
+                    for email in emailAddresses {
                         print(email.value ?? "")
                     }
                 }
