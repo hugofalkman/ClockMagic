@@ -53,11 +53,12 @@
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="6S3-kN-kh7" firstAttribute="leading" secondItem="Fzp-HN-Ue1" secondAttribute="trailing" constant="8" id="FFu-io-LnN"/>
-                                                <constraint firstItem="Pxc-WM-2Nr" firstAttribute="bottom" secondItem="Fzp-HN-Ue1" secondAttribute="bottom" priority="750" id="Nq3-8E-DX7"/>
                                                 <constraint firstItem="6S3-kN-kh7" firstAttribute="top" secondItem="3ut-wf-9Zz" secondAttribute="topMargin" id="OKD-8b-Eqz"/>
                                                 <constraint firstItem="Pxc-WM-2Nr" firstAttribute="top" secondItem="6S3-kN-kh7" secondAttribute="bottom" id="Qg2-tN-Gla"/>
-                                                <constraint firstItem="Fzp-HN-Ue1" firstAttribute="top" secondItem="6S3-kN-kh7" secondAttribute="top" priority="750" id="ToP-zb-x3c"/>
+                                                <constraint firstItem="Fzp-HN-Ue1" firstAttribute="top" secondItem="6S3-kN-kh7" secondAttribute="top" id="ToP-zb-x3c"/>
                                                 <constraint firstItem="Pxc-WM-2Nr" firstAttribute="leading" secondItem="6S3-kN-kh7" secondAttribute="leading" id="cG2-eQ-mFv"/>
+                                                <constraint firstItem="Fzp-HN-Ue1" firstAttribute="width" secondItem="3ut-wf-9Zz" secondAttribute="width" multiplier="1:4" priority="750" id="djG-y7-U7z"/>
+                                                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="Fzp-HN-Ue1" secondAttribute="bottom" id="g24-Q3-tVM"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="Pxc-WM-2Nr" secondAttribute="bottom" id="gs9-k8-PJI"/>
                                                 <constraint firstItem="Fzp-HN-Ue1" firstAttribute="leading" secondItem="3ut-wf-9Zz" secondAttribute="leading" id="hiG-Rv-tKA"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="6S3-kN-kh7" secondAttribute="trailing" id="qMM-eW-WQ7"/>
