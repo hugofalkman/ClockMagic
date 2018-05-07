@@ -10,13 +10,28 @@ import UIKit
 import GoogleAPIClientForREST
 import GoogleSignIn
 
+// MARK: - TableView Cell
+
+class ViewCell: UITableViewCell {
+    
+    override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        layoutIfNeeded()
+    }
+    
+    @IBOutlet weak var creatorPhoto: UIImageView!
+    @IBOutlet weak var headerLabel: UILabel!
+    @IBOutlet weak var descriptionLabel: UILabel!
+}
+
 class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegate, GIDSignInDelegate, GIDSignInUIDelegate {
 
     // MARK: - Properties
     
     @IBOutlet weak var subView: UIView!
-  
+      
     @IBOutlet weak var tableView: UITableView!
+    
     
     private var eventTitle: [String] = []
     private var eventDetail: [String] = []
@@ -67,7 +82,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         tableView.delegate = self
         tableView.dataSource = self
         tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 100
+        tableView.estimatedRowHeight = 150
         
         // Setup ClockView and start clock
         let preferences = Preferences()
@@ -232,16 +247,23 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     // MARK: - TableView Data Source
     
+    
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return eventTitle.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! ViewCell
         
         let row = indexPath.row
-        cell.textLabel?.text = eventTitle[row]
-        cell.detailTextLabel?.text = eventDetail[row]
+        cell.headerLabel?.text = eventTitle[row]
+        cell.descriptionLabel?.text = eventDetail[row]
+        if eventPhotoURL[row] != "" {
+            let data = try? Data(contentsOf: URL(string: eventPhotoURL[row])!)
+            cell.creatorPhoto.image = UIImage(data: data!)
+        }
+        cell.layoutIfNeeded()
         return cell
     }
     
