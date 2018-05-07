@@ -405,6 +405,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.hhugofalkman.ClockMagic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos11.3;
 				SWIFT_OBJC_BRIDGING_HEADER = "ClockMagic/ClockMagic-bridging-header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -428,6 +429,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.hhugofalkman.ClockMagic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos11.3;
 				SWIFT_OBJC_BRIDGING_HEADER = "ClockMagic/ClockMagic-bridging-header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
