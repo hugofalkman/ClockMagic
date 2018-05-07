@@ -220,9 +220,9 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     // MARK: Get creator photos from Google contacts list
     
     func getCreatorPhotos() {
-        guard eventCreator != [] && eventCreator != [""] else { return }
+        guard eventCreator != [] else { return }
         for creator in eventCreator {
-            if let index = contactEmail.index(of: creator) {
+            if let index = contactEmail.index(of: creator), creator != "" {
                 eventPhotoURL.append(contactPhoto[index])
             } else {
                 eventPhotoURL.append("")
