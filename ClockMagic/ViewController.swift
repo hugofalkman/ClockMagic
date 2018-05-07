@@ -21,6 +21,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     private var eventTitle: [String] = []
     private var eventDetail: [String] = []
     private var eventCreator: [String] = []
+    private var eventPhotoURL: [String] = []
     
     private var contactEmail: [String] = []
     private var contactName: [String] = []
@@ -174,7 +175,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     // MARK: - Display events in TableView
     
-    // Display the start dates and event summaries in the UITextView
     @objc func displayResultWithTicket(
         ticket: GTLRServiceTicket,
         finishedWithObject response : GTLRCalendar_Events,
@@ -211,8 +211,23 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         } else {
             eventTitle = ["Inga kommande händelser"]
             eventDetail = [""]
+            eventCreator = [""]
         }
+        getCreatorPhotos()
         tableView.reloadData()
+    }
+    
+    // MARK: Get creator photos from Google contacts list
+    
+    func getCreatorPhotos() {
+        guard eventCreator != [] && eventCreator != [""] else { return }
+        for creator in eventCreator {
+            if let index = contactEmail.index(of: creator) {
+                eventPhotoURL.append(contactPhoto[index])
+            } else {
+                eventPhotoURL.append("")
+            }
+        }
     }
     
     // MARK: - TableView Data Source
