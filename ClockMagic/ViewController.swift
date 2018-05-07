@@ -112,6 +112,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             self.service.authorizer = user.authentication.fetcherAuthorizer()
             self.service2.authorizer = self.service.authorizer
             fetchContacts()
+            Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(fetchContacts), userInfo: nil, repeats: true)
         }
     }
     
@@ -170,7 +171,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             }
         }
         fetchEvents()
-        Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(fetchEvents), userInfo: nil, repeats: true)
     }
     
     // MARK: - Get Google Calendar Events
@@ -235,6 +235,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     // MARK: Get creator photos from Google contacts list
     
     func getCreatorPhotos() {
+        eventPhotoURL = []
         guard eventCreator != [] else { return }
         for creator in eventCreator {
             if let index = contactEmail.index(of: creator), creator != "" {
@@ -246,8 +247,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     }
     
     // MARK: - TableView Data Source
-    
-    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return eventTitle.count
