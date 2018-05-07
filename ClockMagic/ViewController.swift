@@ -22,6 +22,10 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     private var eventDetail: [String] = []
     private var eventCreator: [String] = []
     
+    private var contactEmail: [String] = []
+    private var contactName: [String] = []
+    private var contactPhoto: [String] = []
+    
     private var clockView: ClockView? {
         willSet {
             let clockView = self.clockView
@@ -58,15 +62,17 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         // Add the sign-in button.
         tableView.addSubview(signInButton)
         
+        // Setup TableView
         tableView.delegate = self
         tableView.dataSource = self
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 100
         
+        // Setup ClockView and start clock
         let preferences = Preferences()
-        let subview = preferences.model.init(frame: subView.bounds)
-        subview.styleName = preferences.styleName
-        clockView = subview
+        let prepView = preferences.model.init(frame: subView.bounds)
+        prepView.styleName = preferences.styleName
+        clockView = prepView
         
         Timer.scheduledTimer(timeInterval: 0.25, target: self, selector: #selector(updateUI), userInfo: nil, repeats: true)
     }
@@ -90,9 +96,65 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             self.service.authorizer = user.authentication.fetcherAuthorizer()
             self.service2.authorizer = self.service.authorizer
             fetchContacts()
-            fetchEvents()
-            Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(fetchEvents), userInfo: nil, repeats: true)
         }
+    }
+    
+    // MARK: - Get Google Contacts
+    
+    @objc func fetchContacts() {
+        let query = GTLRPeopleServiceQuery_PeopleConnectionsList.query(withResourceName: "people/me")
+        query.personFields = "names,emailAddresses,photos"
+        service2.executeQuery(
+            query,
+            delegate: self,
+            didFinish: #selector(getContactsFromTicket(ticket:finishedWithObject:error:)))
+    }
+    
+    @objc func getContactsFromTicket(
+        ticket: GTLRServiceTicket,
+        finishedWithObject response: GTLRPeopleService_ListConnectionsResponse,
+        error: NSError?) {
+        
+        if let error = error {
+            showAlert(title: "Error", message: error.localizedDescription)
+            return
+        }
+        
+        if let connections = response.connections, !connections.isEmpty {
+            loop: for connection in connections {
+                if let emailAddresses = connection.emailAddresses, !emailAddresses.isEmpty {
+                    var email = ""
+                    for address in emailAddresses {
+                        if let _ = address.metadata?.primary {
+                            email = address.value ?? ""
+                        }
+                    }
+                    if email == "" { continue loop }
+                    contactEmail.append(email)
+                }
+                
+                if let names = connection.names, !names.isEmpty {
+                    var displayName = ""
+                    for name in names {
+                        if let _ = name.metadata?.primary {
+                            displayName = name.displayName ?? ""
+                        }
+                    }
+                    contactName.append(displayName)
+                }
+                if let photos = connection.photos, !photos.isEmpty {
+                    var url = ""
+                    for photo in photos {
+                        if let _ = photo.metadata?.primary {
+                            url = photo.url ?? ""
+                        }
+                    }
+                    contactPhoto.append(url)
+                }
+            }
+        }
+        fetchEvents()
+        Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(fetchEvents), userInfo: nil, repeats: true)
     }
     
     // MARK: - Get Google Calendar Events
@@ -108,54 +170,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             query,
             delegate: self,
             didFinish: #selector(displayResultWithTicket(ticket:finishedWithObject:error:)))
-    }
-    
-    // MARK: - Get Google Contacts
-    
-    @objc func fetchContacts() {
-        let query = GTLRPeopleServiceQuery_PeopleConnectionsList.query(withResourceName: "people/me")
-        query.personFields = "names,emailAddresses,photos"
-        service2.executeQuery(
-            query,
-            delegate: self,
-            didFinish: #selector(getCreatorFromTicket(ticket:finishedWithObject:error:)))
-    }
-    
-    @objc func getCreatorFromTicket(
-        ticket: GTLRServiceTicket,
-        finishedWithObject response: GTLRPeopleService_ListConnectionsResponse,
-        error: NSError?) {
-        
-        if let error = error {
-            showAlert(title: "Error", message: error.localizedDescription)
-            return
-        }
-        
-        if let connections = response.connections, !connections.isEmpty {
-            for connection in connections {
-                if let names = connection.names, !names.isEmpty {
-                    for name in names {
-                        if let _ = name.metadata?.primary {
-                            print(name.displayName ?? "")
-                        }
-                    }
-                }
-                if let emailAddresses = connection.emailAddresses, !emailAddresses.isEmpty {
-                    for email in emailAddresses {
-                            if let _ = email.metadata?.primary {
-                        print(email.value ?? "")
-                        }
-                    }
-                }
-                if let photos = connection.photos, !photos.isEmpty {
-                    for photo in photos {
-                        if let _ = photo.metadata?.primary {
-                            print(photo.url ?? "")
-                        }
-                    }
-                }
-            }
-        }
     }
     
     // MARK: - Display events in TableView
