@@ -36,7 +36,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     private var eventTitle: [String] = []
     private var eventDetail: [String] = []
     private var eventCreator: [String] = []
-    private var eventPhotoURL: [String] = []
+    private var eventPhoto: [UIImage?] = []
     
     private var contactEmail: [String] = []
     private var contactName: [String] = []
@@ -231,21 +231,29 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             eventDetail = [""]
             eventCreator = [""]
         }
-        getCreatorPhotos()
-        tableView.reloadData()
+        
+        //  get photos in background and when finished reload tableview from main queue
+        DispatchQueue.global().async { [unowned self] in
+            self.getCreatorPhotos()
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        }
     }
     
     // MARK: Get creator photos from Google contacts list
     
     func getCreatorPhotos() {
-        eventPhotoURL = []
+        eventPhoto = []
         guard eventCreator != [] else { return }
         for creator in eventCreator {
             if let index = contactEmail.index(of: creator), creator != "" {
-                eventPhotoURL.append(contactPhoto[index])
-            } else {
-                eventPhotoURL.append("")
-            }
+                let urlString = contactPhoto[index]
+                if let url = URL(string: urlString), // also discards the case urlString = ""
+                    let data = try? Data(contentsOf: url) {
+                    eventPhoto.append(UIImage(data: data))
+                } else { eventPhoto.append(nil) }
+            } else { eventPhoto.append(nil) }
         }
     }
     
@@ -261,10 +269,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         let row = indexPath.row
         cell.headerLabel?.text = eventTitle[row]
         cell.descriptionLabel?.text = eventDetail[row]
-        if eventPhotoURL[row] != "" {
-            let data = try? Data(contentsOf: URL(string: eventPhotoURL[row])!)
-            cell.creatorPhoto.image = UIImage(data: data!)
-        }
+        cell.creatorPhoto.image = eventPhoto[row] // can be nil
         cell.layoutIfNeeded()
         return cell
     }
