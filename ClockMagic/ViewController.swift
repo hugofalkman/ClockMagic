@@ -137,6 +137,9 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             return
         }
         
+        contactEmail = []
+        contactName = []
+        contactPhoto = []
         if let connections = response.connections, !connections.isEmpty {
             loop: for connection in connections {
                 if let emailAddresses = connection.emailAddresses, !emailAddresses.isEmpty {
