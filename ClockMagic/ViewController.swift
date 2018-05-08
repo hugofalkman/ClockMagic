@@ -29,9 +29,13 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     // MARK: - Properties
     
     @IBOutlet weak var subView: UIView!
-      
-    @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var dayOfWeek: UILabel!
+    @IBOutlet weak var timeOfDay: UILabel!
+    @IBOutlet weak var season: UILabel!
+    @IBOutlet weak var date: UILabel!
+    
+    @IBOutlet weak var tableView: UITableView!
     
     private var eventTitle: [String] = []
     private var eventDetail: [String] = []
@@ -41,6 +45,8 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     private var contactEmail: [String] = []
     private var contactName: [String] = []
     private var contactPhoto: [String] = []
+    
+    let dateFormatter = DateFormatter()
     
     private var clockView: ClockView? {
         willSet {
@@ -90,13 +96,57 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         prepView.styleName = preferences.styleName
         clockView = prepView
         
-        Timer.scheduledTimer(timeInterval: 0.25, target: self, selector: #selector(updateUI), userInfo: nil, repeats: true)
+        Timer.scheduledTimer(timeInterval: 0.25, target: self, selector: #selector(updateClock), userInfo: nil, repeats: true)
+        
+        // Setup and start Calendar
+        dateFormatter.locale = Locale(identifier: "sv")
+        updateCalendar()
+        Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(updateCalendar), userInfo: nil, repeats: true)
+        
     }
     
-    @objc private func updateUI() {
+    @objc private func updateClock() {
         if let clockView = clockView {
             clockView.setNeedsDisplay(clockView.clockFrame)
         }
+    }
+    
+    @objc private func updateCalendar() {
+        dayOfWeek.text = dateFormatter.weekdaySymbols[Calendar.current.component(.weekday, from: Date()) - 1]
+        
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 22...23, 0...5:
+            timeOfDay.text = "natt"
+        case 6...8:
+            timeOfDay.text = "morgon"
+        case 9...11:
+            timeOfDay.text = "förmiddag"
+        case 12...17:
+            timeOfDay.text = "eftermiddag"
+        case 18...21:
+            timeOfDay.text = "kväll"
+        default:
+            timeOfDay.text = nil
+        }
+        
+        let month = Calendar.current.component(.month, from: Date())
+        switch month {
+        case 12, 1...4:
+            season.text = "vinter"
+        case 5...6:
+            season.text = "vår"
+        case 7...8:
+            season.text = "sommar"
+        case 9...11:
+            season.text = "höst"
+        default:
+            season.text = nil
+        }
+        
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .none
+        date.text = dateFormatter.string(from: Date())
     }
     
     // MARK: - Google ID Signin
@@ -209,9 +259,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         if let events = response.items, !events.isEmpty {
             for event in events {
                 let start = event.start!.dateTime ?? event.start!.date!
-                
-                let dateFormatter = DateFormatter()
-                dateFormatter.locale = Locale(identifier: "sv")
                 
                 dateFormatter.dateStyle = .medium
                 dateFormatter.timeStyle = .none

@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
@@ -74,12 +75,49 @@
                                 </prototypes>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K8H-XV-U8S">
-                                <rect key="frame" x="0.0" y="0.0" width="512" height="768"/>
+                                <rect key="frame" x="0.0" y="0.0" width="512" height="512"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="K8H-XV-U8S" secondAttribute="height" multiplier="1:1" id="f6h-LR-qkh"/>
+                                </constraints>
                             </view>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="a4S-rw-faT">
+                                <rect key="frame" x="0.0" y="504" width="512" height="264"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Day of the Week" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4xa-IM-DoH">
+                                        <rect key="frame" x="0.0" y="0.0" width="512" height="66"/>
+                                        <color key="backgroundColor" red="0.99363827024006091" green="1" blue="0.59624979839266667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="40"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Time of Day" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gD9-3p-WRI">
+                                        <rect key="frame" x="0.0" y="66" width="512" height="66"/>
+                                        <color key="backgroundColor" red="0.99607843139999996" green="1" blue="0.58823529409999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="40"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Season" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VLq-vd-6MC">
+                                        <rect key="frame" x="0.0" y="132" width="512" height="66"/>
+                                        <color key="backgroundColor" red="0.99607843137254903" green="1" blue="0.58823529411764708" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="40"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HRr-3i-6cg">
+                                        <rect key="frame" x="0.0" y="198" width="512" height="66"/>
+                                        <color key="backgroundColor" red="0.99607843137254903" green="1" blue="0.58823529411764708" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="40"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="a4S-rw-faT" firstAttribute="top" secondItem="K8H-XV-U8S" secondAttribute="bottomMargin" id="50Q-L2-P7K"/>
                             <constraint firstItem="m9k-WX-omO" firstAttribute="leading" secondItem="K8H-XV-U8S" secondAttribute="trailing" id="5Ri-My-Kkq"/>
                             <constraint firstItem="m9k-WX-omO" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="CHB-vF-G3X"/>
                             <constraint firstItem="m9k-WX-omO" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="Qxi-5Y-9bt"/>
@@ -87,13 +125,19 @@
                             <constraint firstItem="m9k-WX-omO" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="SfB-0m-K56"/>
                             <constraint firstItem="K8H-XV-U8S" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="1:2" id="WGh-j1-pu9"/>
                             <constraint firstItem="K8H-XV-U8S" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="bFA-Fi-YZX"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="K8H-XV-U8S" secondAttribute="bottom" id="i4e-ey-aLH"/>
+                            <constraint firstItem="m9k-WX-omO" firstAttribute="leading" secondItem="a4S-rw-faT" secondAttribute="trailing" id="k5B-hR-5im"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="a4S-rw-faT" secondAttribute="bottom" id="m24-9a-wlp"/>
+                            <constraint firstItem="a4S-rw-faT" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="nrL-Qg-gcv"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="date" destination="HRr-3i-6cg" id="WYh-f4-xEn"/>
+                        <outlet property="dayOfWeek" destination="4xa-IM-DoH" id="X9S-aC-a9i"/>
+                        <outlet property="season" destination="VLq-vd-6MC" id="FOx-3t-LTD"/>
                         <outlet property="subView" destination="K8H-XV-U8S" id="I14-Tg-4jd"/>
                         <outlet property="tableView" destination="m9k-WX-omO" id="bqe-vP-IfD"/>
+                        <outlet property="timeOfDay" destination="gD9-3p-WRI" id="DY7-zA-OFG"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

@@ -78,49 +78,49 @@ final class BN0032: ClockView {
         style = Style.default
     }
     
-    override func draw(day: Int) {
-        let dateArrowColor = Color.red
-        let dateBackgroundColor = UIColor(red: 0.894, green: 0.933, blue: 0.965, alpha: 1)
-        let clockWidth = clockFrame.size.width
-        let dateWidth = clockWidth * 0.057416268
-        let dateFrame = CGRect(
-            x: clockFrame.origin.x + ((clockWidth - dateWidth) / 2.0),
-            y: clockFrame.origin.y + (clockWidth * (1 - 0.199362041 - 0.071770335)),
-            width: dateWidth,
-            height: clockWidth * 0.071770335
-        )
-        
-        dateBackgroundColor.setFill()
-        
-        UIRectFill(dateFrame)
-        
-        style.minuteColor.setFill()
-        
-        let paragraph = NSMutableParagraphStyle()
-        paragraph.alignment = .center
-        
-        let string = NSAttributedString(string: "\(day)", attributes: [
-            .font: UIFont(name: "HelveticaNeue-Light", size: clockWidth * 0.044657098)!,
-            .kern: -1,
-            .paragraphStyle: paragraph
-            ])
-        
-        var stringFrame = dateFrame
-        stringFrame.origin.y += dateFrame.size.height * 0.12
-        string.draw(in: stringFrame)
-        
-        dateArrowColor.setFill()
-        let y = dateFrame.minY - (clockWidth * 0.015948963)
-        let height = clockWidth * 0.022328549
-        let pointDip = clockWidth * 0.009569378
-        
-        let path = UIBezierPath()
-        path.move(to: CGPoint(x: dateFrame.minX, y: y))
-        path.addLine(to: CGPoint(x: dateFrame.minX, y: y + height))
-        path.addLine(to: CGPoint(x: dateFrame.midX, y: y + height + pointDip))
-        path.addLine(to: CGPoint(x: dateFrame.maxX, y: y + height))
-        path.addLine(to: CGPoint(x: dateFrame.maxX, y: y))
-        path.addLine(to: CGPoint(x: dateFrame.midX, y: y + pointDip))
-        path.fill()
-    }
+//    override func draw(day: Int) {
+//        let dateArrowColor = Color.red
+//        let dateBackgroundColor = UIColor(red: 0.894, green: 0.933, blue: 0.965, alpha: 1)
+//        let clockWidth = clockFrame.size.width
+//        let dateWidth = clockWidth * 0.057416268
+//        let dateFrame = CGRect(
+//            x: clockFrame.origin.x + ((clockWidth - dateWidth) / 2.0),
+//            y: clockFrame.origin.y + (clockWidth * (1 - 0.199362041 - 0.071770335)),
+//            width: dateWidth,
+//            height: clockWidth * 0.071770335
+//        )
+//
+//        dateBackgroundColor.setFill()
+//
+//        UIRectFill(dateFrame)
+//
+//        style.minuteColor.setFill()
+//        
+//        let paragraph = NSMutableParagraphStyle()
+//        paragraph.alignment = .center
+//        
+//        let string = NSAttributedString(string: "\(day)", attributes: [
+//            .font: UIFont(name: "HelveticaNeue-Light", size: clockWidth * 0.044657098)!,
+//            .kern: -1,
+//            .paragraphStyle: paragraph
+//            ])
+//
+//        var stringFrame = dateFrame
+//        stringFrame.origin.y += dateFrame.size.height * 0.12
+//        string.draw(in: stringFrame)
+//
+//        dateArrowColor.setFill()
+//        let y = dateFrame.minY - (clockWidth * 0.015948963)
+//        let height = clockWidth * 0.022328549
+//        let pointDip = clockWidth * 0.009569378
+//
+//        let path = UIBezierPath()
+//        path.move(to: CGPoint(x: dateFrame.minX, y: y))
+//        path.addLine(to: CGPoint(x: dateFrame.minX, y: y + height))
+//        path.addLine(to: CGPoint(x: dateFrame.midX, y: y + height + pointDip))
+//        path.addLine(to: CGPoint(x: dateFrame.maxX, y: y + height))
+//        path.addLine(to: CGPoint(x: dateFrame.maxX, y: y))
+//        path.addLine(to: CGPoint(x: dateFrame.midX, y: y + pointDip))
+//        path.fill()
+//    }
 }
