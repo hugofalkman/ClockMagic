@@ -1,0 +1,18 @@
+/* 
+  Localizable.strings
+  ClockMagic
+
+  Created by H Hugo Falkman on 2018-05-09.
+  Copyright © 2018 H Hugo Falkman. All rights reserved.
+*/
+
+"natt" = "nacht";
+"morgon" = "morgen";
+"förmiddag" = "voormiddag";
+"eftermiddag" = "namiddag";
+"kväll" = "avond";
+
+"vinter" = "winter";
+"vår" = "voorjaar";
+"sommar" = "zomer";
+"höst" = "herfst";
