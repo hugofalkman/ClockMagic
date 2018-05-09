@@ -99,7 +99,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         Timer.scheduledTimer(timeInterval: 0.25, target: self, selector: #selector(updateClock), userInfo: nil, repeats: true)
         
         // Setup and start Calendar
-        dateFormatter.locale = Locale(identifier: "sv")
+        // dateFormatter.locale = Locale(identifier: "sv")
         updateCalendar()
         Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(updateCalendar), userInfo: nil, repeats: true)
         
@@ -117,15 +117,15 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
         case 22...23, 0...5:
-            timeOfDay.text = "natt"
+            timeOfDay.text = NSLocalizedString("natt", comment: "time of day")
         case 6...8:
-            timeOfDay.text = "morgon"
+            timeOfDay.text = NSLocalizedString("morgon", comment: "time of day")
         case 9...11:
-            timeOfDay.text = "förmiddag"
+            timeOfDay.text = NSLocalizedString("förmiddag", comment: "time of day")
         case 12...17:
-            timeOfDay.text = "eftermiddag"
+            timeOfDay.text = NSLocalizedString("eftermiddag", comment: "time of day")
         case 18...21:
-            timeOfDay.text = "kväll"
+            timeOfDay.text = NSLocalizedString("kväll", comment: "time of day")
         default:
             timeOfDay.text = nil
         }
@@ -133,13 +133,13 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         let month = Calendar.current.component(.month, from: Date())
         switch month {
         case 12, 1...4:
-            season.text = "vinter"
+            season.text = NSLocalizedString("vinter", comment: "season")
         case 5...6:
-            season.text = "vår"
+            season.text = NSLocalizedString("vår", comment: "season")
         case 7...8:
-            season.text = "sommar"
+            season.text = NSLocalizedString("sommar", comment: "season")
         case 9...11:
-            season.text = "höst"
+            season.text = NSLocalizedString("höst", comment: "season")
         default:
             season.text = nil
         }

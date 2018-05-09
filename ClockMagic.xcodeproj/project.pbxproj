@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		321A4A3E452DEBF298C8B7D9 /* Pods_ClockMagic.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFF974629FC93B4C43D041C6 /* Pods_ClockMagic.framework */; };
+		B1C6669520A3145100904F2C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B1C6669720A3145100904F2C /* Localizable.strings */; };
 		B1FD215A20971D7E00AF26E0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD215920971D7E00AF26E0 /* AppDelegate.swift */; };
 		B1FD215C20971D7E00AF26E0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD215B20971D7E00AF26E0 /* ViewController.swift */; };
 		B1FD215F20971D7E00AF26E0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B1FD215D20971D7E00AF26E0 /* Main.storyboard */; };
@@ -22,6 +23,12 @@
 
 /* Begin PBXFileReference section */
 		B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ClockMagic-bridging-header.h"; sourceTree = "<group>"; };
+		B1C6669120A3123500904F2C /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Main.strings; sourceTree = "<group>"; };
+		B1C6669220A3123500904F2C /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		B1C6669320A3138A00904F2C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
+		B1C6669420A3138A00904F2C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		B1C6669620A3145100904F2C /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
+		B1C6669820A3147000904F2C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B1FD215620971D7E00AF26E0 /* ClockMagic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClockMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1FD215920971D7E00AF26E0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B1FD215B20971D7E00AF26E0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -82,6 +89,7 @@
 				B1FD2171209723F900AF26E0 /* Color.swift */,
 				B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */,
 				B1FD216020971D7F00AF26E0 /* Assets.xcassets */,
+				B1C6669720A3145100904F2C /* Localizable.strings */,
 				B1FD216220971D7F00AF26E0 /* LaunchScreen.storyboard */,
 				B1FD216520971D7F00AF26E0 /* Info.plist */,
 			);
@@ -145,11 +153,11 @@
 			};
 			buildConfigurationList = B1FD215120971D7D00AF26E0 /* Build configuration list for PBXProject "ClockMagic" */;
 			compatibilityVersion = "Xcode 9.3";
-			developmentRegion = en;
+			developmentRegion = sv;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
 				Base,
+				en,
 			);
 			mainGroup = B1FD214D20971D7D00AF26E0;
 			productRefGroup = B1FD215720971D7E00AF26E0 /* Products */;
@@ -167,6 +175,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B1FD216420971D7F00AF26E0 /* LaunchScreen.storyboard in Resources */,
+				B1C6669520A3145100904F2C /* Localizable.strings in Resources */,
 				B1FD216120971D7F00AF26E0 /* Assets.xcassets in Resources */,
 				B1FD215F20971D7E00AF26E0 /* Main.storyboard in Resources */,
 			);
@@ -255,10 +264,21 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		B1C6669720A3145100904F2C /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B1C6669620A3145100904F2C /* sv */,
+				B1C6669820A3147000904F2C /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		B1FD215D20971D7E00AF26E0 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				B1FD215E20971D7E00AF26E0 /* Base */,
+				B1C6669120A3123500904F2C /* sv */,
+				B1C6669320A3138A00904F2C /* en */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -267,6 +287,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				B1FD216320971D7F00AF26E0 /* Base */,
+				B1C6669220A3123500904F2C /* sv */,
+				B1C6669420A3138A00904F2C /* en */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -278,6 +300,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -338,6 +361,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";

@@ -1,0 +1,18 @@
+
+/* Class = "UILabel"; text = "Day of the Week"; ObjectID = "4xa-IM-DoH"; */
+"4xa-IM-DoH.text" = "Day of the Week";
+
+/* Class = "UILabel"; text = "Header"; ObjectID = "6S3-kN-kh7"; */
+"6S3-kN-kh7.text" = "Header";
+
+/* Class = "UILabel"; text = "Date"; ObjectID = "HRr-3i-6cg"; */
+"HRr-3i-6cg.text" = "Date";
+
+/* Class = "UILabel"; text = "Description"; ObjectID = "Pxc-WM-2Nr"; */
+"Pxc-WM-2Nr.text" = "Description";
+
+/* Class = "UILabel"; text = "Season"; ObjectID = "VLq-vd-6MC"; */
+"VLq-vd-6MC.text" = "Season";
+
+/* Class = "UILabel"; text = "Time of Day"; ObjectID = "gD9-3p-WRI"; */
+"gD9-3p-WRI.text" = "Time of Day";
