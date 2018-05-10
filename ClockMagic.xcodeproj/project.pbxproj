@@ -419,7 +419,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = CAE4XXMP5G;
 				INFOPLIST_FILE = ClockMagic/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
@@ -429,7 +429,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.hhugofalkman.ClockMagic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "5d7fb2e5-0243-4bf6-87f7-b7c06f72708d";
+				PROVISIONING_PROFILE_SPECIFIER = ClockMagicDevelopmentProfile;
 				SDKROOT = iphoneos11.3;
 				SWIFT_OBJC_BRIDGING_HEADER = "ClockMagic/ClockMagic-bridging-header.h";
 				SWIFT_VERSION = 4.0;
@@ -442,8 +443,8 @@
 			baseConfigurationReference = E2D50931A74739B0833252EF /* Pods-ClockMagic.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = CAE4XXMP5G;
 				INFOPLIST_FILE = ClockMagic/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
@@ -453,7 +454,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.hhugofalkman.ClockMagic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "42661e34-d7e2-42c6-baaf-365f0bf0612b";
+				PROVISIONING_PROFILE_SPECIFIER = ClockMagicDistributionProfile;
 				SDKROOT = iphoneos11.3;
 				SWIFT_OBJC_BRIDGING_HEADER = "ClockMagic/ClockMagic-bridging-header.h";
 				SWIFT_VERSION = 4.0;

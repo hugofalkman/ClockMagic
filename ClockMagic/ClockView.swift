@@ -80,6 +80,12 @@ class ClockView: UIView {
             drawLogo()
         }
         
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .none
+        dateFormatter.timeStyle = .medium
+        let time = dateFormatter.string(from: Date())
+        draw(time: time)
+        
         let comps = Calendar.current.dateComponents([.day, .hour, .minute, .second], from: Date())
         let seconds = Double(comps.second ?? 0) / 60.0
         let minutes = (Double(comps.minute ?? 0) / 60.0) + (seconds / 60.0)
@@ -126,6 +132,7 @@ class ClockView: UIView {
         draw(seconds: (.pi * 2 * seconds) - .pi / 2)
     }
     
+    func draw(time: String) {}
     func draw(day: Int) {}
     
     func draw(hours angle: Double) {

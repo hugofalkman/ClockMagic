@@ -67,7 +67,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     private let scopes = [kGTLRAuthScopeCalendarReadonly, kGTLRAuthScopePeopleServiceContactsReadonly]
     private let service = GTLRCalendarService()
     private let service2 = GTLRPeopleServiceService()
-    let signInButton = GIDSignInButton()
+    var signInButton = GIDSignInButton()
     let output = UITextView()
     
     // MARK: - Lifecycle
@@ -80,9 +80,13 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         GIDSignIn.sharedInstance().uiDelegate = self
         GIDSignIn.sharedInstance().scopes = scopes
         GIDSignIn.sharedInstance().signInSilently()
+        GIDSignIn.sharedInstance().language = Locale.current.languageCode
         
         // Add the sign-in button.
+        signInButton.style = GIDSignInButtonStyle.wide
         tableView.addSubview(signInButton)
+        signInButton.center = CGPoint(x: view.bounds.width / 4, y: view.bounds.height / 2)
+        
         
         // Setup TableView
         tableView.delegate = self
@@ -274,7 +278,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                 eventCreator.append(event.creator?.email ?? "")
             }
         } else {
-            eventTitle = ["Inga kommande händelser"]
+            eventTitle = [NSLocalizedString("Inga kommande händelser", comment: "Message empty calendar")]
             eventDetail = [""]
             eventCreator = [""]
         }
@@ -299,13 +303,14 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                 if let url = URL(string: urlString), // also discards the case urlString = ""
                     let data = try? Data(contentsOf: url) {
                     eventPhoto.append(UIImage(data: data))
-                } else { eventPhoto.append(nil) }
-            } else { eventPhoto.append(nil) }
+                } else { eventPhoto.append(UIImage()) }
+            } else { eventPhoto.append(UIImage()) }
         }
     }
     
     // MARK: - TableView Data Source
     
+    // This returns 0 until (some) data has been retrieved from web. This signals to TableView not to continue. Once all photos have been retrieved on background thread, tableView.reloadData is invoked on the main thread finishing populating the tableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return eventTitle.count
     }
@@ -316,7 +321,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         let row = indexPath.row
         cell.headerLabel?.text = eventTitle[row]
         cell.descriptionLabel?.text = eventDetail[row]
-        cell.creatorPhoto.image = eventPhoto[row] // can be nil
+        cell.creatorPhoto.image = eventPhoto[row]
         cell.layoutIfNeeded()
         return cell
     }

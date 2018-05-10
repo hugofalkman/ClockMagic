@@ -78,6 +78,42 @@ final class BN0032: ClockView {
         style = Style.default
     }
     
+    override func draw(time: String) {
+        let timeBackgroundColor = UIColor(red: 0.894, green: 0.933, blue: 0.965, alpha: 1)
+        let clockWidth = clockFrame.size.width
+        var timeWidth = clockWidth * 0.057416268 * 6.2
+        let locale = Locale.current.regionCode
+        if let code = locale, code == "US" {
+            timeWidth *= 1.5
+        }
+        let timeFrame = CGRect(
+            x: clockFrame.origin.x + ((clockWidth - timeWidth) / 2.0),
+            y: clockFrame.origin.y + (clockWidth * (1 - 0.199362041 * 1.4 - 0.071770335 * 1.3)),
+            width: timeWidth,
+            height: clockWidth * 0.071770335 * 1.3
+        )
+        
+        timeBackgroundColor.setFill()
+
+        UIRectFill(timeFrame)
+
+        style.minuteColor.setFill()
+
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+
+        let string = NSAttributedString(string: time, attributes: [
+            .font: UIFont(name: "HelveticaNeue-Bold", size: clockWidth * 0.044657098 * 2)!,
+            .kern: -1,
+            .paragraphStyle: paragraph
+            ])
+        
+        var stringFrame = timeFrame
+        stringFrame.origin.y -= timeFrame.size.height * 0.1
+        stringFrame.origin.x -= timeFrame.size.width * 0.01
+        string.draw(in: stringFrame)
+    }
+    
 //    override func draw(day: Int) {
 //        let dateArrowColor = Color.red
 //        let dateBackgroundColor = UIColor(red: 0.894, green: 0.933, blue: 0.965, alpha: 1)
@@ -95,10 +131,10 @@ final class BN0032: ClockView {
 //        UIRectFill(dateFrame)
 //
 //        style.minuteColor.setFill()
-//        
+//
 //        let paragraph = NSMutableParagraphStyle()
 //        paragraph.alignment = .center
-//        
+//
 //        let string = NSAttributedString(string: "\(day)", attributes: [
 //            .font: UIFont(name: "HelveticaNeue-Light", size: clockWidth * 0.044657098)!,
 //            .kern: -1,
