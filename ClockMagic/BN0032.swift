@@ -6,7 +6,6 @@
 //  Copyright © 2018 H Hugo Falkman. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
 final class BN0032: ClockView {
@@ -81,82 +80,24 @@ final class BN0032: ClockView {
     override func draw(time: String) {
         let timeBackgroundColor = UIColor(red: 0.894, green: 0.933, blue: 0.965, alpha: 1)
         let clockWidth = clockFrame.size.width
-        var timeWidth = clockWidth * 0.057416268 * 6.2
-        let locale = Locale.current.regionCode
-        if let code = locale, code == "US" {
-            timeWidth *= 1.5
-        }
-        let timeFrame = CGRect(
-            x: clockFrame.origin.x + ((clockWidth - timeWidth) / 2.0),
-            y: clockFrame.origin.y + (clockWidth * (1 - 0.199362041 * 1.4 - 0.071770335 * 1.3)),
-            width: timeWidth,
-            height: clockWidth * 0.071770335 * 1.3
-        )
-        
-        timeBackgroundColor.setFill()
-
-        UIRectFill(timeFrame)
-
-        style.minuteColor.setFill()
 
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
 
         let string = NSAttributedString(string: time, attributes: [
-            .font: UIFont(name: "HelveticaNeue-Bold", size: clockWidth * 0.044657098 * 2)!,
+            .font: UIFont(name: "HelveticaNeue-Bold", size: clockWidth * 0.09)!,
             .kern: -1,
             .paragraphStyle: paragraph
             ])
         
-        var stringFrame = timeFrame
-        stringFrame.origin.y -= timeFrame.size.height * 0.1
-        stringFrame.origin.x -= timeFrame.size.width * 0.01
+        var stringFrame = string.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil)
+        stringFrame.size.width += clockWidth * 0.04
+        stringFrame.origin.x = clockFrame.origin.x + ((clockWidth - stringFrame.size.width) / 2.0)
+        stringFrame.origin.y = clockFrame.origin.y + (clockWidth * 0.6)
+        
+        timeBackgroundColor.setFill()
+        UIRectFill(stringFrame)
+        
         string.draw(in: stringFrame)
     }
-    
-//    override func draw(day: Int) {
-//        let dateArrowColor = Color.red
-//        let dateBackgroundColor = UIColor(red: 0.894, green: 0.933, blue: 0.965, alpha: 1)
-//        let clockWidth = clockFrame.size.width
-//        let dateWidth = clockWidth * 0.057416268
-//        let dateFrame = CGRect(
-//            x: clockFrame.origin.x + ((clockWidth - dateWidth) / 2.0),
-//            y: clockFrame.origin.y + (clockWidth * (1 - 0.199362041 - 0.071770335)),
-//            width: dateWidth,
-//            height: clockWidth * 0.071770335
-//        )
-//
-//        dateBackgroundColor.setFill()
-//
-//        UIRectFill(dateFrame)
-//
-//        style.minuteColor.setFill()
-//
-//        let paragraph = NSMutableParagraphStyle()
-//        paragraph.alignment = .center
-//
-//        let string = NSAttributedString(string: "\(day)", attributes: [
-//            .font: UIFont(name: "HelveticaNeue-Light", size: clockWidth * 0.044657098)!,
-//            .kern: -1,
-//            .paragraphStyle: paragraph
-//            ])
-//
-//        var stringFrame = dateFrame
-//        stringFrame.origin.y += dateFrame.size.height * 0.12
-//        string.draw(in: stringFrame)
-//
-//        dateArrowColor.setFill()
-//        let y = dateFrame.minY - (clockWidth * 0.015948963)
-//        let height = clockWidth * 0.022328549
-//        let pointDip = clockWidth * 0.009569378
-//
-//        let path = UIBezierPath()
-//        path.move(to: CGPoint(x: dateFrame.minX, y: y))
-//        path.addLine(to: CGPoint(x: dateFrame.minX, y: y + height))
-//        path.addLine(to: CGPoint(x: dateFrame.midX, y: y + height + pointDip))
-//        path.addLine(to: CGPoint(x: dateFrame.maxX, y: y + height))
-//        path.addLine(to: CGPoint(x: dateFrame.maxX, y: y))
-//        path.addLine(to: CGPoint(x: dateFrame.midX, y: y + pointDip))
-//        path.fill()
-//    }
 }
