@@ -44,7 +44,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     private var contactEmail: [String] = []
     private var contactName: [String] = []
-    private var contactPhoto: [String] = []
+    private var contactPhoto: [String] = [] // A url not an image
     
     let dateFormatter = DateFormatter()
     
@@ -68,7 +68,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     private let service = GTLRCalendarService()
     private let service2 = GTLRPeopleServiceService()
     var signInButton = GIDSignInButton()
-    let output = UITextView()
     
     // MARK: - Lifecycle
     
@@ -87,7 +86,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         tableView.addSubview(signInButton)
         signInButton.center = CGPoint(x: view.bounds.width / 4, y: view.bounds.height / 2)
         
-        
         // Setup TableView
         tableView.delegate = self
         tableView.dataSource = self
@@ -102,8 +100,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         
         Timer.scheduledTimer(timeInterval: 0.25, target: self, selector: #selector(updateClock), userInfo: nil, repeats: true)
         
-        // Setup and start Calendar
-        // dateFormatter.locale = Locale(identifier: "sv")
+        // Setup and start local Calendar
         updateCalendar()
         Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(updateCalendar), userInfo: nil, repeats: true)
         
@@ -155,6 +152,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     // MARK: - Google ID Signin
     
+    // called when sign-in button pushed
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
               withError error: Error!) {
         if let error = error {
@@ -162,7 +160,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             self.service.authorizer = nil
         } else {
             self.signInButton.isHidden = true
-            self.output.isHidden = false
             self.service.authorizer = user.authentication.fetcherAuthorizer()
             self.service2.authorizer = self.service.authorizer
             fetchContacts()
@@ -172,7 +169,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     // MARK: - Get Google Contacts
     
-    @objc func fetchContacts() {
+    @objc private func fetchContacts() {
         let query = GTLRPeopleServiceQuery_PeopleConnectionsList.query(withResourceName: "people/me")
         query.personFields = "names,emailAddresses,photos"
         service2.executeQuery(
@@ -267,7 +264,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                 dateFormatter.dateStyle = .medium
                 dateFormatter.timeStyle = .none
                 var startDate = dateFormatter.string(from: start.date)
-                startDate = String(startDate.dropLast(5))
+                startDate = String(startDate.dropLast(5)) // drop year
                 
                 dateFormatter.dateStyle = .none
                 dateFormatter.timeStyle = .short
@@ -296,6 +293,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     func getCreatorPhotos() {
         eventPhoto = []
+        guard contactEmail != [] else { return }
         guard eventCreator != [] else { return }
         for creator in eventCreator {
             if let index = contactEmail.index(of: creator), creator != "" {
@@ -310,7 +308,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     // MARK: - TableView Data Source
     
-    // This returns 0 until (some) data has been retrieved from web. This signals to TableView not to continue. Once all photos have been retrieved on background thread, tableView.reloadData is invoked on the main thread finishing populating the tableView
+    // This returns 0 until (some) data has been retrieved from web. The 0 signals to TableView not to continue. Once all photos have been retrieved on background thread, tableView.reloadData is invoked on the main thread finishing populating the tableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return eventTitle.count
     }
