@@ -13,12 +13,12 @@ class ClockView: UIView {
     
     // MARK: - Types
     
-    // enum Style: String, ClockStyle {
-    enum Style: String {
-        case bkbkg = "BKBKG"
-        var description: String {
-            return "Black"
-        }
+//    // enum Style: String, ClockStyle {
+//    enum Style: String {
+//        case bkbkg = "BKBKG"
+//        var description: String {
+//            return "Black"
+//        }
 //        var faceColor: UIColor {
 //            return Color.darkBackground
 //        }
@@ -26,13 +26,13 @@ class ClockView: UIView {
 //            return Color.white
 //        }
 //        static var `default`: ClockStyle {
-        static var `default`: Style {
-            return Style.bkbkg
-        }
-        static var all: [Style] {
-            return [Style.bkbkg]
-        }
-    }
+//        static var `default`: Style {
+//            return Style.bkbkg
+//        }
+//        static var all: [Style] {
+//            return [Style.bkbkg]
+//        }
+//    }
     
     // MARK: - Properties
     
@@ -49,7 +49,7 @@ class ClockView: UIView {
     }
     
 //    var style = BN0032.Style.bkbkg
-    var style = Style.bkbkg
+//    var style = Style.bkbkg
 
     var styleName = "Black"
     

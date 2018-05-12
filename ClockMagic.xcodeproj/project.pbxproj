@@ -15,7 +15,6 @@
 		B1FD216120971D7F00AF26E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1FD216020971D7F00AF26E0 /* Assets.xcassets */; };
 		B1FD216420971D7F00AF26E0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B1FD216220971D7F00AF26E0 /* LaunchScreen.storyboard */; };
 		B1FD216E2097206F00AF26E0 /* ClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD216D2097206F00AF26E0 /* ClockView.swift */; };
-		B1FD21702097210200AF26E0 /* ClockStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD216F2097210200AF26E0 /* ClockStyle.swift */; };
 		B1FD2172209723F900AF26E0 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD2171209723F900AF26E0 /* Color.swift */; };
 /* End PBXBuildFile section */
 
@@ -34,7 +33,6 @@
 		B1FD216320971D7F00AF26E0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B1FD216520971D7F00AF26E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B1FD216D2097206F00AF26E0 /* ClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockView.swift; sourceTree = "<group>"; };
-		B1FD216F2097210200AF26E0 /* ClockStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockStyle.swift; sourceTree = "<group>"; };
 		B1FD2171209723F900AF26E0 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		C4DF63C9CB488A6D6AA7C7FB /* Pods-ClockMagic.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ClockMagic.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ClockMagic/Pods-ClockMagic.debug.xcconfig"; sourceTree = "<group>"; };
 		E2D50931A74739B0833252EF /* Pods-ClockMagic.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ClockMagic.release.xcconfig"; path = "Pods/Target Support Files/Pods-ClockMagic/Pods-ClockMagic.release.xcconfig"; sourceTree = "<group>"; };
@@ -78,7 +76,6 @@
 				B1FD215B20971D7E00AF26E0 /* ViewController.swift */,
 				B1FD215D20971D7E00AF26E0 /* Main.storyboard */,
 				B1FD216D2097206F00AF26E0 /* ClockView.swift */,
-				B1FD216F2097210200AF26E0 /* ClockStyle.swift */,
 				B1FD2171209723F900AF26E0 /* Color.swift */,
 				B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */,
 				B1FD216020971D7F00AF26E0 /* Assets.xcassets */,
@@ -247,7 +244,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B1FD21702097210200AF26E0 /* ClockStyle.swift in Sources */,
 				B1FD215C20971D7E00AF26E0 /* ViewController.swift in Sources */,
 				B1FD216E2097206F00AF26E0 /* ClockView.swift in Sources */,
 				B1FD2172209723F900AF26E0 /* Color.swift in Sources */,
