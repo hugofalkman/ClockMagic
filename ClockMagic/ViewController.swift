@@ -147,7 +147,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     // MARK: - Google ID Signin
     
-    // called when sign-in button pushed
+    // Called when sign-in button pushed
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
               withError error: Error!) {
         if let error = error {
@@ -167,10 +167,14 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     @objc private func fetchContacts() {
         let query = GTLRPeopleServiceQuery_PeopleConnectionsList.query(withResourceName: "people/me")
         query.personFields = "names,emailAddresses,photos"
-        service2.executeQuery(
-            query,
-            delegate: self,
-            didFinish: #selector(getContactsFromTicket(ticket:finishedWithObject:error:)))
+        
+        //  Get contacts in background
+        DispatchQueue.global().async { [unowned self] in
+            self.service2.executeQuery(
+                query,
+                delegate: self,
+                didFinish: #selector(self.getContactsFromTicket(ticket:finishedWithObject:error:)))
+        }
     }
     
     @objc func getContactsFromTicket(
@@ -231,10 +235,14 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         query.timeMin = GTLRDateTime(date: Date())
         query.singleEvents = true
         query.orderBy = kGTLRCalendarOrderByStartTime
-        service.executeQuery(
+        
+        // Get calendare events in background
+        DispatchQueue.global().async { [unowned self] in
+            self.service.executeQuery(
             query,
             delegate: self,
-            didFinish: #selector(displayResultWithTicket(ticket:finishedWithObject:error:)))
+            didFinish: #selector(self.displayResultWithTicket(ticket:finishedWithObject:error:)))
+        }
     }
     
     // MARK: - Display events in TableView
@@ -275,7 +283,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             eventCreator = [""]
         }
         
-        //  get photos in background and when finished reload tableview from main queue
+        //  Get photos in background and when finished reload tableview from main queue
         DispatchQueue.global().async { [unowned self] in
             self.getCreatorPhotos()
             DispatchQueue.main.async {
@@ -314,7 +322,9 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         let row = indexPath.row
         cell.headerLabel?.text = eventTitle[row]
         cell.descriptionLabel?.text = eventDetail[row]
-        cell.creatorPhoto.image = eventPhoto[row]
+        if eventPhoto.count == eventTitle.count {
+            cell.creatorPhoto.image = eventPhoto[row]
+        }
         cell.layoutIfNeeded()
         return cell
     }
