@@ -6,54 +6,16 @@
 //  Copyright © 2018 H Hugo Falkman. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
 class ClockView: UIView {
     
-    // MARK: - Types
-    
-//    // enum Style: String, ClockStyle {
-//    enum Style: String {
-//        case bkbkg = "BKBKG"
-//        var description: String {
-//            return "Black"
-//        }
-//        var faceColor: UIColor {
-//            return Color.darkBackground
-//        }
-//        var minuteColor: UIColor {
-//            return Color.white
-//        }
-//        static var `default`: ClockStyle {
-//        static var `default`: Style {
-//            return Style.bkbkg
-//        }
-//        static var all: [Style] {
-//            return [Style.bkbkg]
-//        }
-//    }
-    
     // MARK: - Properties
     
-    static var modelName: String = "BN0032"
-    
-//    var drawsLogo = false
-//    var logoImage: UIImage?
     var clockFrame: CGRect {
         return clockFrame(forBounds: bounds)
     }
-    
-    var fontName: String {
-        return "HelveticaNeue-Light"
-    }
-    
-//    var style = BN0032.Style.bkbkg
-//    var style = Style.bkbkg
-
-    var styleName = "Black"
-    
-    static var styles = ["BN0032"]
+    let fontName = "HelveticaNeue-Light"
     
     override var frame: CGRect {
         didSet {
@@ -61,28 +23,11 @@ class ClockView: UIView {
         }
     }
     
-    // MARK: - Initializers
-    
-    convenience init() {
-        self.init(frame: .zero)
-    }
-    
-    required override init(frame: CGRect) {
-        super.init(frame: frame)
-        initialize()
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        initialize()
-    }
-    
     // MARK: - NSView
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)
         
-        // style.backgroundColor.setFill()
         Color.darkBackground.setFill()
         
         UIRectFill(bounds)
@@ -90,10 +35,6 @@ class ClockView: UIView {
         drawFaceBackground()
         drawTicks()
         drawNumbers()
-        
-//        if drawsLogo {
-//            drawLogo()
-//        }
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .none
@@ -110,11 +51,6 @@ class ClockView: UIView {
     
     // MARK: - Configuration
     
-    func initialize() {
-        // NotificationCenter.default.addObserver(self, selector: #selector(preferencesDidChange), name: .PreferencesDidChange, object: nil)
-//        preferencesDidChange(nil)
-    }
-    
     func clockFrame(forBounds bounds: CGRect) -> CGRect {
         let size = bounds.size
         let clockSize = min(size.width, size.height) * 0.85
@@ -126,23 +62,18 @@ class ClockView: UIView {
     // MARK: - Drawing Hooks
     
     func drawTicks() {
-        // drawTicksDivider(color: style.backgroundColor.withAlphaComponent(0.05), position: 0.074960128)
         drawTicksDivider(color: Color.darkBackground.withAlphaComponent(0.05), position: 0.074960128)
         
         let color = Color.white
         drawTicks(minorColor: color.withAlphaComponent(0.5), minorLength: 0.049441786, minorThickness: 0.004784689, majorColor: color, majorThickness: 0.009569378, inset: 0.014)
     }
     
-//    func drawLogo() {
-//        drawLogo(color: style.logoColor, width: 0.156299841, y: 0.622009569)
-//    }
-    
     func drawNumbers() {
         drawNumbers(fontSize: 0.071770334, radius: 0.402711324)
     }
     
     func draw(day: Int, hours: Double, minutes: Double, seconds: Double) {
-        draw(day: day)
+        // draw(day: day)
         draw(hours: (.pi * 2 * hours) - .pi / 2)
         draw(minutes: (.pi * 2 * minutes) - .pi / 2)
         draw(seconds: (.pi * 2 * seconds) - .pi / 2)
@@ -171,8 +102,6 @@ class ClockView: UIView {
         
         string.draw(in: stringFrame)
     }
-    
-    func draw(day: Int) {}
     
     func draw(hours angle: Double) {
         Color.white.setStroke()
@@ -221,34 +150,6 @@ class ClockView: UIView {
         path.addLine(to: end)
         path.stroke()
     }
-    
-//    func drawLogo(color: UIColor, width: CGFloat, y: CGFloat) {
-//        if let image = logoImage {
-//            let originalImageSize = image.size
-//            let imageWidth = clockFrame.size.width * width
-//            let imageSize = CGSize(
-//                width: imageWidth,
-//                height: originalImageSize.height * imageWidth / originalImageSize.width
-//            )
-//            let logoRect = CGRect(
-//                x: (bounds.size.width - imageSize.width) / 2.0,
-//                y: clockFrame.origin.y + (clockFrame.size.width * y),
-//                width: imageSize.width,
-//                height: imageSize.height
-//            )
-//
-//            color.setFill()
-//
-//            let graphicsContext = UIGraphicsGetCurrentContext()!
-//            // let cgImage = CGImage(forProposedRect: nil, context: graphicsContext, hints: nil)!
-//            let context = graphicsContext
-//
-//            context.saveGState()
-//            // context.clip(to: logoRect, mask: cgImage)
-//            context.fill(bounds)
-//            context.restoreGState()
-//        }
-//    }
     
     func drawFaceBackground() {
         Color.darkBackground.setFill()
@@ -326,20 +227,4 @@ class ClockView: UIView {
             string.draw(in: rect)
         }
     }
-//    // MARK: - Private
-//
-//    @objc private func preferencesDidChange(_ notification: NSNotification?) {
-////        let preferences = (notification?.object as? Preferences) ?? Preferences()
-////        drawsLogo = preferences.drawsLogo
-//
-////        if drawsLogo {
-//////            if let imageURL = Bundle(for: ClockView.self).url(forResource: "braun", withExtension: "pdf") {
-//////                logoImage = UIImage(contentsOf: imageURL)
-//////            }
-////        } else {
-////            logoImage = nil
-////        }
-//
-//        setNeedsDisplay(bounds)
-//    }
 }
