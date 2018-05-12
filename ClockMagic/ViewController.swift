@@ -93,10 +93,11 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         tableView.estimatedRowHeight = 150
         
         // Setup ClockView and start clock
-        let preferences = Preferences()
-        let prepView = preferences.model.init(frame: subView.bounds)
-        prepView.styleName = preferences.styleName
-        clockView = prepView
+        // let preferences = Preferences()
+        // let prepView = ClockView.init(frame: subView.bounds)
+        // prepView.styleName = "Black"
+        // clockView = prepView
+        clockView = ClockView.init(frame: subView.bounds)
         
         Timer.scheduledTimer(timeInterval: 0.25, target: self, selector: #selector(updateClock), userInfo: nil, repeats: true)
         

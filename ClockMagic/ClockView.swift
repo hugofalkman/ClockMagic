@@ -11,11 +11,30 @@ import UIKit
 
 class ClockView: UIView {
     
+    // MARK: - Types
+    
+    enum Style: String, ClockStyle {
+        case bkbkg = "BKBKG"
+        var description: String {
+            return "Black"
+        }
+        var faceColor: UIColor {
+            return Color.darkBackground
+        }
+        var minuteColor: UIColor {
+            return Color.white
+        }
+        static var `default`: ClockStyle {
+            return Style.bkbkg
+        }
+        static var all: [ClockStyle] {
+            return [Style.bkbkg]
+        }
+    }
+    
     // MARK: - Properties
     
-    class var modelName: String {
-        fatalError("Unimplemented")
-    }
+    static var modelName: String = "BN0032"
     
     var drawsLogo = false
     var logoImage: UIImage?
@@ -27,20 +46,12 @@ class ClockView: UIView {
         return "HelveticaNeue-Light"
     }
     
-    var style: ClockStyle!
+//    var style = BN0032.Style.bkbkg
+    var style = Style.bkbkg
+
+    var styleName = "Black"
     
-    var styleName: String {
-        set {
-        }
-        
-        get {
-            return style.description
-        }
-    }
-    
-    class var styles: [ClockStyle] {
-        return []
-    }
+    static var styles = ["BN0032"]
     
     override var frame: CGRect {
         didSet {
@@ -97,7 +108,7 @@ class ClockView: UIView {
     
     func initialize() {
         // NotificationCenter.default.addObserver(self, selector: #selector(preferencesDidChange), name: .PreferencesDidChange, object: nil)
-        preferencesDidChange(nil)
+//        preferencesDidChange(nil)
     }
     
     func clockFrame(forBounds bounds: CGRect) -> CGRect {
@@ -132,7 +143,30 @@ class ClockView: UIView {
         draw(seconds: (.pi * 2 * seconds) - .pi / 2)
     }
     
-    func draw(time: String) {}
+    func draw(time: String) {
+        let timeBackgroundColor = UIColor(red: 0.894, green: 0.933, blue: 0.965, alpha: 1)
+        let clockWidth = clockFrame.size.width
+        
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+        
+        let string = NSAttributedString(string: time, attributes: [
+            .font: UIFont(name: "HelveticaNeue-Bold", size: clockWidth * 0.09)!,
+            .kern: -1,
+            .paragraphStyle: paragraph
+            ])
+        
+        var stringFrame = string.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil)
+        stringFrame.size.width += clockWidth * 0.04
+        stringFrame.origin.x = clockFrame.origin.x + ((clockWidth - stringFrame.size.width) / 2.0)
+        stringFrame.origin.y = clockFrame.origin.y + (clockWidth * 0.6)
+        
+        timeBackgroundColor.setFill()
+        UIRectFill(stringFrame)
+        
+        string.draw(in: stringFrame)
+    }
+    
     func draw(day: Int) {}
     
     func draw(hours angle: Double) {
@@ -291,8 +325,8 @@ class ClockView: UIView {
     // MARK: - Private
     
     @objc private func preferencesDidChange(_ notification: NSNotification?) {
-        let preferences = (notification?.object as? Preferences) ?? Preferences()
-        drawsLogo = preferences.drawsLogo
+//        let preferences = (notification?.object as? Preferences) ?? Preferences()
+//        drawsLogo = preferences.drawsLogo
         
         if drawsLogo {
 //            if let imageURL = Bundle(for: ClockView.self).url(forResource: "braun", withExtension: "pdf") {

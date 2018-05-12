@@ -26,15 +26,12 @@ extension ClockStyle {
     var backgroundColor: UIColor {
         return Color.darkBackground
     }
-    
     var hourColor: UIColor {
         return minuteColor
     }
-    
     var secondColor: UIColor {
         return Color.yellow
     }
-    
     var logoColor: UIColor {
         return minuteColor
     }
