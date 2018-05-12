@@ -93,18 +93,12 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         tableView.estimatedRowHeight = 150
         
         // Setup ClockView and start clock
-        // let preferences = Preferences()
-        // let prepView = ClockView.init(frame: subView.bounds)
-        // prepView.styleName = "Black"
-        // clockView = prepView
         clockView = ClockView.init(frame: subView.bounds)
-        
         Timer.scheduledTimer(timeInterval: 0.25, target: self, selector: #selector(updateClock), userInfo: nil, repeats: true)
         
         // Setup and start local Calendar
         updateCalendar()
         Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(updateCalendar), userInfo: nil, repeats: true)
-        
     }
     
     @objc private func updateClock() {

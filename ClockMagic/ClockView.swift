@@ -13,21 +13,23 @@ class ClockView: UIView {
     
     // MARK: - Types
     
-    enum Style: String, ClockStyle {
+    // enum Style: String, ClockStyle {
+    enum Style: String {
         case bkbkg = "BKBKG"
         var description: String {
             return "Black"
         }
-        var faceColor: UIColor {
-            return Color.darkBackground
-        }
-        var minuteColor: UIColor {
-            return Color.white
-        }
-        static var `default`: ClockStyle {
+//        var faceColor: UIColor {
+//            return Color.darkBackground
+//        }
+//        var minuteColor: UIColor {
+//            return Color.white
+//        }
+//        static var `default`: ClockStyle {
+        static var `default`: Style {
             return Style.bkbkg
         }
-        static var all: [ClockStyle] {
+        static var all: [Style] {
             return [Style.bkbkg]
         }
     }
@@ -36,8 +38,8 @@ class ClockView: UIView {
     
     static var modelName: String = "BN0032"
     
-    var drawsLogo = false
-    var logoImage: UIImage?
+//    var drawsLogo = false
+//    var logoImage: UIImage?
     var clockFrame: CGRect {
         return clockFrame(forBounds: bounds)
     }
@@ -80,16 +82,18 @@ class ClockView: UIView {
     override func draw(_ rect: CGRect) {
         super.draw(rect)
         
-        style.backgroundColor.setFill()
+        // style.backgroundColor.setFill()
+        Color.darkBackground.setFill()
+        
         UIRectFill(bounds)
         
         drawFaceBackground()
         drawTicks()
         drawNumbers()
         
-        if drawsLogo {
-            drawLogo()
-        }
+//        if drawsLogo {
+//            drawLogo()
+//        }
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .none
@@ -122,15 +126,16 @@ class ClockView: UIView {
     // MARK: - Drawing Hooks
     
     func drawTicks() {
-        drawTicksDivider(color: style.backgroundColor.withAlphaComponent(0.05), position: 0.074960128)
+        // drawTicksDivider(color: style.backgroundColor.withAlphaComponent(0.05), position: 0.074960128)
+        drawTicksDivider(color: Color.darkBackground.withAlphaComponent(0.05), position: 0.074960128)
         
-        let color = style.minuteColor
+        let color = Color.white
         drawTicks(minorColor: color.withAlphaComponent(0.5), minorLength: 0.049441786, minorThickness: 0.004784689, majorColor: color, majorThickness: 0.009569378, inset: 0.014)
     }
     
-    func drawLogo() {
-        drawLogo(color: style.logoColor, width: 0.156299841, y: 0.622009569)
-    }
+//    func drawLogo() {
+//        drawLogo(color: style.logoColor, width: 0.156299841, y: 0.622009569)
+//    }
     
     func drawNumbers() {
         drawNumbers(fontSize: 0.071770334, radius: 0.402711324)
@@ -170,17 +175,17 @@ class ClockView: UIView {
     func draw(day: Int) {}
     
     func draw(hours angle: Double) {
-        style.hourColor.setStroke()
+        Color.white.setStroke()
         drawHand(length: 0.263955343, thickness: 0.023125997, angle: angle)
     }
     
     func draw(minutes angle: Double) {
-        style.minuteColor.setStroke()
+        Color.white.setStroke()
         drawHand(length: 0.391547049, thickness: 0.014354067, angle: angle)
     }
     
     func draw(seconds angle: Double) {
-        style.secondColor.set()
+        Color.yellow.set()
         drawHand(length: 0.391547049, thickness: 0.009569378, angle: angle)
         
         // Counterweight
@@ -217,7 +222,7 @@ class ClockView: UIView {
         path.stroke()
     }
     
-    func drawLogo(color: UIColor, width: CGFloat, y: CGFloat) {
+//    func drawLogo(color: UIColor, width: CGFloat, y: CGFloat) {
 //        if let image = logoImage {
 //            let originalImageSize = image.size
 //            let imageWidth = clockFrame.size.width * width
@@ -243,10 +248,10 @@ class ClockView: UIView {
 //            context.fill(bounds)
 //            context.restoreGState()
 //        }
-    }
+//    }
     
     func drawFaceBackground() {
-        style.faceColor.setFill()
+        Color.darkBackground.setFill()
         
         let clockPath = UIBezierPath(ovalIn: clockFrame)
         clockPath.lineWidth = 4
@@ -304,7 +309,7 @@ class ClockView: UIView {
         
         for i in 0..<12 {
             let string = NSAttributedString(string: "\(12 - i)", attributes: [
-                .foregroundColor: style.minuteColor,
+                .foregroundColor: Color.white,
                 .kern: -2,
                 .font: font
                 ])
@@ -321,21 +326,20 @@ class ClockView: UIView {
             string.draw(in: rect)
         }
     }
-    
-    // MARK: - Private
-    
-    @objc private func preferencesDidChange(_ notification: NSNotification?) {
-//        let preferences = (notification?.object as? Preferences) ?? Preferences()
-//        drawsLogo = preferences.drawsLogo
-        
-        if drawsLogo {
-//            if let imageURL = Bundle(for: ClockView.self).url(forResource: "braun", withExtension: "pdf") {
-//                logoImage = UIImage(contentsOf: imageURL)
-//            }
-        } else {
-            logoImage = nil
-        }
-        
-        setNeedsDisplay(bounds)
-    }
+//    // MARK: - Private
+//
+//    @objc private func preferencesDidChange(_ notification: NSNotification?) {
+////        let preferences = (notification?.object as? Preferences) ?? Preferences()
+////        drawsLogo = preferences.drawsLogo
+//
+////        if drawsLogo {
+//////            if let imageURL = Bundle(for: ClockView.self).url(forResource: "braun", withExtension: "pdf") {
+//////                logoImage = UIImage(contentsOf: imageURL)
+//////            }
+////        } else {
+////            logoImage = nil
+////        }
+//
+//        setNeedsDisplay(bounds)
+//    }
 }

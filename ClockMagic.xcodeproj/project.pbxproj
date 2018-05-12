@@ -17,8 +17,6 @@
 		B1FD216E2097206F00AF26E0 /* ClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD216D2097206F00AF26E0 /* ClockView.swift */; };
 		B1FD21702097210200AF26E0 /* ClockStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD216F2097210200AF26E0 /* ClockStyle.swift */; };
 		B1FD2172209723F900AF26E0 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD2171209723F900AF26E0 /* Color.swift */; };
-		B1FD217420973EA500AF26E0 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD217320973EA500AF26E0 /* Preferences.swift */; };
-		B1FD21762097411D00AF26E0 /* BN0032.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD21752097411D00AF26E0 /* BN0032.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,8 +36,6 @@
 		B1FD216D2097206F00AF26E0 /* ClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockView.swift; sourceTree = "<group>"; };
 		B1FD216F2097210200AF26E0 /* ClockStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockStyle.swift; sourceTree = "<group>"; };
 		B1FD2171209723F900AF26E0 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
-		B1FD217320973EA500AF26E0 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
-		B1FD21752097411D00AF26E0 /* BN0032.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BN0032.swift; sourceTree = "<group>"; };
 		C4DF63C9CB488A6D6AA7C7FB /* Pods-ClockMagic.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ClockMagic.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ClockMagic/Pods-ClockMagic.debug.xcconfig"; sourceTree = "<group>"; };
 		E2D50931A74739B0833252EF /* Pods-ClockMagic.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ClockMagic.release.xcconfig"; path = "Pods/Target Support Files/Pods-ClockMagic/Pods-ClockMagic.release.xcconfig"; sourceTree = "<group>"; };
 		FFF974629FC93B4C43D041C6 /* Pods_ClockMagic.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ClockMagic.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -82,8 +78,6 @@
 				B1FD215B20971D7E00AF26E0 /* ViewController.swift */,
 				B1FD215D20971D7E00AF26E0 /* Main.storyboard */,
 				B1FD216D2097206F00AF26E0 /* ClockView.swift */,
-				B1FD21752097411D00AF26E0 /* BN0032.swift */,
-				B1FD217320973EA500AF26E0 /* Preferences.swift */,
 				B1FD216F2097210200AF26E0 /* ClockStyle.swift */,
 				B1FD2171209723F900AF26E0 /* Color.swift */,
 				B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */,
@@ -255,9 +249,7 @@
 			files = (
 				B1FD21702097210200AF26E0 /* ClockStyle.swift in Sources */,
 				B1FD215C20971D7E00AF26E0 /* ViewController.swift in Sources */,
-				B1FD217420973EA500AF26E0 /* Preferences.swift in Sources */,
 				B1FD216E2097206F00AF26E0 /* ClockView.swift in Sources */,
-				B1FD21762097411D00AF26E0 /* BN0032.swift in Sources */,
 				B1FD2172209723F900AF26E0 /* Color.swift in Sources */,
 				B1FD215A20971D7E00AF26E0 /* AppDelegate.swift in Sources */,
 			);
