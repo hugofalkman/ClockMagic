@@ -42,11 +42,11 @@ class ClockView: UIView {
         let time = dateFormatter.string(from: Date())
         draw(time: time)
         
-        let comps = Calendar.current.dateComponents([.day, .hour, .minute, .second], from: Date())
+        let comps = Calendar.current.dateComponents([.hour, .minute, .second], from: Date())
         let seconds = Double(comps.second ?? 0) / 60.0
         let minutes = (Double(comps.minute ?? 0) / 60.0) + (seconds / 60.0)
         let hours = (Double(comps.hour ?? 0) / 12.0) + ((minutes / 60.0) * (60.0 / 12.0))
-        draw(day: comps.day ?? 0, hours: hours, minutes: minutes, seconds: seconds)
+        draw(hours: hours, minutes: minutes, seconds: seconds)
     }
     
     // MARK: - Configuration
@@ -72,8 +72,7 @@ class ClockView: UIView {
         drawNumbers(fontSize: 0.071770334, radius: 0.402711324)
     }
     
-    func draw(day: Int, hours: Double, minutes: Double, seconds: Double) {
-        // draw(day: day)
+    func draw(hours: Double, minutes: Double, seconds: Double) {
         draw(hours: (.pi * 2 * hours) - .pi / 2)
         draw(minutes: (.pi * 2 * minutes) - .pi / 2)
         draw(seconds: (.pi * 2 * seconds) - .pi / 2)
