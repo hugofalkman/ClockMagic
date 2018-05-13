@@ -42,11 +42,17 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     private var eventCreator: [String] = []
     private var eventPhoto: [UIImage?] = []
     
+    private var oldEventTitle: [String] = []
+    private var oldEventDetail: [String] = []
+    private var oldEventPhoto: [UIImage?] = []
+    
     private var contactEmail: [String] = []
     private var contactName: [String] = []
     private var contactPhoto: [String] = [] // A url not an image
     
-    let dateFormatter = DateFormatter()
+    private var isRedBackground = false
+    
+    private let dateFormatter = DateFormatter()
     
     private var clockView: ClockView? {
         willSet {
@@ -81,6 +87,12 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         GIDSignIn.sharedInstance().signInSilently()
         GIDSignIn.sharedInstance().language = Locale.current.languageCode
         
+        // Configure GTLR services
+        service.isRetryEnabled = true
+        service.maxRetryInterval = 30
+        service2.isRetryEnabled = true
+        service2.maxRetryInterval = 30
+        
         // Add the sign-in button.
         signInButton.style = GIDSignInButtonStyle.wide
         tableView.addSubview(signInButton)
@@ -90,7 +102,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         tableView.delegate = self
         tableView.dataSource = self
         tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 150
+        tableView.estimatedRowHeight = 200
         
         // Setup ClockView and start clock
         clockView = ClockView.init(frame: subView.bounds)
@@ -151,14 +163,14 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
               withError error: Error!) {
         if let error = error {
-            showAlert(title: "Authentication Error", message: error.localizedDescription)
+            showAlert(title: NSLocalizedString("Auktoriseringssfel", comment: "Fel password och liknande") , message: error.localizedDescription)
             self.service.authorizer = nil
         } else {
             self.signInButton.isHidden = true
             self.service.authorizer = user.authentication.fetcherAuthorizer()
             self.service2.authorizer = self.service.authorizer
             fetchContacts()
-            Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(fetchContacts), userInfo: nil, repeats: true)
+            Timer.scheduledTimer(timeInterval: 120, target: self, selector: #selector(fetchContacts), userInfo: nil, repeats: true)
         }
     }
     
@@ -182,14 +194,18 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         finishedWithObject response: GTLRPeopleService_ListConnectionsResponse,
         error: NSError?) {
         
-        if let error = error {
-            showAlert(title: "Error", message: error.localizedDescription)
-            return
-        }
-        
         contactEmail = []
         contactName = []
         contactPhoto = []
+        
+        // if let error = error {
+        if error != nil {
+            // Continue to fetch calendar items and display them without photos of the creator
+            fetchEvents()
+            // showAlert(title: "Error", message: error.localizedDescription)
+            return
+        }
+        
         if let connections = response.connections, !connections.isEmpty {
             loop: for connection in connections {
                 if let emailAddresses = connection.emailAddresses, !emailAddresses.isEmpty {
@@ -229,10 +245,13 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     // MARK: - Get Google Calendar Events
     
     // Construct a query and get a list of upcoming events from the user calendar
-    @objc func fetchEvents() {
+    @objc private func fetchEvents() {
         let query = GTLRCalendarQuery_EventsList.query(withCalendarId: "primary")
-        // query.maxResults = 10
-        query.timeMin = GTLRDateTime(date: Date())
+        let startDate = Date()
+        query.timeMin = GTLRDateTime(date: startDate)
+        // 8 days of calendar data
+        query.timeMax = GTLRDateTime(date: Date(timeInterval: 8 * 86400, since: startDate))
+
         query.singleEvents = true
         query.orderBy = kGTLRCalendarOrderByStartTime
         
@@ -253,32 +272,26 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         error : NSError?) {
         
         if let error = error {
-            showAlert(title: "Error", message: error.localizedDescription)
+            displayError(error: error.localizedDescription)
             return
         }
         
-        eventTitle = []
-        eventDetail = []
-        eventCreator = []
         if let events = response.items, !events.isEmpty {
+            eventTitle = []
+            eventDetail = []
+            eventCreator = []
+            
             for event in events {
-                let start = event.start!.dateTime ?? event.start!.date!
-                
-                dateFormatter.dateStyle = .medium
-                dateFormatter.timeStyle = .none
-                var startDate = dateFormatter.string(from: start.date)
-                startDate = String(startDate.dropLast(5)) // drop year
-                
-                dateFormatter.dateStyle = .none
-                dateFormatter.timeStyle = .short
-                let startTime = dateFormatter.string(from: start.date)
-                
-                eventTitle.append(startDate + " " + startTime + " - " + (event.summary ?? ""))
+                let start = (event.start!.dateTime ?? event.start!.date!).date
+                let title = event.summary ?? ""
+                eventTitle.append(getEventTitle(startDate: start, title: title))
                 eventDetail.append(event.descriptionProperty ?? "")
                 eventCreator.append(event.creator?.email ?? "")
             }
         } else {
-            eventTitle = [NSLocalizedString("Inga kommande händelser", comment: "Message empty calendar")]
+            let start = Date()
+            let title = NSLocalizedString("Inga kommande händelser", comment: "Message empty calendar")
+            eventTitle = [getEventTitle(startDate: start, title: title)]
             eventDetail = [""]
             eventCreator = [""]
         }
@@ -287,25 +300,63 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         DispatchQueue.global().async { [unowned self] in
             self.getCreatorPhotos()
             DispatchQueue.main.async {
+                self.isRedBackground = false
                 self.tableView.reloadData()
+                // save results for possible later display if the connection to Google goes down
+                self.oldEventTitle = self.eventTitle
+                self.oldEventDetail = self.eventDetail
+                self.oldEventPhoto = self.eventPhoto
             }
         }
     }
     
+    private func getEventTitle(startDate start: Date, title: String) -> String {
+        
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .none
+        var startDate = dateFormatter.string(from: start)
+        startDate = String(startDate.dropLast(5)) // drop year
+        
+        dateFormatter.dateStyle = .none
+        dateFormatter.timeStyle = .short
+        let startTime = dateFormatter.string(from: start)
+        
+        return startDate + " " + startTime + " - " + title
+    }
+    
+    private func displayError(error: String) {
+        eventTitle = oldEventTitle
+        eventDetail = oldEventDetail
+        eventPhoto = oldEventPhoto
+        
+        let start = Date()
+        let title = NSLocalizedString("Fel. Kunde inte läsa kalendern.", comment: "Error message")
+        eventTitle.insert(getEventTitle(startDate: start, title: title), at: 0)
+        eventDetail.insert(NSLocalizedString("Följande händelser kanske inte längre är aktuella.", comment: "Error detail"), at: 0)
+        eventPhoto.insert(UIImage(), at: 0)
+        
+        isRedBackground = true
+        tableView.reloadData()
+    }
+    
     // MARK: Get creator photos from Google contacts list
     
-    func getCreatorPhotos() {
+    private func getCreatorPhotos() {
         eventPhoto = []
         guard contactEmail != [] else { return }
         guard eventCreator != [] else { return }
         for creator in eventCreator {
             if let index = contactEmail.index(of: creator), creator != "" {
                 let urlString = contactPhoto[index]
-                if let url = URL(string: urlString), // also discards the case urlString = ""
+                if let url = URL(string: urlString), // also discards the case urlString == ""
                     let data = try? Data(contentsOf: url) {
                     eventPhoto.append(UIImage(data: data))
-                } else { eventPhoto.append(UIImage()) }
-            } else { eventPhoto.append(UIImage()) }
+                } else {
+                    eventPhoto.append(UIImage())
+                }
+            } else {
+                eventPhoto.append(UIImage())
+            }
         }
     }
     
@@ -320,6 +371,15 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! ViewCell
         
         let row = indexPath.row
+        
+        if row == 0 && isRedBackground == true {
+            cell.headerLabel.backgroundColor = Color.red
+            cell.descriptionLabel.backgroundColor = Color.red
+        } else {
+            cell.headerLabel.backgroundColor = nil
+            cell.descriptionLabel.backgroundColor = nil
+        }
+        
         cell.headerLabel?.text = eventTitle[row]
         cell.descriptionLabel?.text = eventDetail[row]
         if eventPhoto.count == eventTitle.count {
@@ -331,7 +391,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     // MARK: - Showing Alert
     
-    func showAlert(title : String, message: String) {
+    private func showAlert(title : String, message: String) {
         let alert = UIAlertController(
             title: title,
             message: message,

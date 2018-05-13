@@ -17,4 +17,7 @@
 "sommar" = "Summer";
 "höst" = "Fall";
 
-"Inga kommande händelser" = "No upcoming events found";
+"Inga kommande händelser" = "No upcoming events found.";
+"Auktoriseringsfel" = "Authorization error";
+"Fel. Kunde inte läsa kalendern." = "Error. Could not read the calendar.";
+"Följande händelser kanske inte längre är aktuella." = "The following events may no longer be valid.";

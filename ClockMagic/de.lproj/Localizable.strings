@@ -17,4 +17,7 @@
 "sommar" = "Sommer";
 "höst" = "Herbst";
 
-"Inga kommande händelser" = "Keine anstehenden Ereignisse gefunden";
+"Inga kommande händelser" = "Keine anstehenden Ereignisse gefunden.";
+"Auktoriseringsfel" = "Autorisierungsfehler";
+"Fel. Kunde inte läsa kalendern." = "Error. Der Kalender konnte nicht gelesen werden.";
+"Följande händelser kanske inte längre är aktuella." = "Die folgenden Ereignisse sind möglicherweise nicht mehr gültig.";
