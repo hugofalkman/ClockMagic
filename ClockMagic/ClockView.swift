@@ -40,7 +40,8 @@ class ClockView: UIView {
         dateFormatter.dateStyle = .none
         dateFormatter.timeStyle = .medium
         let time = dateFormatter.string(from: Date())
-        draw(time: time)
+        let version = getVersion()
+        draw(time: time, version: version)
         
         let comps = Calendar.current.dateComponents([.hour, .minute, .second], from: Date())
         let seconds = Double(comps.second ?? 0) / 60.0
@@ -78,7 +79,7 @@ class ClockView: UIView {
         draw(seconds: (.pi * 2 * seconds) - .pi / 2)
     }
     
-    func draw(time: String) {
+    func draw(time: String, version: String) {
         let timeBackgroundColor = UIColor(red: 0.894, green: 0.933, blue: 0.965, alpha: 1)
         let clockWidth = clockFrame.size.width
         
@@ -90,16 +91,26 @@ class ClockView: UIView {
             .kern: -1,
             .paragraphStyle: paragraph
             ])
+        let string2 = NSAttributedString(string: version, attributes: [
+            .font: UIFont(name: "HelveticaNeue", size: clockWidth * 0.03)!,
+            .kern: -1,
+            .paragraphStyle: paragraph
+            ])
         
         var stringFrame = string.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil)
         stringFrame.size.width += clockWidth * 0.04
         stringFrame.origin.x = clockFrame.origin.x + ((clockWidth - stringFrame.size.width) / 2.0)
         stringFrame.origin.y = clockFrame.origin.y + (clockWidth * 0.6)
+        var string2Frame = string2.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil)
+        string2Frame.size.width += clockWidth * 0.02
+        string2Frame.origin = CGPoint.zero
         
         timeBackgroundColor.setFill()
         UIRectFill(stringFrame)
+        UIRectFill(string2Frame)
         
         string.draw(in: stringFrame)
+        string2.draw(in: string2Frame)
     }
     
     func draw(hours angle: Double) {
@@ -226,4 +237,21 @@ class ClockView: UIView {
             string.draw(in: rect)
         }
     }
+    
+    func getVersion() -> String {
+        var string = "ClockMagic"
+        
+        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+            string += "  V(\(version))"
+        }
+        if let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String {
+            string += "  (\(build))"
+        }
+        return string
+    }
 }
+
+
+
+
+

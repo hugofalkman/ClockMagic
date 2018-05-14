@@ -68,8 +68,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         }
     }
     
-    // If modifying these scopes, delete your previously saved credentials by
-    // resetting the iOS simulator or uninstall the app.
+    // If these scopes chamge, delete saved credentials by uninstalling the app
     private let scopes = [kGTLRAuthScopeCalendarReadonly, kGTLRAuthScopePeopleServiceContactsReadonly]
     private let service = GTLRCalendarService()
     private let service2 = GTLRPeopleServiceService()
@@ -245,7 +244,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     // MARK: - Get Google Calendar Events
     
     // Construct a query and get a list of upcoming events from the user calendar
-    @objc private func fetchEvents() {
+    private func fetchEvents() {
         let query = GTLRCalendarQuery_EventsList.query(withCalendarId: "primary")
         let startDate = Date()
         query.timeMin = GTLRDateTime(date: startDate)
