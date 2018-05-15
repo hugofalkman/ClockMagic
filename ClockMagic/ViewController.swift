@@ -25,7 +25,7 @@ class ViewCell: UITableViewCell {
 }
 
 class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegate, GIDSignInDelegate, GIDSignInUIDelegate {
-
+    
     // MARK: - Properties
     
     @IBOutlet weak var subView: UIView!
@@ -95,13 +95,13 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         // Add the sign-in button.
         signInButton.style = GIDSignInButtonStyle.wide
         tableView.addSubview(signInButton)
-        signInButton.center = CGPoint(x: view.bounds.width / 4, y: view.bounds.height / 2)
+        signInButton.center = CGPoint(x: tableView.bounds.width / 2, y: tableView.bounds.height / 2)
         
         // Setup TableView
         tableView.delegate = self
         tableView.dataSource = self
         tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 200
+        tableView.estimatedRowHeight = 150
         
         // Setup ClockView and start clock
         clockView = ClockView.init(frame: subView.bounds)
@@ -250,16 +250,16 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         query.timeMin = GTLRDateTime(date: startDate)
         // 8 days of calendar data
         query.timeMax = GTLRDateTime(date: Date(timeInterval: 8 * 86400, since: startDate))
-
+        
         query.singleEvents = true
         query.orderBy = kGTLRCalendarOrderByStartTime
         
-        // Get calendare events in background
+        // Get calendar events in background
         DispatchQueue.global().async { [unowned self] in
             self.service.executeQuery(
-            query,
-            delegate: self,
-            didFinish: #selector(self.displayResultWithTicket(ticket:finishedWithObject:error:)))
+                query,
+                delegate: self,
+                didFinish: #selector(self.displayResultWithTicket(ticket:finishedWithObject:error:)))
         }
     }
     
@@ -332,7 +332,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         let title = NSLocalizedString("Fel. Kunde inte läsa kalendern.", comment: "Error message")
         eventTitle.insert(getEventTitle(startDate: start, title: title), at: 0)
         eventDetail.insert(NSLocalizedString("Följande händelser kanske inte längre är aktuella.", comment: "Error detail"), at: 0)
-        eventPhoto.insert(UIImage(), at: 0)
+        eventPhoto.insert(nil, at: 0)
         
         isRedBackground = true
         tableView.reloadData()
@@ -351,10 +351,10 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                     let data = try? Data(contentsOf: url) {
                     eventPhoto.append(UIImage(data: data))
                 } else {
-                    eventPhoto.append(UIImage())
+                    eventPhoto.append(nil)
                 }
             } else {
-                eventPhoto.append(UIImage())
+                eventPhoto.append(nil)
             }
         }
     }
@@ -372,11 +372,9 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         let row = indexPath.row
         
         if row == 0 && isRedBackground == true {
-            cell.headerLabel.backgroundColor = Color.red
-            cell.descriptionLabel.backgroundColor = Color.red
+            cell.backgroundColor = Color.red
         } else {
-            cell.headerLabel.backgroundColor = nil
-            cell.descriptionLabel.backgroundColor = nil
+            cell.backgroundColor = nil
         }
         
         cell.headerLabel?.text = eventTitle[row]

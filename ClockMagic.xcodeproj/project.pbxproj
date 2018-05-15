@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		321A4A3E452DEBF298C8B7D9 /* Pods_ClockMagic.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFF974629FC93B4C43D041C6 /* Pods_ClockMagic.framework */; };
 		B1C6669520A3145100904F2C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B1C6669720A3145100904F2C /* Localizable.strings */; };
+		B1CCE5F120AA935100F5C686 /* ClockMagic.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B1CCE5F020AA935100F5C686 /* ClockMagic.jpg */; };
 		B1FD215A20971D7E00AF26E0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD215920971D7E00AF26E0 /* AppDelegate.swift */; };
 		B1FD215C20971D7E00AF26E0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD215B20971D7E00AF26E0 /* ViewController.swift */; };
 		B1FD215F20971D7E00AF26E0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B1FD215D20971D7E00AF26E0 /* Main.storyboard */; };
@@ -25,6 +26,7 @@
 		B1C6669920A3333600904F2C /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B1C6669A20A3334C00904F2C /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B1C6669B20A3374000904F2C /* en-US */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-US"; path = "en-US.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		B1CCE5F020AA935100F5C686 /* ClockMagic.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = ClockMagic.jpg; path = ../../../../../../Downloads/ClockMagic.jpg; sourceTree = "<group>"; };
 		B1FD215620971D7E00AF26E0 /* ClockMagic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClockMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1FD215920971D7E00AF26E0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B1FD215B20971D7E00AF26E0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				B1FD216020971D7F00AF26E0 /* Assets.xcassets */,
 				B1C6669720A3145100904F2C /* Localizable.strings */,
 				B1FD216220971D7F00AF26E0 /* LaunchScreen.storyboard */,
+				B1CCE5F020AA935100F5C686 /* ClockMagic.jpg */,
 				B1FD216520971D7F00AF26E0 /* Info.plist */,
 			);
 			path = ClockMagic;
@@ -167,6 +170,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B1CCE5F120AA935100F5C686 /* ClockMagic.jpg in Resources */,
 				B1FD216420971D7F00AF26E0 /* LaunchScreen.storyboard in Resources */,
 				B1C6669520A3145100904F2C /* Localizable.strings in Resources */,
 				B1FD216120971D7F00AF26E0 /* Assets.xcassets in Resources */,
