@@ -68,7 +68,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         }
     }
     
-    // If these scopes chamge, delete saved credentials by uninstalling the app
+    // If these scopes change, delete saved credentials by uninstalling the app
     private let scopes = [kGTLRAuthScopeCalendarReadonly, kGTLRAuthScopePeopleServiceContactsReadonly]
     private let service = GTLRCalendarService()
     private let service2 = GTLRPeopleServiceService()
@@ -137,15 +137,15 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             timeOfDay.text = nil
         }
         
-        let month = Calendar.current.component(.month, from: Date())
-        switch month {
-        case 12, 1...4:
+        let monthday = Calendar.current.dateComponents([.month, .day], from: Date())
+        switch (monthday.month ?? 0, monthday.day ?? 0) {
+        case (1...4, _), (12, _):
             season.text = NSLocalizedString("vinter", comment: "season")
-        case 5...6:
+        case (5, _), (6, 1...15):
             season.text = NSLocalizedString("vår", comment: "season")
-        case 7...8:
+        case (6, 16...30), (7...8, _):
             season.text = NSLocalizedString("sommar", comment: "season")
-        case 9...11:
+        case (9...11, _):
             season.text = NSLocalizedString("höst", comment: "season")
         default:
             season.text = nil
