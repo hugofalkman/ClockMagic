@@ -131,7 +131,7 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
-                        <outlet property="date" destination="HRr-3i-6cg" id="WYh-f4-xEn"/>
+                        <outlet property="dateLabel" destination="HRr-3i-6cg" id="i0h-ir-Biz"/>
                         <outlet property="dayOfWeek" destination="4xa-IM-DoH" id="X9S-aC-a9i"/>
                         <outlet property="season" destination="VLq-vd-6MC" id="FOx-3t-LTD"/>
                         <outlet property="subView" destination="K8H-XV-U8S" id="I14-Tg-4jd"/>

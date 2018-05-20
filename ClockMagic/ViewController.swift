@@ -26,32 +26,40 @@ class ViewCell: UITableViewCell {
 
 class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegate, GIDSignInDelegate, GIDSignInUIDelegate {
     
-    // MARK: - Properties
+    // MARK: - Properties and structs
     
     @IBOutlet weak var subView: UIView!
     
     @IBOutlet weak var dayOfWeek: UILabel!
     @IBOutlet weak var timeOfDay: UILabel!
     @IBOutlet weak var season: UILabel!
-    @IBOutlet weak var date: UILabel!
+    @IBOutlet weak var dateLabel: UILabel!
     
     @IBOutlet weak var tableView: UITableView!
     
-    private var eventTitle: [String] = []
-    private var eventDetail: [String] = []
-    private var eventCreator: [String] = []
-    private var eventPhoto: [UIImage?] = []
-    
-    private var oldEventTitle: [String] = []
-    private var oldEventDetail: [String] = []
-    private var oldEventPhoto: [UIImage?] = []
+    private struct event {
+        var title: String
+        var detail: String
+        var creator: String
+        var photo: UIImage?
+    }
+    private var events: [event] = []
+    private var oldEvents: [event] = []
     
     private var contactEmail: [String] = []
     private var contactName: [String] = []
     private var contactPhoto: [String] = [] // A url not an image
     
+    private struct contact {
+        var email: String
+        var name: String
+        var photoUrl: String
+    }
+    private var contacts: [contact] = []
+    
     private var isRedBackground = false
     
+    private var currentDate = Date()
     private let dateFormatter = DateFormatter()
     
     private var clockView: ClockView? {
@@ -107,9 +115,8 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         clockView = ClockView.init(frame: subView.bounds)
         Timer.scheduledTimer(timeInterval: 0.25, target: self, selector: #selector(updateClock), userInfo: nil, repeats: true)
         
-        // Setup and start local Calendar
+        // Initialize local Calendar
         updateCalendar()
-        Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(updateCalendar), userInfo: nil, repeats: true)
     }
     
     @objc private func updateClock() {
@@ -119,9 +126,9 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     }
     
     @objc private func updateCalendar() {
-        dayOfWeek.text = dateFormatter.weekdaySymbols[Calendar.current.component(.weekday, from: Date()) - 1]
+        dayOfWeek.text = dateFormatter.weekdaySymbols[Calendar.current.component(.weekday, from: currentDate) - 1]
         
-        let hour = Calendar.current.component(.hour, from: Date())
+        let hour = Calendar.current.component(.hour, from: currentDate)
         switch hour {
         case 22...23, 0...5:
             timeOfDay.text = NSLocalizedString("natt", comment: "time of day")
@@ -137,7 +144,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             timeOfDay.text = nil
         }
         
-        let monthday = Calendar.current.dateComponents([.month, .day], from: Date())
+        let monthday = Calendar.current.dateComponents([.month, .day], from: currentDate)
         switch (monthday.month ?? 0, monthday.day ?? 0) {
         case (1...4, _), (12, _):
             season.text = NSLocalizedString("vinter", comment: "season")
@@ -153,7 +160,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .none
-        date.text = dateFormatter.string(from: Date())
+        dateLabel.text = dateFormatter.string(from: currentDate)
     }
     
     // MARK: - Google ID Signin
@@ -245,11 +252,16 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     // Construct a query and get a list of upcoming events from the user calendar
     private func fetchEvents() {
+        
+        // Reset currentDate and update local calendar
+        currentDate = Date()
+        updateCalendar()
+        
         let query = GTLRCalendarQuery_EventsList.query(withCalendarId: "primary")
-        let startDate = Date()
+        let startDate = currentDate
         query.timeMin = GTLRDateTime(date: startDate)
-        // 8 days of calendar data
-        query.timeMax = GTLRDateTime(date: Date(timeInterval: 8 * 86400, since: startDate))
+        // 48 hours of calendar data
+        query.timeMax = GTLRDateTime(date: Date(timeInterval: 2 * 86400, since: startDate))
         
         query.singleEvents = true
         query.orderBy = kGTLRCalendarOrderByStartTime
@@ -275,24 +287,22 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             return
         }
         
-        if let events = response.items, !events.isEmpty {
-            eventTitle = []
-            eventDetail = []
-            eventCreator = []
+        if let items = response.items, !items.isEmpty {
+            events = []
             
-            for event in events {
-                let start = (event.start!.dateTime ?? event.start!.date!).date
-                let title = event.summary ?? ""
-                eventTitle.append(getEventTitle(startDate: start, title: title))
-                eventDetail.append(event.descriptionProperty ?? "")
-                eventCreator.append(event.creator?.email ?? "")
+            for item in items {
+                let start = (item.start!.dateTime ?? item.start!.date!).date
+                let title = item.summary ?? ""
+                events.append(event(title: getEventTitle(startDate: start, title: title),
+                    detail: item.descriptionProperty ?? "",
+                    creator: item.creator?.email ?? "",
+                    photo: nil))
             }
         } else {
-            let start = Date()
+            let start = currentDate
             let title = NSLocalizedString("Inga kommande händelser", comment: "Message empty calendar")
-            eventTitle = [getEventTitle(startDate: start, title: title)]
-            eventDetail = [""]
-            eventCreator = [""]
+            events = [event(title: getEventTitle(startDate: start, title: title),
+                detail: "", creator: "", photo: nil)]
         }
         
         //  Get photos in background and when finished reload tableview from main queue
@@ -302,9 +312,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                 self.isRedBackground = false
                 self.tableView.reloadData()
                 // save results for possible later display if the connection to Google goes down
-                self.oldEventTitle = self.eventTitle
-                self.oldEventDetail = self.eventDetail
-                self.oldEventPhoto = self.eventPhoto
+                self.oldEvents = self.events
             }
         }
     }
@@ -324,15 +332,13 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     }
     
     private func displayError(error: String) {
-        eventTitle = oldEventTitle
-        eventDetail = oldEventDetail
-        eventPhoto = oldEventPhoto
+        events = oldEvents
         
-        let start = Date()
+        let start = currentDate
         let title = NSLocalizedString("Fel. Kunde inte läsa kalendern.", comment: "Error message")
-        eventTitle.insert(getEventTitle(startDate: start, title: title), at: 0)
-        eventDetail.insert(NSLocalizedString("Följande händelser kanske inte längre är aktuella.", comment: "Error detail"), at: 0)
-        eventPhoto.insert(nil, at: 0)
+        events.insert(event(title: getEventTitle(startDate: start, title: title),
+            detail: NSLocalizedString("Följande händelser kanske inte längre är aktuella.", comment: "Error detail"),
+            creator: "", photo: nil), at: 0)
         
         isRedBackground = true
         tableView.reloadData()
@@ -341,20 +347,22 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     // MARK: Get creator photos from Google contacts list
     
     private func getCreatorPhotos() {
-        eventPhoto = []
-        guard contactEmail != [] else { return }
-        guard eventCreator != [] else { return }
-        for creator in eventCreator {
-            if let index = contactEmail.index(of: creator), creator != "" {
-                let urlString = contactPhoto[index]
-                if let url = URL(string: urlString), // also discards the case urlString == ""
-                    let data = try? Data(contentsOf: url) {
-                    eventPhoto.append(UIImage(data: data))
-                } else {
-                    eventPhoto.append(nil)
-                }
+//        eventPhoto = []
+        guard !contactEmail.isEmpty else { return }
+        guard !events.isEmpty else { return }
+        for eventIndex in 0..<events.count {
+            if let index = contactEmail.index(of: events[eventIndex].creator),
+                events[eventIndex].creator != "" {
+                    let urlString = contactPhoto[index]
+                    if let url = URL(string: urlString),
+                        // also discards the case urlString == ""
+                        let data = try? Data(contentsOf: url) {
+                        events[eventIndex].photo = UIImage(data: data)
+                    } else {
+                        events[eventIndex].photo = nil
+                    }
             } else {
-                eventPhoto.append(nil)
+                events[eventIndex].photo = nil
             }
         }
     }
@@ -363,7 +371,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     // This returns 0 until (some) data has been retrieved from web. The 0 signals to TableView not to continue. Once all photos have been retrieved on background thread, tableView.reloadData is invoked on the main thread finishing populating the tableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return eventTitle.count
+        return events.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -377,11 +385,9 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             cell.backgroundColor = nil
         }
         
-        cell.headerLabel?.text = eventTitle[row]
-        cell.descriptionLabel?.text = eventDetail[row]
-        if eventPhoto.count == eventTitle.count {
-            cell.creatorPhoto.image = eventPhoto[row]
-        }
+        cell.headerLabel.text = events[row].title
+        cell.descriptionLabel.text = events[row].detail
+        cell.creatorPhoto.image = events[row].photo
         cell.layoutIfNeeded()
         return cell
     }
@@ -403,8 +409,3 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         present(alert, animated: true, completion: nil)
     }
 }
-
-
-
-
-
