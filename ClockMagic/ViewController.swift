@@ -30,9 +30,9 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     @IBOutlet weak var subView: UIView!
     
-    @IBOutlet weak var dayOfWeek: UILabel!
-    @IBOutlet weak var timeOfDay: UILabel!
-    @IBOutlet weak var season: UILabel!
+    @IBOutlet weak var dayOfWeekLabel: UILabel!
+    @IBOutlet weak var timeOfDayLabel: UILabel!
+    @IBOutlet weak var seasonLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
     
     @IBOutlet weak var tableView: UITableView!
@@ -122,36 +122,36 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     }
     
     @objc private func updateCalendar() {
-        dayOfWeek.text = dateFormatter.weekdaySymbols[Calendar.current.component(.weekday, from: currentDate) - 1]
+        dayOfWeekLabel.text = dateFormatter.weekdaySymbols[Calendar.current.component(.weekday, from: currentDate) - 1]
         
         let hour = Calendar.current.component(.hour, from: currentDate)
         switch hour {
         case 22...23, 0...5:
-            timeOfDay.text = NSLocalizedString("natt", comment: "time of day")
+            timeOfDayLabel.text = NSLocalizedString("natt", comment: "time of day")
         case 6...8:
-            timeOfDay.text = NSLocalizedString("morgon", comment: "time of day")
+            timeOfDayLabel.text = NSLocalizedString("morgon", comment: "time of day")
         case 9...11:
-            timeOfDay.text = NSLocalizedString("förmiddag", comment: "time of day")
+            timeOfDayLabel.text = NSLocalizedString("förmiddag", comment: "time of day")
         case 12...17:
-            timeOfDay.text = NSLocalizedString("eftermiddag", comment: "time of day")
+            timeOfDayLabel.text = NSLocalizedString("eftermiddag", comment: "time of day")
         case 18...21:
-            timeOfDay.text = NSLocalizedString("kväll", comment: "time of day")
+            timeOfDayLabel.text = NSLocalizedString("kväll", comment: "time of day")
         default:
-            timeOfDay.text = nil
+            timeOfDayLabel.text = nil
         }
         
         let monthday = Calendar.current.dateComponents([.month, .day], from: currentDate)
         switch (monthday.month ?? 0, monthday.day ?? 0) {
         case (1...4, _), (12, _):
-            season.text = NSLocalizedString("vinter", comment: "season")
+            seasonLabel.text = NSLocalizedString("vinter", comment: "season")
         case (5, _), (6, 1...15):
-            season.text = NSLocalizedString("vår", comment: "season")
+            seasonLabel.text = NSLocalizedString("vår", comment: "season")
         case (6, 16...30), (7...8, _):
-            season.text = NSLocalizedString("sommar", comment: "season")
+            seasonLabel.text = NSLocalizedString("sommar", comment: "season")
         case (9...11, _):
-            season.text = NSLocalizedString("höst", comment: "season")
+            seasonLabel.text = NSLocalizedString("höst", comment: "season")
         default:
-            season.text = nil
+            seasonLabel.text = nil
         }
         
         dateFormatter.dateStyle = .medium

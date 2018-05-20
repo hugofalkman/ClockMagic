@@ -132,11 +132,11 @@
                     </view>
                     <connections>
                         <outlet property="dateLabel" destination="HRr-3i-6cg" id="i0h-ir-Biz"/>
-                        <outlet property="dayOfWeek" destination="4xa-IM-DoH" id="X9S-aC-a9i"/>
-                        <outlet property="season" destination="VLq-vd-6MC" id="FOx-3t-LTD"/>
+                        <outlet property="dayOfWeekLabel" destination="4xa-IM-DoH" id="0x5-vt-P2m"/>
+                        <outlet property="seasonLabel" destination="VLq-vd-6MC" id="3SW-f8-xFL"/>
                         <outlet property="subView" destination="K8H-XV-U8S" id="I14-Tg-4jd"/>
                         <outlet property="tableView" destination="m9k-WX-omO" id="bqe-vP-IfD"/>
-                        <outlet property="timeOfDay" destination="gD9-3p-WRI" id="DY7-zA-OFG"/>
+                        <outlet property="timeOfDayLabel" destination="gD9-3p-WRI" id="DZv-eN-aQI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
