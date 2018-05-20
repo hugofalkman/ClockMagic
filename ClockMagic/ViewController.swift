@@ -43,19 +43,15 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         var creator: String
         var photo: UIImage?
     }
-    private var events: [event] = []
-    private var oldEvents: [event] = []
-    
-    private var contactEmail: [String] = []
-    private var contactName: [String] = []
-    private var contactPhoto: [String] = [] // A url not an image
+    private var events = [event]()
+    private var oldEvents = [event]()
     
     private struct contact {
         var email: String
         var name: String
         var photoUrl: String
     }
-    private var contacts: [contact] = []
+    private var contacts = [contact]()
     
     private var isRedBackground = false
     
@@ -200,49 +196,46 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         finishedWithObject response: GTLRPeopleService_ListConnectionsResponse,
         error: NSError?) {
         
-        contactEmail = []
-        contactName = []
-        contactPhoto = []
+        contacts = []
         
         // if let error = error {
         if error != nil {
             // Continue to fetch calendar items and display them without photos of the creator
             fetchEvents()
-            // showAlert(title: "Error", message: error.localizedDescription)
             return
         }
         
         if let connections = response.connections, !connections.isEmpty {
             loop: for connection in connections {
+                var email = ""
                 if let emailAddresses = connection.emailAddresses, !emailAddresses.isEmpty {
-                    var email = ""
                     for address in emailAddresses {
                         if let _ = address.metadata?.primary {
                             email = address.value ?? ""
                         }
                     }
                     if email == "" { continue loop }
-                    contactEmail.append(email)
                 }
                 
+                var displayName = ""
                 if let names = connection.names, !names.isEmpty {
-                    var displayName = ""
                     for name in names {
                         if let _ = name.metadata?.primary {
                             displayName = name.displayName ?? ""
                         }
                     }
-                    contactName.append(displayName)
                 }
+                
+                var url = ""
                 if let photos = connection.photos, !photos.isEmpty {
-                    var url = ""
                     for photo in photos {
                         if let _ = photo.metadata?.primary {
                             url = photo.url ?? ""
                         }
                     }
-                    contactPhoto.append(url)
                 }
+                
+                contacts.append(contact(email: email, name: displayName, photoUrl: url))
             }
         }
         fetchEvents()
@@ -271,18 +264,19 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             self.service.executeQuery(
                 query,
                 delegate: self,
-                didFinish: #selector(self.displayResultWithTicket(ticket:finishedWithObject:error:)))
+                didFinish: #selector(self.getEventsFromTicket(ticket:finishedWithObject:error:)))
         }
     }
     
-    // MARK: - Display events in TableView
+    // MARK: - Build events array
     
-    @objc func displayResultWithTicket(
+    @objc func getEventsFromTicket(
         ticket: GTLRServiceTicket,
         finishedWithObject response : GTLRCalendar_Events,
         error : NSError?) {
         
         if let error = error {
+            // Display error and old events
             displayError(error: error.localizedDescription)
             return
         }
@@ -347,17 +341,17 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     // MARK: Get creator photos from Google contacts list
     
     private func getCreatorPhotos() {
-//        eventPhoto = []
-        guard !contactEmail.isEmpty else { return }
+        guard !contacts.isEmpty else { return }
         guard !events.isEmpty else { return }
+        let contactsEmail = contacts.map { $0.email }
         for eventIndex in 0..<events.count {
-            if let index = contactEmail.index(of: events[eventIndex].creator),
+            if let index = contactsEmail.index(of: events[eventIndex].creator),
                 events[eventIndex].creator != "" {
-                    let urlString = contactPhoto[index]
+                    let urlString = contacts[index].photoUrl
                     if let url = URL(string: urlString),
                         // also discards the case urlString == ""
-                        let data = try? Data(contentsOf: url) {
-                        events[eventIndex].photo = UIImage(data: data)
+                        let data = try? Data(contentsOf: url) { // stacked if lets
+                            events[eventIndex].photo = UIImage(data: data)
                     } else {
                         events[eventIndex].photo = nil
                     }
@@ -392,7 +386,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         return cell
     }
     
-    // MARK: - Showing Alert
+    // MARK: - Showing Alert helper function
     
     private func showAlert(title : String, message: String) {
         let alert = UIAlertController(
