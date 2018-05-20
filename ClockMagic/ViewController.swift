@@ -165,7 +165,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
               withError error: Error!) {
         if let error = error {
-            showAlert(title: NSLocalizedString("Auktoriseringssfel", comment: "Fel password och liknande") , message: error.localizedDescription)
+            showAlert(title: NSLocalizedString("Auktoriseringsfel", comment: "Fel password och liknande") , message: error.localizedDescription)
             self.service.authorizer = nil
         } else {
             self.signInButton.isHidden = true
@@ -198,7 +198,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         
         contacts = []
         
-        // if let error = error {
         if error != nil {
             // Continue to fetch calendar items and display them without photos of the creator
             fetchEvents()
