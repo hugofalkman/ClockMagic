@@ -72,7 +72,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         }
     }
     
-    // If these scopes change, delete saved credentials by uninstalling the app
+    // When these scopes change, delete saved credentials by uninstalling the app
     private let scopes = [kGTLRAuthScopeCalendarReadonly, kGTLRAuthScopePeopleServiceContactsReadonly]
     private let service = GTLRCalendarService()
     private let service2 = GTLRPeopleServiceService()
@@ -214,8 +214,8 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                             email = address.value ?? ""
                         }
                     }
-                    if email == "" { continue loop }
                 }
+                if email == "" { continue loop }
                 
                 var displayName = ""
                 if let names = connection.names, !names.isEmpty {
@@ -255,7 +255,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         query.timeMin = GTLRDateTime(date: startDate)
         // 48 hours of calendar data
         query.timeMax = GTLRDateTime(date: Date(timeInterval: 2 * 86400, since: startDate))
-        
         query.singleEvents = true
         query.orderBy = kGTLRCalendarOrderByStartTime
         
