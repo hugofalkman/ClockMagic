@@ -17,6 +17,10 @@
 "sommar" = "Summer";
 "höst" = "Fall";
 
+"I dag" = "Today";
+"I morgon" = "Tomorrow";
+"I övermorgon" = "The day after tomorrow";
+
 "Inga kommande händelser" = "No upcoming events found.";
 "Auktoriseringsfel" = "Authorization error";
 "Fel. Kunde inte läsa kalendern." = "Error. Could not read the calendar.";

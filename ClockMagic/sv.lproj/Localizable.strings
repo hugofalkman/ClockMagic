@@ -17,6 +17,10 @@
 "sommar" = "sommar";
 "höst" = "höst";
 
+"I dag" = "I dag";
+"I morgon" = "I morgon";
+"I övermorgon" = "I övermorgon";
+
 "Inga kommande händelser" = "Inga kommande händelser hittades.";
 "Auktoriseringsfel" = "Auktoriseringsfel";
 "Fel. Kunde inte läsa kalendern." = "Fel. Kunde inte läsa kalendern.";

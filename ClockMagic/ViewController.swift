@@ -38,6 +38,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     @IBOutlet weak var tableView: UITableView!
     
     private struct event {
+        var start: Date
         var title: String
         var detail: String
         var creator: String
@@ -45,6 +46,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     }
     private var events = [event]()
     private var oldEvents = [event]()
+    private var eventsByDay = [[event]]()
     
     private struct contact {
         var email: String
@@ -285,7 +287,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             for item in items {
                 let start = (item.start!.dateTime ?? item.start!.date!).date
                 let title = item.summary ?? ""
-                events.append(event(title: getEventTitle(startDate: start, title: title),
+                events.append(event(start: start, title: getEventTitle(startDate: start, title: title),
                     detail: item.descriptionProperty ?? "",
                     creator: item.creator?.email ?? "",
                     photo: nil))
@@ -293,7 +295,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         } else {
             let start = currentDate
             let title = NSLocalizedString("Inga kommande händelser", comment: "Message empty calendar")
-            events = [event(title: getEventTitle(startDate: start, title: title),
+            events = [event(start: start, title: getEventTitle(startDate: start, title: title),
                 detail: "", creator: "", photo: nil)]
         }
         
@@ -301,26 +303,25 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         DispatchQueue.global().async { [unowned self] in
             self.getCreatorPhotos()
             DispatchQueue.main.async {
-                self.isRedBackground = false
-                self.tableView.reloadData()
                 // save results for possible later display if the connection to Google goes down
                 self.oldEvents = self.events
+                self.prepareForTableView(isRedBackground: false)
             }
         }
     }
     
     private func getEventTitle(startDate start: Date, title: String) -> String {
         
-        dateFormatter.dateStyle = .medium
-        dateFormatter.timeStyle = .none
-        var startDate = dateFormatter.string(from: start)
-        startDate = String(startDate.dropLast(5)) // drop year
+//        dateFormatter.dateStyle = .medium
+//        dateFormatter.timeStyle = .none
+//        var startDate = dateFormatter.string(from: start)
+//        startDate = String(startDate.dropLast(5)) // drop year
         
         dateFormatter.dateStyle = .none
         dateFormatter.timeStyle = .short
         let startTime = dateFormatter.string(from: start)
-        
-        return startDate + " " + startTime + " - " + title
+        return startTime + " - " + title
+        //return startDate + " " + startTime + " - " + title
     }
     
     private func displayError(error: String) {
@@ -328,12 +329,11 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         
         let start = currentDate
         let title = NSLocalizedString("Fel. Kunde inte läsa kalendern.", comment: "Error message")
-        events.insert(event(title: getEventTitle(startDate: start, title: title),
+        events.insert(event(start: start, title: getEventTitle(startDate: start, title: title),
             detail: NSLocalizedString("Följande händelser kanske inte längre är aktuella.", comment: "Error detail"),
             creator: "", photo: nil), at: 0)
         
-        isRedBackground = true
-        tableView.reloadData()
+        prepareForTableView(isRedBackground: true)
     }
     
     // MARK: Get creator photos from Google contacts list
@@ -359,27 +359,79 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         }
     }
     
+    // MARK: - Prepare for TableView
+    
+    private func prepareForTableView(isRedBackground isRed: Bool) {
+        isRedBackground = isRed
+        eventsByDay = []
+        let calendar = Calendar.current
+        eventsByDay.append(events.filter {calendar.isDateInToday($0.start) })
+        eventsByDay.append(events.filter {calendar.isDateInTomorrow($0.start) })
+        eventsByDay.append(events.filter {!calendar.isDateInToday($0.start) && !calendar.isDateInTomorrow($0.start) })
+        
+        tableView.reloadData()
+    }
+    
     // MARK: - TableView Data Source
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 3
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        
+        guard !eventsByDay.isEmpty else { return nil }
+        guard !eventsByDay[section].isEmpty else { return nil }
+        
+        let header = UILabel()
+        header.font = UIFont.systemFont(ofSize: 25, weight: .medium)
+        header.sizeToFit()
+        
+        var day = currentDate
+        switch section {
+        case 0:
+            header.text = NSLocalizedString("I dag", comment: "header")
+        case 1:
+            header.text = NSLocalizedString("I morgon", comment: "header")
+            day = Calendar.current.date(byAdding: .day, value: 1, to: day)!
+        case 2:
+            header.text = NSLocalizedString("I övermorgon", comment: "header")
+            day = Calendar.current.date(byAdding: .day, value: 2, to: day)!
+            
+        default:
+            header.text = "error"
+        }
+
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .none
+        var formattedDay = dateFormatter.string(from: day)
+        formattedDay = String(formattedDay.dropLast(5)) // drop year
+        header.text = (header.text! + " " + formattedDay).uppercased()
+        return header
+    }
     
     // This returns 0 until (some) data has been retrieved from web. The 0 signals to TableView not to continue. Once all photos have been retrieved on background thread, tableView.reloadData is invoked on the main thread finishing populating the tableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return events.count
+        
+        guard !eventsByDay.isEmpty else { return 0 }
+        return eventsByDay[section].count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! ViewCell
         
         let row = indexPath.row
+        let section = indexPath.section
         
-        if row == 0 && isRedBackground == true {
+        if section == 0 && row == 0 && isRedBackground == true {
             cell.backgroundColor = Color.red
         } else {
             cell.backgroundColor = nil
         }
         
-        cell.headerLabel.text = events[row].title
-        cell.descriptionLabel.text = events[row].detail
-        cell.creatorPhoto.image = events[row].photo
+        cell.headerLabel.text = eventsByDay[section][row].title
+        cell.descriptionLabel.text = eventsByDay[section][row].detail
+        cell.creatorPhoto.image = eventsByDay[section][row].photo
         cell.layoutIfNeeded()
         return cell
     }

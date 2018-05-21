@@ -17,6 +17,10 @@
 "sommar" = "Sommer";
 "höst" = "Herbst";
 
+"I dag" = "Heute";
+"I morgon" = "Morgen";
+"I övermorgon" = "Übermorgen";
+
 "Inga kommande händelser" = "Keine anstehenden Ereignisse gefunden.";
 "Auktoriseringsfel" = "Autorisierungsfehler";
 "Fel. Kunde inte läsa kalendern." = "Error. Der Kalender konnte nicht gelesen werden.";
