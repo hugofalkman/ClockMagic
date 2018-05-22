@@ -39,6 +39,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     private struct event {
         var start: Date
+        var hasTime: Bool
         var title: String
         var detail: String
         var creator: String
@@ -101,7 +102,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         // Add the sign-in button.
         signInButton.style = GIDSignInButtonStyle.wide
         tableView.addSubview(signInButton)
-        signInButton.center = CGPoint(x: tableView.bounds.width / 2, y: tableView.bounds.height / 2)
+        signInButton.center = CGPoint(x: view.bounds.width / 4, y: view.bounds.height / 2)
         
         // Setup TableView
         tableView.delegate = self
@@ -247,6 +248,12 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     // Construct a query and get a list of upcoming events from the user calendar
     private func fetchEvents() {
         
+        //        let tQuery = GTLRCalendarQuery_CalendarListList.query()
+        //        service.executeQuery(tQuery) { (ticket, response, error) in
+        //            let list = response as! GTLRCalendar_CalendarList
+        //            print(String(describing: list.items))
+        //        }
+        
         // Reset currentDate and update local calendar
         currentDate = Date()
         updateCalendar()
@@ -285,17 +292,20 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             events = []
             
             for item in items {
-                let start = (item.start!.dateTime ?? item.start!.date!).date
+                // If hasTime is false, start.date is set to noon GMT so day is correct in all timezones
+                let start = item.start!.dateTime ?? item.start!.date!
                 let title = item.summary ?? ""
-                events.append(event(start: start, title: getEventTitle(startDate: start, title: title),
+                let hasTime = start.hasTime
+                let creator = hasTime ? (item.creator?.email ?? "") : ""
+                events.append(event(start: start.date, hasTime: hasTime, title: getEventTitle(startDate: start.date, hasTime: hasTime, title: title),
                     detail: item.descriptionProperty ?? "",
-                    creator: item.creator?.email ?? "",
+                    creator: creator,
                     photo: nil))
             }
         } else {
             let start = currentDate
             let title = NSLocalizedString("Inga kommande händelser", comment: "Message empty calendar")
-            events = [event(start: start, title: getEventTitle(startDate: start, title: title),
+            events = [event(start: start, hasTime: true, title: getEventTitle(startDate: start, hasTime: true, title: title),
                 detail: "", creator: "", photo: nil)]
         }
         
@@ -310,13 +320,14 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         }
     }
     
-    private func getEventTitle(startDate start: Date, title: String) -> String {
+    private func getEventTitle(startDate start: Date, hasTime notAllDay: Bool, title: String) -> String {
         
 //        dateFormatter.dateStyle = .medium
 //        dateFormatter.timeStyle = .none
 //        var startDate = dateFormatter.string(from: start)
 //        startDate = String(startDate.dropLast(5)) // drop year
         
+        guard notAllDay else { return title }
         dateFormatter.dateStyle = .none
         dateFormatter.timeStyle = .short
         let startTime = dateFormatter.string(from: start)
@@ -329,7 +340,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         
         let start = currentDate
         let title = NSLocalizedString("Fel. Kunde inte läsa kalendern.", comment: "Error message")
-        events.insert(event(start: start, title: getEventTitle(startDate: start, title: title),
+        events.insert(event(start: start, hasTime: true, title: getEventTitle(startDate: start, hasTime: true, title: title),
             detail: NSLocalizedString("Följande händelser kanske inte längre är aktuella.", comment: "Error detail"),
             creator: "", photo: nil), at: 0)
         
@@ -425,6 +436,8 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         
         if section == 0 && row == 0 && isRedBackground == true {
             cell.backgroundColor = Color.red
+        } else if !eventsByDay[section][row].hasTime {
+            cell.backgroundColor = Color.yellowBackground
         } else {
             cell.backgroundColor = nil
         }

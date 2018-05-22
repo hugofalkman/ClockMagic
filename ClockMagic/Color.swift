@@ -12,6 +12,7 @@ struct Color {
     
     // MARK: - Properties
     
+    static let yellowBackground = UIColor(red: 0.99, green: 1.00, blue: 0.60, alpha: 1)
     static let darkBackground = UIColor(red: 0.129, green: 0.125, blue: 0.141, alpha: 1)
     static let yellow = UIColor(red: 0.965, green: 0.773, blue: 0.180, alpha: 1)
     static let red = UIColor(red: 0.847, green: 0.227, blue: 0.286, alpha: 0.7)
