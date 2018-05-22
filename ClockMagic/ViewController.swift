@@ -107,8 +107,12 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         // Setup TableView
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 150
+        // tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.sectionHeaderHeight = UITableViewAutomaticDimension
+        // tableView.estimatedRowHeight = 150
+        if #available(iOS 11.0, *) {
+            tableView?.estimatedSectionHeaderHeight = 30
+        }
         
         // Setup ClockView and start clock
         clockView = ClockView.init(frame: subView.bounds)
