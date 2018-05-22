@@ -25,3 +25,5 @@
 "Auktoriseringsfel" = "Autorisierungsfehler";
 "Fel. Kunde inte läsa kalendern." = "Error. Der Kalender konnte nicht gelesen werden.";
 "Följande händelser kanske inte längre är aktuella." = "Die folgenden Ereignisse sind möglicherweise nicht mehr gültig.";
+
+"Logga in på ditt Google-konto" = "\nMelden Sie sich bei Ihrem Google-Konto an und autorisieren Sie den Zugriff auf die Kontaktliste und den primären Kalender.\n\nAutorisierungsinformationen werden in Ihrem Schlüsselbund gespeichert, so dass nachfolgende Ausführungen keine Autorisierung anfordern.\n\nUm zu einem anderen Google-Konto zu wechseln, lösche die App und installiere sie neu.\n\nAnweisungen und Hilfe zum Einrichten des Google-Kontos, der Kontaktliste und des Kalenders finden Sie unter https://clockmagic.wordpress.com";

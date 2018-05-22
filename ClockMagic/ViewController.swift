@@ -27,6 +27,8 @@ class ViewCell: UITableViewCell {
 class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegate, GIDSignInDelegate, GIDSignInUIDelegate {
     
     // MARK: - Properties and structs
+ 
+    @IBOutlet weak var startMessage: UITextView!
     
     @IBOutlet weak var subView: UIView!
     
@@ -81,7 +83,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     private let service2 = GTLRPeopleServiceService()
     var signInButton = GIDSignInButton()
     
-    // MARK: - Lifecycle
+    // MARK: - View Controller Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -99,8 +101,13 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         service2.isRetryEnabled = true
         service2.maxRetryInterval = 30
         
+        // Set up Start Message
+        
+        startMessage.text = NSLocalizedString("Logga in på ditt Google-konto", comment: "initially displayed message")
+        
         // Add the sign-in button.
         signInButton.style = GIDSignInButtonStyle.wide
+        signInButton.colorScheme = GIDSignInButtonColorScheme.dark
         tableView.addSubview(signInButton)
         signInButton.center = CGPoint(x: view.bounds.width / 4, y: view.bounds.height / 2)
         
@@ -160,15 +167,18 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         dateLabel.text = dateFormatter.string(from: currentDate)
     }
     
-    // MARK: - Google ID Signin
+    // MARK: - Google ID Signin Delegate
     
-    // Called when sign-in button pushed
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
               withError error: Error!) {
         if let error = error {
-            showAlert(title: NSLocalizedString("Auktoriseringsfel", comment: "Fel password och liknande") , message: error.localizedDescription)
+            // Ignore error messages before viewDidLoad finishes
+            if self.isViewLoaded && (self.view.window != nil) {
+                showAlert(title: NSLocalizedString("Auktoriseringsfel", comment: "Fel password och liknande") , message: error.localizedDescription)
+            }
             self.service.authorizer = nil
         } else {
+            self.startMessage.isHidden = true
             self.signInButton.isHidden = true
             self.service.authorizer = user.authentication.fetcherAuthorizer()
             self.service2.authorizer = self.service.authorizer
@@ -245,12 +255,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     // Construct a query and get a list of upcoming events from the user calendar
     private func fetchEvents() {
-        
-        //        let tQuery = GTLRCalendarQuery_CalendarListList.query()
-        //        service.executeQuery(tQuery) { (ticket, response, error) in
-        //            let list = response as! GTLRCalendar_CalendarList
-        //            print(String(describing: list.items))
-        //        }
         
         // Reset currentDate and update local calendar
         currentDate = Date()
@@ -461,6 +465,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             handler: nil
         )
         alert.addAction(ok)
-        present(alert, animated: true, completion: nil)
+        self.present(alert, animated: true, completion: nil)
     }
 }
