@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		321A4A3E452DEBF298C8B7D9 /* Pods_ClockMagic.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFF974629FC93B4C43D041C6 /* Pods_ClockMagic.framework */; };
+		B1B08A6C20B573FC004DE743 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B08A6B20B573FC004DE743 /* Event.swift */; };
+		B1B08A6E20B57670004DE743 /* GoogleCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B08A6D20B57670004DE743 /* GoogleCalendar.swift */; };
 		B1C6669520A3145100904F2C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B1C6669720A3145100904F2C /* Localizable.strings */; };
 		B1CCE5F120AA935100F5C686 /* ClockMagic.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B1CCE5F020AA935100F5C686 /* ClockMagic.jpg */; };
 		B1FD215A20971D7E00AF26E0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD215920971D7E00AF26E0 /* AppDelegate.swift */; };
@@ -20,6 +22,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B1B08A6B20B573FC004DE743 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		B1B08A6D20B57670004DE743 /* GoogleCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCalendar.swift; sourceTree = "<group>"; };
 		B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ClockMagic-bridging-header.h"; sourceTree = "<group>"; };
 		B1C6669620A3145100904F2C /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B1C6669820A3147000904F2C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -78,6 +82,8 @@
 				B1FD215B20971D7E00AF26E0 /* ViewController.swift */,
 				B1FD215D20971D7E00AF26E0 /* Main.storyboard */,
 				B1FD216D2097206F00AF26E0 /* ClockView.swift */,
+				B1B08A6D20B57670004DE743 /* GoogleCalendar.swift */,
+				B1B08A6B20B573FC004DE743 /* Event.swift */,
 				B1FD2171209723F900AF26E0 /* Color.swift */,
 				B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */,
 				B1FD216020971D7F00AF26E0 /* Assets.xcassets */,
@@ -252,6 +258,8 @@
 				B1FD216E2097206F00AF26E0 /* ClockView.swift in Sources */,
 				B1FD2172209723F900AF26E0 /* Color.swift in Sources */,
 				B1FD215A20971D7E00AF26E0 /* AppDelegate.swift in Sources */,
+				B1B08A6E20B57670004DE743 /* GoogleCalendar.swift in Sources */,
+				B1B08A6C20B573FC004DE743 /* Event.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

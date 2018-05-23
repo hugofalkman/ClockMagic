@@ -39,24 +39,16 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     @IBOutlet weak var tableView: UITableView!
     
-    private struct event {
-        var start: Date
-        var hasTime: Bool
-        var title: String
-        var detail: String
-        var creator: String
-        var photo: UIImage?
-    }
-    private var events = [event]()
-    private var oldEvents = [event]()
-    private var eventsByDay = [[event]]()
+    private var events = [Event]()
+    private var oldEvents = [Event]()
+    private var eventsByDay = [[Event]]()
     
-    private struct contact {
+    private struct Contact {
         var email: String
         var name: String
         var photoUrl: String
     }
-    private var contacts = [contact]()
+    private var contacts = [Contact]()
     
     private var isRedBackground = false
     
@@ -251,7 +243,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                     }
                 }
                 
-                contacts.append(contact(email: email, name: displayName, photoUrl: url))
+                contacts.append(Contact(email: email, name: displayName, photoUrl: url))
             }
         }
         fetchEvents()
@@ -305,7 +297,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                 let title = item.summary ?? ""
                 let hasTime = start.hasTime
                 let creator = hasTime ? (item.creator?.email ?? "") : ""
-                events.append(event(start: start.date, hasTime: hasTime, title: getEventTitle(startDate: start.date, hasTime: hasTime, title: title),
+                events.append(Event(start: start.date, hasTime: hasTime, title: getEventTitle(startDate: start.date, hasTime: hasTime, title: title),
                     detail: item.descriptionProperty ?? "",
                     creator: creator,
                     photo: nil))
@@ -313,7 +305,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         } else {
             let start = currentDate
             let title = NSLocalizedString("Inga kommande händelser", comment: "Message empty calendar")
-            events = [event(start: start, hasTime: true, title: getEventTitle(startDate: start, hasTime: true, title: title),
+            events = [Event(start: start, hasTime: true, title: getEventTitle(startDate: start, hasTime: true, title: title),
                 detail: "", creator: "", photo: nil)]
         }
         
@@ -348,7 +340,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         
         let start = currentDate
         let title = NSLocalizedString("Fel. Kunde inte läsa kalendern.", comment: "Error message")
-        events.insert(event(start: start, hasTime: true, title: getEventTitle(startDate: start, hasTime: true, title: title),
+        events.insert(Event(start: start, hasTime: true, title: getEventTitle(startDate: start, hasTime: true, title: title),
             detail: NSLocalizedString("Följande händelser kanske inte längre är aktuella.", comment: "Error detail"),
             creator: "", photo: nil), at: 0)
         
