@@ -26,7 +26,7 @@ class ViewCell: UITableViewCell {
 
 class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegate, GIDSignInDelegate, GIDSignInUIDelegate {
     
-    // MARK: - Properties and structs
+    // MARK: - Properties
  
     @IBOutlet weak var startMessage: UITextView!
     
@@ -42,17 +42,11 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     private var events = [Event]()
     private var oldEvents = [Event]()
     private var eventsByDay = [[Event]]()
-    
-    private struct Contact {
-        var email: String
-        var name: String
-        var photoUrl: String
-    }
-    private var contacts = [Contact]()
-    
     private var isRedBackground = false
-    
     private var currentDate = Date()
+    
+    private var eventObserver: NSObjectProtocol?
+    private let googleCalendar = GoogleCalendar()
     private let dateFormatter = DateFormatter()
     
     private var clockView: ClockView? {
@@ -75,8 +69,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         kGTLRAuthScopeCalendarReadonly,
         kGTLRAuthScopePeopleServiceContactsReadonly
     ]
-    private let service = GTLRCalendarService()
-    private let service2 = GTLRPeopleServiceService()
     var signInButton = GIDSignInButton()
     
     // MARK: - View Controller Lifecycle
@@ -94,10 +86,10 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         GIDSignIn.sharedInstance().signInSilently()
         
         // Configure GTLR services
-        service.isRetryEnabled = true
-        service.maxRetryInterval = 30
-        service2.isRetryEnabled = true
-        service2.maxRetryInterval = 30
+        googleCalendar.service.isRetryEnabled = true
+        googleCalendar.service.maxRetryInterval = 30
+        googleCalendar.service2.isRetryEnabled = true
+        googleCalendar.service2.maxRetryInterval = 30
         
         // Set up Start Message
         startMessage.text = NSLocalizedString("Logga in på ditt Google-konto", comment: "initially displayed message")
@@ -174,150 +166,51 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             if self.isViewLoaded && (self.view.window != nil) {
                 showAlert(title: NSLocalizedString("Auktoriseringsfel", comment: "Fel password och liknande") , message: error.localizedDescription)
             }
-            self.service.authorizer = nil
+            self.googleCalendar.service.authorizer = nil
+            self.googleCalendar.service.authorizer = nil
         } else {
             self.startMessage.isHidden = true
             self.signInButton.isHidden = true
-            self.service.authorizer = user.authentication.fetcherAuthorizer()
-            self.service2.authorizer = self.service.authorizer
-            fetchContacts()
-            Timer.scheduledTimer(timeInterval: 120, target: self, selector: #selector(fetchContacts), userInfo: nil, repeats: true)
-        }
-    }
-    
-    // MARK: - Get Google Contacts
-    
-    @objc private func fetchContacts() {
-        let query = GTLRPeopleServiceQuery_PeopleConnectionsList.query(withResourceName: "people/me")
-        query.personFields = "names,emailAddresses,photos"
-        
-        //  Get contacts in background
-        DispatchQueue.global().async { [unowned self] in
-            self.service2.executeQuery(
-                query,
-                delegate: self,
-                didFinish: #selector(self.getContactsFromTicket(ticket:finishedWithObject:error:)))
-        }
-    }
-    
-    @objc func getContactsFromTicket(
-        ticket: GTLRServiceTicket,
-        finishedWithObject response: GTLRPeopleService_ListConnectionsResponse,
-        error: NSError?) {
-        
-        contacts = []
-        
-        if error != nil {
-            // Continue to fetch calendar items and display them without photos of the creator
-            fetchEvents()
-            return
-        }
-        
-        if let connections = response.connections, !connections.isEmpty {
-            loop: for connection in connections {
-                var email = ""
-                if let emailAddresses = connection.emailAddresses, !emailAddresses.isEmpty {
-                    for address in emailAddresses {
-                        if let _ = address.metadata?.primary {
-                            email = address.value ?? ""
-                        }
-                    }
-                }
-                if email == "" { continue loop }
-                
-                var displayName = ""
-                if let names = connection.names, !names.isEmpty {
-                    for name in names {
-                        if let _ = name.metadata?.primary {
-                            displayName = name.displayName ?? ""
-                        }
-                    }
-                }
-                
-                var url = ""
-                if let photos = connection.photos, !photos.isEmpty {
-                    for photo in photos {
-                        if let _ = photo.metadata?.primary {
-                            url = photo.url ?? ""
-                        }
-                    }
-                }
-                
-                contacts.append(Contact(email: email, name: displayName, photoUrl: url))
-            }
-        }
-        fetchEvents()
-    }
-    
-    // MARK: - Get Google Calendar Events
-    
-    // Construct a query and get a list of upcoming events from the user calendar
-    private func fetchEvents() {
-        
-        // Reset currentDate and update local calendar
-        currentDate = Date()
-        updateCalendar()
-        
-        let query = GTLRCalendarQuery_EventsList.query(withCalendarId: "primary")
-        let startDate = currentDate
-        query.timeMin = GTLRDateTime(date: startDate)
-        // 48 hours of calendar data
-        query.timeMax = GTLRDateTime(date: Date(timeInterval: 2 * 86400, since: startDate))
-        query.singleEvents = true
-        query.orderBy = kGTLRCalendarOrderByStartTime
-        
-        // Get calendar events in background
-        DispatchQueue.global().async { [unowned self] in
-            self.service.executeQuery(
-                query,
-                delegate: self,
-                didFinish: #selector(self.getEventsFromTicket(ticket:finishedWithObject:error:)))
-        }
-    }
-    
-    // MARK: - Build events array
-    
-    @objc func getEventsFromTicket(
-        ticket: GTLRServiceTicket,
-        finishedWithObject response : GTLRCalendar_Events,
-        error : NSError?) {
-        
-        if let error = error {
-            // Display error and old events
-            displayError(error: error.localizedDescription)
-            return
-        }
-        
-        if let items = response.items, !items.isEmpty {
-            events = []
+            let accessToken = user.authentication.fetcherAuthorizer()
+            self.googleCalendar.service.authorizer = accessToken
+            self.googleCalendar.service2.authorizer = accessToken
             
-            for item in items {
-                // If hasTime is false, start.date is set to noon GMT so day is correct in all timezones
-                let start = item.start!.dateTime ?? item.start!.date!
-                let title = item.summary ?? ""
-                let hasTime = start.hasTime
-                let creator = hasTime ? (item.creator?.email ?? "") : ""
-                events.append(Event(start: start.date, hasTime: hasTime, title: getEventTitle(startDate: start.date, hasTime: hasTime, title: title),
-                    detail: item.descriptionProperty ?? "",
-                    creator: creator,
-                    photo: nil))
-            }
+            eventObserver = NotificationCenter.default.addObserver(
+                forName: .EventsDidChange,
+                object: googleCalendar,
+                queue: OperationQueue.main,
+                using: { (notification) in
+                    self.eventsDidChange()
+                }
+            )
+            googleCalendar.getEvents()
+            Timer.scheduledTimer(timeInterval: 120, target: googleCalendar, selector: #selector(googleCalendar.getEvents), userInfo: nil, repeats: true)
+        }
+    }
+    
+    private func eventsDidChange() {
+        currentDate = googleCalendar.currentDate
+        updateCalendar()
+        let error = googleCalendar.eventsInError
+        if error {
+            displayError()
         } else {
-            let start = currentDate
-            let title = NSLocalizedString("Inga kommande händelser", comment: "Message empty calendar")
-            events = [Event(start: start, hasTime: true, title: getEventTitle(startDate: start, hasTime: true, title: title),
-                detail: "", creator: "", photo: nil)]
+            events = googleCalendar.events
+            // save results for possible later display if the connection to Google goes down
+            oldEvents = events
         }
+        prepareForTableView(isRedBackground: error)
+    }
+    
+    private func displayError() {
+        events = oldEvents
         
-        //  Get photos in background and when finished reload tableview from main queue
-        DispatchQueue.global().async { [unowned self] in
-            self.getCreatorPhotos()
-            DispatchQueue.main.async {
-                // save results for possible later display if the connection to Google goes down
-                self.oldEvents = self.events
-                self.prepareForTableView(isRedBackground: false)
-            }
-        }
+        let start = currentDate
+        let title = NSLocalizedString("Fel. Kunde inte läsa kalendern.", comment: "Error message")
+        events.insert(Event(start: start, hasTime: true,
+            title: getEventTitle(startDate: start, hasTime: true, title: title),
+            detail: NSLocalizedString("Följande händelser kanske inte längre är aktuella.",
+            comment: "Error detail"), creator: "", photo: nil), at: 0)
     }
     
     private func getEventTitle(startDate start: Date, hasTime notAllDay: Bool, title: String) -> String {
@@ -335,41 +228,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         //return startDate + " " + startTime + " - " + title
     }
     
-    private func displayError(error: String) {
-        events = oldEvents
-        
-        let start = currentDate
-        let title = NSLocalizedString("Fel. Kunde inte läsa kalendern.", comment: "Error message")
-        events.insert(Event(start: start, hasTime: true, title: getEventTitle(startDate: start, hasTime: true, title: title),
-            detail: NSLocalizedString("Följande händelser kanske inte längre är aktuella.", comment: "Error detail"),
-            creator: "", photo: nil), at: 0)
-        
-        prepareForTableView(isRedBackground: true)
-    }
-    
-    // MARK: Get creator photos from Google contacts list
-    
-    private func getCreatorPhotos() {
-        guard !contacts.isEmpty else { return }
-        guard !events.isEmpty else { return }
-        let contactsEmail = contacts.map { $0.email }
-        for eventIndex in 0..<events.count {
-            if let index = contactsEmail.index(of: events[eventIndex].creator),
-                events[eventIndex].creator != "" {
-                    let urlString = contacts[index].photoUrl
-                    if let url = URL(string: urlString),
-                        // also discards the case urlString == ""
-                        let data = try? Data(contentsOf: url) { // stacked if lets
-                            events[eventIndex].photo = UIImage(data: data)
-                    } else {
-                        events[eventIndex].photo = nil
-                    }
-            } else {
-                events[eventIndex].photo = nil
-            }
-        }
-    }
-    
     // MARK: - Prepare for TableView
     
     private func prepareForTableView(isRedBackground isRed: Bool) {
@@ -383,7 +241,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         tableView.reloadData()
     }
     
-    // MARK: - TableView Data Source
+    // MARK: - TableView Data Source/Delegate
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 3
