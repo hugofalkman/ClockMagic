@@ -77,8 +77,12 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         }
     }
     
-    // When these scopes change, delete saved credentials by uninstalling the app
-    private let scopes = [kGTLRAuthScopeCalendarReadonly, kGTLRAuthScopePeopleServiceContactsReadonly]
+    // Google GTLR framework
+    // When scopes change, delete access token in Keychain by uninstalling the app
+    private let scopes = [
+        kGTLRAuthScopeCalendarReadonly,
+        kGTLRAuthScopePeopleServiceContactsReadonly
+    ]
     private let service = GTLRCalendarService()
     private let service2 = GTLRPeopleServiceService()
     var signInButton = GIDSignInButton()
@@ -92,8 +96,10 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         GIDSignIn.sharedInstance().delegate = self
         GIDSignIn.sharedInstance().uiDelegate = self
         GIDSignIn.sharedInstance().scopes = scopes
-        GIDSignIn.sharedInstance().signInSilently()
         GIDSignIn.sharedInstance().language = Locale.current.languageCode
+        
+        // Automatic Google Sign-in if access token saved in Keychain
+        GIDSignIn.sharedInstance().signInSilently()
         
         // Configure GTLR services
         service.isRetryEnabled = true
@@ -102,7 +108,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         service2.maxRetryInterval = 30
         
         // Set up Start Message
-        
         startMessage.text = NSLocalizedString("Logga in på ditt Google-konto", comment: "initially displayed message")
         
         // Add the sign-in button.
@@ -169,6 +174,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     // MARK: - Google ID Signin Delegate
     
+    // didSignIn
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
               withError error: Error!) {
         if let error = error {

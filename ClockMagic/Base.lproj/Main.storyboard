@@ -118,7 +118,7 @@
                                     </label>
                                 </subviews>
                             </stackView>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="SeA-EX-QoE">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SeA-EX-QoE">
                                 <rect key="frame" x="0.0" y="20" width="512" height="748"/>
                                 <color key="backgroundColor" red="0.99363827019999995" green="1" blue="0.59624979840000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <string key="text">
