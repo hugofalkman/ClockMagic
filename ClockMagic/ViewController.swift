@@ -206,26 +206,10 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         events = oldEvents
         
         let start = currentDate
-        let title = NSLocalizedString("Fel. Kunde inte läsa kalendern.", comment: "Error message")
-        events.insert(Event(start: start, hasTime: true,
-            title: getEventTitle(startDate: start, hasTime: true, title: title),
+        let summary = NSLocalizedString("Fel. Kunde inte läsa kalendern.", comment: "Error message")
+        events.insert(Event(start: start, hasTime: true, summary: summary,
             detail: NSLocalizedString("Följande händelser kanske inte längre är aktuella.",
-            comment: "Error detail"), creator: "", photo: nil), at: 0)
-    }
-    
-    private func getEventTitle(startDate start: Date, hasTime notAllDay: Bool, title: String) -> String {
-        
-//        dateFormatter.dateStyle = .medium
-//        dateFormatter.timeStyle = .none
-//        var startDate = dateFormatter.string(from: start)
-//        startDate = String(startDate.dropLast(5)) // drop year
-        
-        guard notAllDay else { return title }
-        dateFormatter.dateStyle = .none
-        dateFormatter.timeStyle = .short
-        let startTime = dateFormatter.string(from: start)
-        return startTime + " - " + title
-        //return startDate + " " + startTime + " - " + title
+                comment: "Error detail"), creator: ""), at: 0)
     }
     
     // MARK: - Prepare for TableView

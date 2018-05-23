@@ -149,20 +149,16 @@ class GoogleCalendar: NSObject {
                 // If hasTime is false, start.date is set to noon GMT
                 // to make day correct in all timezones
                 let start = item.start!.dateTime ?? item.start!.date!
-                let title = item.summary ?? ""
+                let summary = item.summary ?? ""
                 let hasTime = start.hasTime
                 let creator = hasTime ? (item.creator?.email ?? "") : ""
-                events.append(Event(start: start.date, hasTime: hasTime,
-                    title: getEventTitle(startDate: start.date, hasTime: hasTime, title: title),
-                    detail: item.descriptionProperty ?? "",
-                    creator: creator, photo: nil))
+                events.append(Event(start: start.date, hasTime: hasTime, summary: summary, detail: item.descriptionProperty ?? "", creator: creator))
             }
         } else {
             let start = currentDate
-            let title = NSLocalizedString("Inga kommande händelser", comment: "Message empty calendar")
+            let summary = NSLocalizedString("Inga kommande händelser", comment: "Message empty calendar")
             events = [Event(start: start, hasTime: true,
-                title: getEventTitle(startDate: start, hasTime: true, title: title),
-                detail: "", creator: "", photo: nil)]
+                summary: summary, detail: "", creator: "")]
         }
         
         //  Get photos in background and when finished reload tableview from main queue
@@ -173,21 +169,6 @@ class GoogleCalendar: NSObject {
                 NotificationCenter.default.post(name: .EventsDidChange, object: self)
            }
         }
-    }
-    
-    private func getEventTitle(startDate start: Date, hasTime notAllDay: Bool, title: String) -> String {
-        
-        //        dateFormatter.dateStyle = .medium
-        //        dateFormatter.timeStyle = .none
-        //        var startDate = dateFormatter.string(from: start)
-        //        startDate = String(startDate.dropLast(5)) // drop year
-        
-        guard notAllDay else { return title }
-        dateFormatter.dateStyle = .none
-        dateFormatter.timeStyle = .short
-        let startTime = dateFormatter.string(from: start)
-        return startTime + " - " + title
-        //return startDate + " " + startTime + " - " + title
     }
     
     private func flagError(error: String) {
