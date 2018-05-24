@@ -78,6 +78,14 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zbY-Ii-G3C" customClass="GIDSignInButton">
+                                <rect key="frame" x="612" y="370" width="312" height="48"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="1pn-ZB-tTp"/>
+                                    <constraint firstAttribute="width" constant="312" id="r7B-VY-dBl"/>
+                                </constraints>
+                            </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K8H-XV-U8S">
                                 <rect key="frame" x="0.0" y="20" width="512" height="512"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -118,7 +126,7 @@
                                     </label>
                                 </subviews>
                             </stackView>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SeA-EX-QoE">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="SeA-EX-QoE">
                                 <rect key="frame" x="0.0" y="20" width="512" height="748"/>
                                 <color key="backgroundColor" red="0.99363827019999995" green="1" blue="0.59624979840000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <string key="text">
@@ -145,11 +153,13 @@ For instructions and help on setting up the Google account, contact list, and ca
                             <constraint firstItem="K8H-XV-U8S" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="R9Y-YB-MJH"/>
                             <constraint firstItem="m9k-WX-omO" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="SfB-0m-K56"/>
                             <constraint firstItem="K8H-XV-U8S" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="1:2" id="WGh-j1-pu9"/>
+                            <constraint firstItem="zbY-Ii-G3C" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" multiplier="3:2" id="WW7-Hk-LC4"/>
                             <constraint firstItem="SeA-EX-QoE" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="1:2" id="aal-aL-1tk"/>
                             <constraint firstItem="K8H-XV-U8S" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="bFA-Fi-YZX"/>
                             <constraint firstItem="m9k-WX-omO" firstAttribute="leading" secondItem="a4S-rw-faT" secondAttribute="trailing" constant="8" id="k5B-hR-5im"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="a4S-rw-faT" secondAttribute="bottom" id="m24-9a-wlp"/>
                             <constraint firstItem="a4S-rw-faT" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="nrL-Qg-gcv"/>
+                            <constraint firstItem="zbY-Ii-G3C" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="wRw-js-auf"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
@@ -157,6 +167,7 @@ For instructions and help on setting up the Google account, contact list, and ca
                         <outlet property="dateLabel" destination="HRr-3i-6cg" id="i0h-ir-Biz"/>
                         <outlet property="dayOfWeekLabel" destination="4xa-IM-DoH" id="0x5-vt-P2m"/>
                         <outlet property="seasonLabel" destination="VLq-vd-6MC" id="3SW-f8-xFL"/>
+                        <outlet property="signInButton" destination="zbY-Ii-G3C" id="gwL-0W-Ojl"/>
                         <outlet property="startMessage" destination="SeA-EX-QoE" id="2bB-Yc-0D7"/>
                         <outlet property="subView" destination="K8H-XV-U8S" id="I14-Tg-4jd"/>
                         <outlet property="tableView" destination="m9k-WX-omO" id="bqe-vP-IfD"/>

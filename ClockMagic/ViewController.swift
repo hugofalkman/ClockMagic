@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import GoogleAPIClientForREST
 import GoogleSignIn
 
 // MARK: - TableView Cell
@@ -24,7 +23,7 @@ class ViewCell: UITableViewCell {
     @IBOutlet weak var descriptionLabel: UILabel!
 }
 
-class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegate, GIDSignInDelegate, GIDSignInUIDelegate {
+class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegate, GIDSignInUIDelegate {
     
     // MARK: - Properties
  
@@ -39,13 +38,17 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var signInButton: GIDSignInButton!
+    
     private var events = [Event]()
     private var oldEvents = [Event]()
     private var eventsByDay = [[Event]]()
     private var isRedBackground = false
     private var currentDate = Date()
     
-    private var eventObserver: NSObjectProtocol?
+    private var eventsObserver: NSObjectProtocol?
+    private var signedInObserver: NSObjectProtocol?
+    
     private let googleCalendar = GoogleCalendar()
     private let dateFormatter = DateFormatter()
     
@@ -63,42 +66,31 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         }
     }
     
-    // Google GTLR framework
-    // When scopes change, delete access token in Keychain by uninstalling the app
-    private let scopes = [
-        kGTLRAuthScopeCalendarReadonly,
-        kGTLRAuthScopePeopleServiceContactsReadonly
-    ]
-    var signInButton = GIDSignInButton()
-    
     // MARK: - View Controller Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Configure Google Sign-in.
-        GIDSignIn.sharedInstance().delegate = self
+        googleCalendar.setupGIDSignon()
+        
+        signedInObserver = NotificationCenter.default.addObserver(
+            forName: .GoogleSignedIn,
+            object: googleCalendar,
+            queue: OperationQueue.main,
+            using: { (notification) in
+                self.googleSignedIn(userInfo: notification.userInfo)
+            }
+        )
+        
+        // Setup Google Sign-in.
         GIDSignIn.sharedInstance().uiDelegate = self
-        GIDSignIn.sharedInstance().scopes = scopes
-        GIDSignIn.sharedInstance().language = Locale.current.languageCode
-        
-        // Automatic Google Sign-in if access token saved in Keychain
-        GIDSignIn.sharedInstance().signInSilently()
-        
-        // Configure GTLR services
-        googleCalendar.service.isRetryEnabled = true
-        googleCalendar.service.maxRetryInterval = 30
-        googleCalendar.service2.isRetryEnabled = true
-        googleCalendar.service2.maxRetryInterval = 30
         
         // Set up Start Message
-        startMessage.text = NSLocalizedString("Logga in på ditt Google-konto", comment: "initially displayed message")
+        startMessage.text = NSLocalizedString("Logga in på ditt Google-konto", comment: "Initially displayed message")
         
-        // Add the sign-in button.
+        // Configure the sign-in button.
         signInButton.style = GIDSignInButtonStyle.wide
         signInButton.colorScheme = GIDSignInButtonColorScheme.dark
-        tableView.addSubview(signInButton)
-        signInButton.center = CGPoint(x: view.bounds.width / 4, y: view.bounds.height / 2)
         
         // Setup TableView
         tableView.delegate = self
@@ -156,26 +148,21 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         dateLabel.text = dateFormatter.string(from: currentDate)
     }
     
-    // MARK: - Google ID Signin Delegate
+    // MARK: - Google ID Signin
     
-    // didSignIn
-    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
-              withError error: Error!) {
-        if let error = error {
-            // Ignore error messages before viewDidLoad finishes
-            if self.isViewLoaded && (self.view.window != nil) {
+    private func googleSignedIn(userInfo: [AnyHashable: Any]?) {
+        
+        if let error = userInfo?["error"] as? Error {
                 showAlert(title: NSLocalizedString("Auktoriseringsfel", comment: "Fel password och liknande") , message: error.localizedDescription)
-            }
-            self.googleCalendar.service.authorizer = nil
-            self.googleCalendar.service.authorizer = nil
         } else {
+            if let observer = signedInObserver {
+                NotificationCenter.default.removeObserver(observer)
+            }
+            
             self.startMessage.isHidden = true
             self.signInButton.isHidden = true
-            let accessToken = user.authentication.fetcherAuthorizer()
-            self.googleCalendar.service.authorizer = accessToken
-            self.googleCalendar.service2.authorizer = accessToken
             
-            eventObserver = NotificationCenter.default.addObserver(
+            eventsObserver = NotificationCenter.default.addObserver(
                 forName: .EventsDidChange,
                 object: googleCalendar,
                 queue: OperationQueue.main,
@@ -207,9 +194,10 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         
         let start = currentDate
         let summary = NSLocalizedString("Fel. Kunde inte läsa kalendern.", comment: "Error message")
+        let detail = NSLocalizedString("Följande händelser kanske inte längre är aktuella.",
+            comment: "Error detail")
         events.insert(Event(start: start, hasTime: true, summary: summary,
-            detail: NSLocalizedString("Följande händelser kanske inte längre är aktuella.",
-                comment: "Error detail"), creator: ""), at: 0)
+            detail: detail, creator: ""), at: 0)
     }
     
     // MARK: - Prepare for TableView
@@ -254,7 +242,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         default:
             header.text = "error"
         }
-
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .none
         var formattedDay = dateFormatter.string(from: day)

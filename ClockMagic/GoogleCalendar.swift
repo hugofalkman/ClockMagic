@@ -8,18 +8,16 @@
 
 import Foundation
 import GoogleAPIClientForREST
+import GoogleSignIn
 
 extension Notification.Name {
     static let EventsDidChange = Notification.Name("EventsDidChange")
+    static let GoogleSignedIn = Notification.Name("GoogleSignedIn")
 }
 
-class GoogleCalendar: NSObject {
+class GoogleCalendar: NSObject, GIDSignInDelegate {
     
     // MARK: - Public API
-    
-    // Services configured and authorized by GID Signin in ViewController
-    let service = GTLRCalendarService()
-    let service2 = GTLRPeopleServiceService()
     
     var currentDate = Date()
     var events = [Event]()
@@ -27,6 +25,40 @@ class GoogleCalendar: NSObject {
     
     @objc func getEvents() {
         fetchContacts()
+    }
+    
+    // MARK: - GID Signon setup and delegate
+    
+    func setupGIDSignon() {
+        // Configure Google Sign-in.
+        GIDSignIn.sharedInstance().delegate = self
+        GIDSignIn.sharedInstance().scopes = scopes
+        GIDSignIn.sharedInstance().language = Locale.current.languageCode
+        
+        // Automatic Google Sign-in if access token saved in Keychain
+        GIDSignIn.sharedInstance().signInSilently()
+        
+        // Configure GTLR services
+        service.isRetryEnabled = true
+        service.maxRetryInterval = 30
+        service2.isRetryEnabled = true
+        service2.maxRetryInterval = 30
+    }
+    
+    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
+              withError error: Error!) {
+        var userInfo = [String: Error]()
+        if let error = error {
+            userInfo["error"] = error
+            self.service.authorizer = nil
+            self.service.authorizer = nil
+        } else {
+            let accessToken = user.authentication.fetcherAuthorizer()
+            self.service.authorizer = accessToken
+            self.service2.authorizer = accessToken
+        }
+        NotificationCenter.default.post(name: .GoogleSignedIn,
+            object: self, userInfo: userInfo)
     }
     
     // MARK: - Private properties and struct
@@ -39,6 +71,15 @@ class GoogleCalendar: NSObject {
         var photoUrl: String
     }
     private var contacts = [Contact]()
+    
+    // Google GTLR framework
+    // When scopes change, delete access token in Keychain by uninstalling the app
+    private let scopes = [
+        kGTLRAuthScopeCalendarReadonly,
+        kGTLRAuthScopePeopleServiceContactsReadonly
+    ]
+    private let service = GTLRCalendarService()
+    private let service2 = GTLRPeopleServiceService()
     
     // MARK: - Get Google Contacts
     
@@ -55,13 +96,12 @@ class GoogleCalendar: NSObject {
         }
     }
     
-    @objc func getContactsFromTicket(
+    @objc private func getContactsFromTicket(
         ticket: GTLRServiceTicket,
         finishedWithObject response: GTLRPeopleService_ListConnectionsResponse,
         error: NSError?) {
         
         contacts = []
-        
         if error != nil {
         // Continue to fetching calendar events, leaving them without photos of the creator
             fetchEvents()
@@ -131,7 +171,7 @@ class GoogleCalendar: NSObject {
     
     // MARK: - Build events array
     
-    @objc func getEventsFromTicket(
+    @objc private func getEventsFromTicket(
         ticket: GTLRServiceTicket,
         finishedWithObject response : GTLRCalendar_Events,
         error : NSError?) {
