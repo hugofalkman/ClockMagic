@@ -50,6 +50,8 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     private var signedInObserver: NSObjectProtocol?
     
     private let googleCalendar = GoogleCalendar()
+    private var eventTimer: Timer?
+    
     private let dateFormatter = DateFormatter()
     
     private var clockView: ClockView? {
@@ -71,18 +73,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        googleCalendar.setupGIDSignon()
-        
-        signedInObserver = NotificationCenter.default.addObserver(
-            forName: .GoogleSignedIn,
-            object: googleCalendar,
-            queue: OperationQueue.main,
-            using: { (notification) in
-                self.googleSignedIn(userInfo: notification.userInfo)
-            }
-        )
-        
-        // Setup Google Sign-in.
+        // Configure Google Sign-in.
         GIDSignIn.sharedInstance().uiDelegate = self
         
         // Set up Start Message
@@ -91,6 +82,17 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         // Configure the sign-in button.
         signInButton.style = GIDSignInButtonStyle.wide
         signInButton.colorScheme = GIDSignInButtonColorScheme.dark
+        
+        // Start GoogleCalendar GID Signin and wait for it to complete
+        signedInObserver = NotificationCenter.default.addObserver(
+            forName: .GoogleSignedIn,
+            object: googleCalendar,
+            queue: OperationQueue.main,
+            using: { (notification) in
+                self.googleSignedIn(userInfo: notification.userInfo)
+            }
+        )
+        googleCalendar.setupGIDSignon()
         
         // Setup TableView
         tableView.delegate = self
@@ -153,15 +155,21 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     private func googleSignedIn(userInfo: [AnyHashable: Any]?) {
         
         if let error = userInfo?["error"] as? Error {
-                showAlert(title: NSLocalizedString("Auktoriseringsfel", comment: "Fel password och liknande") , message: error.localizedDescription)
+            // Ignore errors before viewDidLoad complete
+           if self.isViewLoaded && (self.view.window != nil) {
+                showAlert(title: NSLocalizedString("Auktoriseringsfel",
+                    comment: "Wrong password or similar"),
+                    message: error.localizedDescription,
+                    okAction: nil)
+            }
         } else {
             if let observer = signedInObserver {
                 NotificationCenter.default.removeObserver(observer)
             }
-            
             self.startMessage.isHidden = true
             self.signInButton.isHidden = true
             
+            // Request events from GoogleCalendar and wait for request to complete
             eventsObserver = NotificationCenter.default.addObserver(
                 forName: .EventsDidChange,
                 object: googleCalendar,
@@ -171,7 +179,12 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                 }
             )
             googleCalendar.getEvents()
-            Timer.scheduledTimer(timeInterval: 120, target: googleCalendar, selector: #selector(googleCalendar.getEvents), userInfo: nil, repeats: true)
+            if eventTimer == nil {
+                eventTimer = Timer.scheduledTimer(
+                    timeInterval: 120, target: googleCalendar,
+                    selector: #selector(googleCalendar.getEvents),
+                    userInfo: nil, repeats: true)
+            }
         }
     }
     
@@ -185,19 +198,42 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             events = googleCalendar.events
             // save results for possible later display if the connection to Google goes down
             oldEvents = events
+            prepareForTableView(isRedBackground: false)
         }
-        prepareForTableView(isRedBackground: error)
     }
     
     private func displayError() {
-        events = oldEvents
-        
-        let start = currentDate
-        let summary = NSLocalizedString("Fel. Kunde inte läsa kalendern.", comment: "Error message")
-        let detail = NSLocalizedString("Följande händelser kanske inte längre är aktuella.",
-            comment: "Error detail")
-        events.insert(Event(start: start, hasTime: true, summary: summary,
-            detail: detail, creator: ""), at: 0)
+        if oldEvents.isEmpty {
+            // very first getEvents request resulted in error
+            if eventTimer != nil {
+                eventTimer?.invalidate()
+                eventTimer = nil
+            }
+            showAlert(title: NSLocalizedString("Åtkomstfel",comment: "Error message"),
+                message: NSLocalizedString(
+                "Fel. Kunde inte läsa kalendern.", comment: "Error message")) { action in
+                // Signout and start again
+                GIDSignIn.sharedInstance().signOut()
+                self.signedInObserver = NotificationCenter.default.addObserver(
+                    forName: .GoogleSignedIn,
+                    object: self.googleCalendar,
+                    queue: OperationQueue.main,
+                    using: { (notification) in
+                        self.googleSignedIn(userInfo: notification.userInfo)
+                    }
+                )
+                self.signInButton.isHidden = false
+            }
+        } else {
+            events = oldEvents
+            let start = currentDate
+            let summary = NSLocalizedString("Fel. Kunde inte läsa kalendern.", comment: "Error message")
+            let detail = NSLocalizedString("Följande händelser kanske inte längre är aktuella.",
+                comment: "Error detail")
+            events.insert(Event(start: start, hasTime: true, summary: summary,
+                detail: detail, creator: ""), at: 0)
+            prepareForTableView(isRedBackground: true)
+        }
     }
     
     // MARK: - Prepare for TableView
@@ -280,18 +316,21 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     // MARK: - Showing Alert helper function
     
-    private func showAlert(title : String, message: String) {
-        let alert = UIAlertController(
-            title: title,
-            message: message,
-            preferredStyle: UIAlertControllerStyle.alert
-        )
-        let ok = UIAlertAction(
-            title: "OK",
-            style: UIAlertActionStyle.default,
-            handler: nil
-        )
-        alert.addAction(ok)
-        self.present(alert, animated: true, completion: nil)
+    private func showAlert(title : String, message: String,
+        okAction: ((UIAlertAction) -> Void)?) {        
+        if presentedViewController == nil {
+            let alert = UIAlertController(
+                title: title,
+                message: message,
+                preferredStyle: UIAlertControllerStyle.alert
+            )
+            let ok = UIAlertAction(
+                title: "OK",
+                style: UIAlertActionStyle.default,
+                handler: okAction
+            )
+            alert.addAction(ok)
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 }

@@ -227,7 +227,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                 if let url = URL(string: urlString),
                     // also discards the case urlString == ""
                     let data = try? Data(contentsOf: url) { // stacked if lets
-                    events[eventIndex].photo = UIImage(data: data)
+                        events[eventIndex].photo = UIImage(data: data)
                 } else {
                     events[eventIndex].photo = nil
                 }

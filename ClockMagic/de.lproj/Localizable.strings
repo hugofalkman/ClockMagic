@@ -23,6 +23,7 @@
 
 "Inga kommande händelser" = "Keine anstehenden Ereignisse gefunden.";
 "Auktoriseringsfel" = "Autorisierungsfehler";
+"Åtkomstfel" = "Zugriffsfehler";
 "Fel. Kunde inte läsa kalendern." = "Error. Der Kalender konnte nicht gelesen werden.";
 "Följande händelser kanske inte längre är aktuella." = "Die folgenden Ereignisse sind möglicherweise nicht mehr gültig.";
 
