@@ -78,6 +78,10 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="oD6-7a-gFK">
+                                <rect key="frame" x="750" y="376" width="37" height="37"/>
+                                <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            </activityIndicatorView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zbY-Ii-G3C" customClass="GIDSignInButton">
                                 <rect key="frame" x="612" y="370" width="312" height="48"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -149,6 +153,7 @@ For instructions and help on setting up the Google account, contact list, and ca
                             <constraint firstItem="m9k-WX-omO" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="CHB-vF-G3X"/>
                             <constraint firstItem="SeA-EX-QoE" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="HHS-fO-k4q"/>
                             <constraint firstItem="SeA-EX-QoE" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="KBj-SK-Gwh"/>
+                            <constraint firstItem="oD6-7a-gFK" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" multiplier="3:2" id="N2s-a3-TJV"/>
                             <constraint firstItem="m9k-WX-omO" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="Qxi-5Y-9bt"/>
                             <constraint firstItem="K8H-XV-U8S" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="R9Y-YB-MJH"/>
                             <constraint firstItem="m9k-WX-omO" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="SfB-0m-K56"/>
@@ -159,6 +164,7 @@ For instructions and help on setting up the Google account, contact list, and ca
                             <constraint firstItem="m9k-WX-omO" firstAttribute="leading" secondItem="a4S-rw-faT" secondAttribute="trailing" constant="8" id="k5B-hR-5im"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="a4S-rw-faT" secondAttribute="bottom" id="m24-9a-wlp"/>
                             <constraint firstItem="a4S-rw-faT" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="nrL-Qg-gcv"/>
+                            <constraint firstItem="oD6-7a-gFK" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="os6-fs-ku8"/>
                             <constraint firstItem="zbY-Ii-G3C" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="wRw-js-auf"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -168,6 +174,7 @@ For instructions and help on setting up the Google account, contact list, and ca
                         <outlet property="dayOfWeekLabel" destination="4xa-IM-DoH" id="0x5-vt-P2m"/>
                         <outlet property="seasonLabel" destination="VLq-vd-6MC" id="3SW-f8-xFL"/>
                         <outlet property="signInButton" destination="zbY-Ii-G3C" id="gwL-0W-Ojl"/>
+                        <outlet property="spinner" destination="oD6-7a-gFK" id="TAR-gE-vUy"/>
                         <outlet property="startMessage" destination="SeA-EX-QoE" id="2bB-Yc-0D7"/>
                         <outlet property="subView" destination="K8H-XV-U8S" id="I14-Tg-4jd"/>
                         <outlet property="tableView" destination="m9k-WX-omO" id="bqe-vP-IfD"/>

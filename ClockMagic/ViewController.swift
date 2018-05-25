@@ -38,6 +38,8 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var spinner: UIActivityIndicatorView!
+
     @IBOutlet weak var signInButton: GIDSignInButton!
     
     private var events = [Event]()
@@ -178,6 +180,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                     self.eventsDidChange()
                 }
             )
+            spinner.startAnimating()
             googleCalendar.getEvents()
             if eventTimer == nil {
                 eventTimer = Timer.scheduledTimer(
@@ -191,6 +194,11 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     private func eventsDidChange() {
         currentDate = googleCalendar.currentDate
         updateCalendar()
+        
+        if oldEvents.isEmpty {
+            spinner.stopAnimating()
+        }
+        
         let error = googleCalendar.eventsInError
         if error {
             displayError()
