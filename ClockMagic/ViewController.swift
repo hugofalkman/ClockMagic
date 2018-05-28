@@ -94,7 +94,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                 self.googleSignedIn(userInfo: notification.userInfo)
             }
         )
-        googleCalendar.setupGIDSignon()
+        googleCalendar.setupGIDSignIn()
         
         // Setup TableView
         tableView.delegate = self
@@ -182,6 +182,8 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             )
             spinner.startAnimating()
             googleCalendar.getEvents()
+            
+            // Refresh events
             if eventTimer == nil {
                 eventTimer = Timer.scheduledTimer(
                     timeInterval: 120, target: googleCalendar,
@@ -195,6 +197,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         currentDate = googleCalendar.currentDate
         updateCalendar()
         
+        // oldEvents only empty first time
         if oldEvents.isEmpty {
             spinner.stopAnimating()
         }
@@ -325,7 +328,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     // MARK: - Showing Alert helper function
     
     private func showAlert(title : String, message: String,
-        okAction: ((UIAlertAction) -> Void)?) {        
+        okAction: ((UIAlertAction) -> Void)?) {
         if presentedViewController == nil {
             let alert = UIAlertController(
                 title: title,

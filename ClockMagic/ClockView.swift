@@ -142,7 +142,6 @@ class ClockView: UIView {
         screwPath.fill()
     }
     
-    
     // MARK: - Drawing Helpers
     
     func drawHand(length: Double, thickness: Double, angle: Double, lineCapStyle: CGLineCap = .square) {
@@ -253,8 +252,3 @@ class ClockView: UIView {
         return string
     }
 }
-
-
-
-
-

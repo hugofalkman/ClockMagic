@@ -17,19 +17,17 @@ extension Notification.Name {
 
 class GoogleCalendar: NSObject, GIDSignInDelegate {
     
-    // MARK: - Public API
+    // MARK: - Public API (also sends above two notifications)
     
-    var currentDate = Date()
-    var events = [Event]()
-    var eventsInError = false
+    private(set) var currentDate = Date()
+    private(set) var events = [Event]()
+    private(set) var eventsInError = false
     
     @objc func getEvents() {
         fetchContacts()
     }
     
-    // MARK: - GID Signon setup and delegate
-    
-    func setupGIDSignon() {
+    func setupGIDSignIn() {
         // Configure Google Sign-in.
         GIDSignIn.sharedInstance().delegate = self
         GIDSignIn.sharedInstance().scopes = scopes
@@ -44,6 +42,8 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         service2.isRetryEnabled = true
         service2.maxRetryInterval = 30
     }
+    
+    // MARK: - GID SignIn Delegate
     
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
               withError error: Error!) {
@@ -65,12 +65,19 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     
     private let dateFormatter = DateFormatter()
     
+    private let dispatchGroup = DispatchGroup()
+    
+    // Set semaphore to only allow one task at a time access to the events array
+    private let eventsSemaphore = DispatchSemaphore(value: 1)
+    
     private struct Contact {
         var email: String
         var name: String
         var photoUrl: String
     }
     private var contacts = [Contact]()
+    
+    private var calendarIds = [String]()
     
     // Google GTLR framework
     // When scopes change, delete access token in Keychain by uninstalling the app
@@ -104,10 +111,9 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         contacts = []
         if error != nil {
         // Continue to fetching calendar events, leaving them without photos of the creator
-            fetchEvents()
+            getCalendarList()
             return
         }
-        
         if let connections = response.connections, !connections.isEmpty {
             loop: for connection in connections {
                 var email = ""
@@ -141,7 +147,38 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                 contacts.append(Contact(email: email, name: primaryName, photoUrl: url))
             }
         }
-        fetchEvents()
+        getCalendarList()
+    }
+    
+    // MARK: - Get list of Calendar ids
+    
+    private func getCalendarList() {
+        let query = GTLRCalendarQuery_CalendarListList.query()
+        service.executeQuery(query) { (ticket, response, error) in
+            
+            if let error = error {
+                // Flag error and return
+                self.flagError(error: error.localizedDescription)
+                return
+            }
+            
+            if let list = response as? GTLRCalendar_CalendarList,
+                let items = list.items {
+                for item in items where item.identifier != nil {
+                    let calendarId = item.identifier!
+                    self.calendarIds.append(calendarId)
+                }
+            }
+            
+            if self.calendarIds.isEmpty {
+                // Flag error and return
+                self.flagError(error: "")
+                return
+            }
+            
+            // print("\(self.calendarIds)")
+            self.fetchEvents()
+        }
     }
     
     // MARK: - Get Google Calendar Events
@@ -149,8 +186,10 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     // Construct a query and get a list of upcoming events from the user calendar
     private func fetchEvents() {
         
+        events = []
         // Set currentDate to reflect the start date of the query
         currentDate = Date()
+        
         
         let query = GTLRCalendarQuery_EventsList.query(withCalendarId: "primary")
         let startDate = currentDate
@@ -160,13 +199,12 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         query.singleEvents = true
         query.orderBy = kGTLRCalendarOrderByStartTime
         
-        // Get calendar events in background
-        DispatchQueue.global().async { [unowned self] in
-            self.service.executeQuery(
+        dispatchGroup.enter()
+        // Run in background
+            service.executeQuery(
                 query,
                 delegate: self,
                 didFinish: #selector(self.getEventsFromTicket(ticket:finishedWithObject:error:)))
-        }
     }
     
     // MARK: - Build events array
@@ -183,8 +221,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         }
         
         if let items = response.items, !items.isEmpty {
-            events = []
-            
+            eventsSemaphore.wait()
             for item in items {
                 // If hasTime is false, start.date is set to noon GMT
                 // to make day correct in all timezones
@@ -194,6 +231,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                 let creator = hasTime ? (item.creator?.email ?? "") : ""
                 events.append(Event(start: start.date, hasTime: hasTime, summary: summary, detail: item.descriptionProperty ?? "", creator: creator))
             }
+            eventsSemaphore.signal()
         } else {
             let start = currentDate
             let summary = NSLocalizedString("Inga kommande händelser", comment: "Message empty calendar")
@@ -201,7 +239,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                 summary: summary, detail: "", creator: "")]
         }
         
-        //  Get photos in background and when finished reload tableview from main queue
+        //  Get photos in background and when finished notify caller
         DispatchQueue.global().async { [unowned self] in
             self.getCreatorPhotos()
             DispatchQueue.main.async {
