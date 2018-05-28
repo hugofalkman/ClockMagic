@@ -156,6 +156,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     
     private func getCalendarList() {
         currentDate = Date()
+        calendarIds = []
         
         let query = GTLRCalendarQuery_CalendarListList.query()
         // Runs in background
@@ -182,53 +183,57 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             }
             
             // print("\(self.calendarIds)")
-            self.fetchEvents()
+            DispatchQueue.main.async {
+                self.fetchEvents()
+            }
         }
     }
     
     // MARK: - Get Google Calendar Events
     
-    // Construct a query and get a list of upcoming events from the user calendar
+    // Query and get a list of upcoming events from each calendar Id
     private func fetchEvents() {
         
         events = []
+        
         // Set currentDate to reflect the start date of the query
         currentDate = Date()
         
-        
-        let query = GTLRCalendarQuery_EventsList.query(withCalendarId: "primary")
-        let startDate = currentDate
-        query.timeMin = GTLRDateTime(date: startDate)
-        // 48 hours of calendar data
-        query.timeMax = GTLRDateTime(date: Date(timeInterval: 2 * 86400, since: startDate))
-        query.singleEvents = true
-        query.orderBy = kGTLRCalendarOrderByStartTime
-        
-        dispatchGroup.enter()
-        // Runs in background
-        service.executeQuery(query) { (ticket, response, error) in
+        for calendarId in calendarIds {
+            let query = GTLRCalendarQuery_EventsList.query(withCalendarId: calendarId)
+            let startDate = currentDate
+            query.timeMin = GTLRDateTime(date: startDate)
+            // 48 hours of calendar data
+            query.timeMax = GTLRDateTime(date: Date(timeInterval: 2 * 86400, since: startDate))
+            query.singleEvents = true
+            query.orderBy = kGTLRCalendarOrderByStartTime
             
-            if let error = error {
-                // Flag error and return
-                self.flagError(error: error.localizedDescription)
-                return
+            dispatchGroup.enter()
+            // Runs in background
+            service.executeQuery(query) { (ticket, response, error) in
+                
+                if let error = error {
+                    // Flag error and return
+                    self.flagError(error: error.localizedDescription)
+                    return
+                }
+                
+                if let list = response as? GTLRCalendar_Events,
+                    let items = list.items, !items.isEmpty {
+                        self.eventsSemaphore.wait()
+                        for item in items {
+                            // If hasTime is false, start.date is set to noon GMT
+                            // to make day correct in all timezones
+                            let start = item.start!.dateTime ?? item.start!.date!
+                            let summary = item.summary ?? ""
+                            let hasTime = start.hasTime
+                            let creator = hasTime ? (item.creator?.email ?? "") : ""
+                            self.events.append(Event(start: start.date, hasTime: hasTime, summary: summary, detail: item.descriptionProperty ?? "", creator: creator))
+                        }
+                        self.eventsSemaphore.signal()
+                }
+                self.dispatchGroup.leave()
             }
-            
-            if let list = response as? GTLRCalendar_Events,
-                let items = list.items, !items.isEmpty {
-                    self.eventsSemaphore.wait()
-                    for item in items {
-                        // If hasTime is false, start.date is set to noon GMT
-                        // to make day correct in all timezones
-                        let start = item.start!.dateTime ?? item.start!.date!
-                        let summary = item.summary ?? ""
-                        let hasTime = start.hasTime
-                        let creator = hasTime ? (item.creator?.email ?? "") : ""
-                        self.events.append(Event(start: start.date, hasTime: hasTime, summary: summary, detail: item.descriptionProperty ?? "", creator: creator))
-                    }
-                    self.eventsSemaphore.signal()
-            }
-            self.dispatchGroup.leave()
         }
         
         dispatchGroup.notify(queue: .main) {

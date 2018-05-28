@@ -206,7 +206,11 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         if error {
             displayError()
         } else {
-            events = googleCalendar.events
+            events = googleCalendar.events.sorted {
+                if $0.hasTime == $1.hasTime {
+                    return $0.start < $1.start
+                }
+                return !$0.hasTime && $1.hasTime }
             // save results for possible later display if the connection to Google goes down
             oldEvents = events
             prepareForTableView(isRedBackground: false)
