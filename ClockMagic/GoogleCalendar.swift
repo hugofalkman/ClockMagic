@@ -24,6 +24,8 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     private(set) var eventsInError = false
     
     @objc func getEvents() {
+        dispatchGroup = DispatchGroup()
+        eventsSemaphore = DispatchSemaphore(value: 1)
         fetchContacts()
     }
     
@@ -65,10 +67,10 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     
     private let dateFormatter = DateFormatter()
     
-    private let dispatchGroup = DispatchGroup()
+    private var dispatchGroup = DispatchGroup()
     
     // Set semaphore to only allow one task at a time access to the events array
-    private let eventsSemaphore = DispatchSemaphore(value: 1)
+    private var eventsSemaphore = DispatchSemaphore(value: 1)
     
     private struct Contact {
         var email: String
@@ -153,7 +155,10 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     // MARK: - Get list of Calendar ids
     
     private func getCalendarList() {
+        currentDate = Date()
+        
         let query = GTLRCalendarQuery_CalendarListList.query()
+        // Runs in background
         service.executeQuery(query) { (ticket, response, error) in
             
             if let error = error {
@@ -200,52 +205,49 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         query.orderBy = kGTLRCalendarOrderByStartTime
         
         dispatchGroup.enter()
-        // Run in background
-            service.executeQuery(
-                query,
-                delegate: self,
-                didFinish: #selector(self.getEventsFromTicket(ticket:finishedWithObject:error:)))
-    }
-    
-    // MARK: - Build events array
-    
-    @objc private func getEventsFromTicket(
-        ticket: GTLRServiceTicket,
-        finishedWithObject response : GTLRCalendar_Events,
-        error : NSError?) {
-        
-        if let error = error {
-            // Flag error and return
-            flagError(error: error.localizedDescription)
-            return
-        }
-        
-        if let items = response.items, !items.isEmpty {
-            eventsSemaphore.wait()
-            for item in items {
-                // If hasTime is false, start.date is set to noon GMT
-                // to make day correct in all timezones
-                let start = item.start!.dateTime ?? item.start!.date!
-                let summary = item.summary ?? ""
-                let hasTime = start.hasTime
-                let creator = hasTime ? (item.creator?.email ?? "") : ""
-                events.append(Event(start: start.date, hasTime: hasTime, summary: summary, detail: item.descriptionProperty ?? "", creator: creator))
+        // Runs in background
+        service.executeQuery(query) { (ticket, response, error) in
+            
+            if let error = error {
+                // Flag error and return
+                self.flagError(error: error.localizedDescription)
+                return
             }
-            eventsSemaphore.signal()
-        } else {
-            let start = currentDate
-            let summary = NSLocalizedString("Inga kommande händelser", comment: "Message empty calendar")
-            events = [Event(start: start, hasTime: true,
-                summary: summary, detail: "", creator: "")]
+            
+            if let list = response as? GTLRCalendar_Events,
+                let items = list.items, !items.isEmpty {
+                    self.eventsSemaphore.wait()
+                    for item in items {
+                        // If hasTime is false, start.date is set to noon GMT
+                        // to make day correct in all timezones
+                        let start = item.start!.dateTime ?? item.start!.date!
+                        let summary = item.summary ?? ""
+                        let hasTime = start.hasTime
+                        let creator = hasTime ? (item.creator?.email ?? "") : ""
+                        self.events.append(Event(start: start.date, hasTime: hasTime, summary: summary, detail: item.descriptionProperty ?? "", creator: creator))
+                    }
+                    self.eventsSemaphore.signal()
+            }
+            self.dispatchGroup.leave()
         }
         
-        //  Get photos in background and when finished notify caller
-        DispatchQueue.global().async { [unowned self] in
-            self.getCreatorPhotos()
-            DispatchQueue.main.async {
-                self.eventsInError = false
-                NotificationCenter.default.post(name: .EventsDidChange, object: self)
-           }
+        dispatchGroup.notify(queue: .main) {
+            if self.events.isEmpty {
+                let start = self.currentDate
+                let summary = NSLocalizedString("Inga kommande händelser",
+                    comment: "Message empty calendar")
+                self.events = [Event(start: start, hasTime: true,
+                    summary: summary, detail: "", creator: "")]
+            }
+            
+            //  Get photos in background and when finished notify caller
+            DispatchQueue.global().async { [unowned self] in
+                self.getCreatorPhotos()
+                DispatchQueue.main.async {
+                    self.eventsInError = false
+                    NotificationCenter.default.post(name: .EventsDidChange, object: self)
+                }
+            }
         }
     }
     
