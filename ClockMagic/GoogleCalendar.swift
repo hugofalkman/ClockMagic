@@ -24,8 +24,6 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     private(set) var eventsInError = false
     
     @objc func getEvents() {
-        dispatchGroup = DispatchGroup()
-        eventsSemaphore = DispatchSemaphore(value: 1)
         fetchContacts()
     }
     
@@ -67,9 +65,8 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     
     private let dateFormatter = DateFormatter()
     
-    private var dispatchGroup = DispatchGroup()
-    
-    // Set semaphore to only allow one task at a time access to the events array
+    private var dispatchGroupContacts = DispatchGroup()
+    private var dispatchGroupEvents = DispatchGroup()
     private var eventsSemaphore = DispatchSemaphore(value: 1)
     
     private struct Contact {
@@ -195,6 +192,8 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     private func fetchEvents() {
         
         events = []
+        dispatchGroupEvents = DispatchGroup()
+        eventsSemaphore = DispatchSemaphore(value: 1)
         
         // Set currentDate to reflect the start date of the query
         currentDate = Date()
@@ -208,7 +207,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             query.singleEvents = true
             query.orderBy = kGTLRCalendarOrderByStartTime
             
-            dispatchGroup.enter()
+            dispatchGroupEvents.enter()
             // Runs in background
             service.executeQuery(query) { (ticket, response, error) in
                 
@@ -232,11 +231,11 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                         }
                         self.eventsSemaphore.signal()
                 }
-                self.dispatchGroup.leave()
+                self.dispatchGroupEvents.leave()
             }
         }
         
-        dispatchGroup.notify(queue: .main) {
+        dispatchGroupEvents.notify(queue: .main) {
             if self.events.isEmpty {
                 let start = self.currentDate
                 let summary = NSLocalizedString("Inga kommande händelser",
