@@ -158,7 +158,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         
         if let error = userInfo?["error"] as? Error {
             // Ignore errors before viewDidLoad complete
-           if self.isViewLoaded && (self.view.window != nil) {
+            if self.isViewLoaded && (self.view.window != nil) {
                 showAlert(title: NSLocalizedString("Auktoriseringsfel",
                     comment: "Wrong password or similar"),
                     message: error.localizedDescription,
@@ -177,7 +177,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
                 object: googleCalendar,
                 queue: OperationQueue.main,
                 using: { (notification) in
-                    self.eventsDidChange()
+                    self.eventsDidChange(userInfo: notification.userInfo)
                 }
             )
             spinner.startAnimating()
@@ -193,7 +193,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         }
     }
     
-    private func eventsDidChange() {
+    private func eventsDidChange(userInfo: [AnyHashable: Any]?) {
         currentDate = googleCalendar.currentDate
         updateCalendar()
         
@@ -204,7 +204,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         
         let error = googleCalendar.eventsInError
         if error {
-            displayError()
+            whenError(error: userInfo?["error"] as? String)
         } else {
             events = googleCalendar.events.sorted {
                 if $0.hasTime == $1.hasTime {
@@ -217,16 +217,17 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         }
     }
     
-    private func displayError() {
+    private func whenError(error: String?) {
         if oldEvents.isEmpty {
             // very first getEvents request resulted in error
             if eventTimer != nil {
                 eventTimer?.invalidate()
                 eventTimer = nil
             }
+            let message = error ?? NSLocalizedString(
+                "Fel. Kunde inte läsa kalendern.", comment: "Error message")
             showAlert(title: NSLocalizedString("Åtkomstfel",comment: "Error message"),
-                message: NSLocalizedString(
-                "Fel. Kunde inte läsa kalendern.", comment: "Error message")) { action in
+                message: message) { action in
                 // Signout and start again
                 GIDSignIn.sharedInstance().signOut()
                 self.signedInObserver = NotificationCenter.default.addObserver(

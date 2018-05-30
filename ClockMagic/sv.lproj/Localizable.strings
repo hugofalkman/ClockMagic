@@ -26,5 +26,6 @@
 "Åtkomstfel" = "Åtkomstfel";
 "Fel. Kunde inte läsa kalendern." = "Fel. Kunde inte läsa kalendern.";
 "Följande händelser kanske inte längre är aktuella." = "Följande händelser kanske inte längre är aktuella.";
+"Inga kalendrar funna" = "Inga kalendrar funna";
 
 "Logga in på ditt Google-konto" = "\nLogga in på ditt Google-konto och godkänn åtkomst till dess kontaktlista och primära kalender.\n\nAuktoriseringsinformationen lagras i din nyckelring, så följande gånger appen används krävs inget godkännande.\n\nOm du vill växla till ett annat Google-konto raderar du appen och installerar den om igen.\n\nFör instruktioner och hjälp med att konfigurera Google-kontot, dess kontaktlista och kalender, se https://clockmagic.wordpress.com";
