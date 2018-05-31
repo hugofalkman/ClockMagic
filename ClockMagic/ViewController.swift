@@ -99,6 +99,8 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         // Setup TableView
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.sectionHeaderHeight = UITableViewAutomaticDimension
+        tableView.estimatedSectionHeaderHeight = 28
         
         // Setup ClockView and start clock
         clockView = ClockView.init(frame: subView.bounds)
@@ -204,27 +206,35 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         
         let error = googleCalendar.eventsInError
         if error {
-            whenError(error: userInfo?["error"] as? String)
+            displayError(error: userInfo?["error"] as? NSError)
         } else {
+            // sort events on time
             events = googleCalendar.events.sorted {
                 if $0.hasTime == $1.hasTime {
                     return $0.start < $1.start
                 }
                 return !$0.hasTime && $1.hasTime }
+            
             // save results for possible later display if the connection to Google goes down
             oldEvents = events
+            
             prepareForTableView(isRedBackground: false)
         }
     }
     
-    private func whenError(error: String?) {
+    private func displayError(error: NSError?) {
+        if let error = error {
+            print("\(error.code) " + error.localizedDescription)
+        } else { print("nil error") }
+        
         if oldEvents.isEmpty {
             // very first getEvents request resulted in error
             if eventTimer != nil {
                 eventTimer?.invalidate()
                 eventTimer = nil
             }
-            let message = error ?? NSLocalizedString(
+            
+            let message = NSLocalizedString(
                 "Fel. Kunde inte läsa kalendern.", comment: "Error message")
             showAlert(title: NSLocalizedString("Åtkomstfel",comment: "Error message"),
                 message: message) { action in
@@ -278,6 +288,8 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         
         let header = UILabel()
         header.font = UIFont.systemFont(ofSize: 25, weight: .medium)
+        header.numberOfLines = 0
+        header.lineBreakMode = .byWordWrapping
         header.sizeToFit()
         
         var day = currentDate

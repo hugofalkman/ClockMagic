@@ -54,8 +54,10 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         // Configure GTLR services
         service.isRetryEnabled = true
         service.maxRetryInterval = 30
+        service.callbackQueue = DispatchQueue.global()
         service2.isRetryEnabled = true
         service2.maxRetryInterval = 30
+        service2.callbackQueue = DispatchQueue.global()
     }
     
     // MARK: - GID SignIn Delegate
@@ -68,9 +70,9 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             self.service.authorizer = nil
             self.service.authorizer = nil
         } else {
-            let accessToken = user.authentication.fetcherAuthorizer()
-            self.service.authorizer = accessToken
-            self.service2.authorizer = accessToken
+            let authorizer = user.authentication.fetcherAuthorizer()
+            self.service.authorizer = authorizer
+            self.service2.authorizer = authorizer
         }
         NotificationCenter.default.post(name: .GoogleSignedIn,
             object: self, userInfo: userInfo)
@@ -90,8 +92,8 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         var photoUrl: String
     }
     private var contacts = [Contact]()
-    
     private var calendarIds = [String]()
+    private var saveError: NSError?
     
     // Google GTLR framework
     // When scopes change, delete access token in Keychain by uninstalling the app
@@ -175,9 +177,9 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         // Runs in background
         service.executeQuery(query) { (ticket, response, error) in
             
-            if let error = error {
+            if let error = error as NSError? {
                 // Flag error and return
-                self.flagError(error: error.localizedDescription)
+                self.flagError(error: error)
                 return
             }
             
@@ -191,7 +193,8 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             
             if self.calendarIds.isEmpty {
                 // Flag error and return
-                self.flagError(error: NSLocalizedString("Inga kalendrar funna", comment: "Error message no calendars" ))
+                let error = NSError(domain: "com.clockmagic.error", code: 999, userInfo: [NSLocalizedDescriptionKey : NSLocalizedString("Inga kalendrar funna", comment: "Error message no calendars" )])
+                self.flagError(error: error)
                 return
             }
             
@@ -206,6 +209,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     private func fetchEvents() {
         
         events = []
+        saveError = nil
         dispatchGroupEvents = DispatchGroup()
         eventsSemaphore = DispatchSemaphore(value: 1)
         
@@ -226,9 +230,12 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             // Runs in background
             service.executeQuery(query) { (ticket, response, error) in
                 
-                if let error = error {
-                    // Flag error and return
-                    self.flagError(error: error.localizedDescription)
+                if let error = error as NSError? {
+                    // Save error and wait for other calendar Id background tasks
+                    self.eventsSemaphore.wait()
+                    self.saveError = error
+                    self.eventsSemaphore.signal()
+                    self.dispatchGroupEvents.leave()
                     return
                 }
                 
@@ -251,6 +258,12 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         }
         
         dispatchGroupEvents.notify(queue: .main) {
+            if let error = self.saveError {
+                // Flag error and return
+                self.flagError(error: error)
+                return
+            }
+            
             if self.events.isEmpty {
                 let start = self.currentDate
                 let summary = NSLocalizedString("Inga kommande händelser",
@@ -262,7 +275,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         }
     }
     
-    private func flagError(error: String) {
+    private func flagError(error: NSError) {
         eventsInError = true
         let userInfo = ["error": error]
         NotificationCenter.default.post(name: .EventsDidChange,
