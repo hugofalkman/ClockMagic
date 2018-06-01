@@ -21,6 +21,8 @@ class ViewCell: UITableViewCell {
     @IBOutlet weak var creatorPhoto: UIImageView!
     @IBOutlet weak var headerLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
+    @IBOutlet weak var attachPhoto: UIImageView!
+    
 }
 
 class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegate, GIDSignInUIDelegate {
@@ -338,6 +340,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         cell.headerLabel.text = eventsByDay[section][row].title
         cell.descriptionLabel.text = eventsByDay[section][row].detail
         cell.creatorPhoto.image = eventsByDay[section][row].photo
+        cell.attachPhoto.image = eventsByDay[section][row].attachPhoto
         cell.layoutIfNeeded()
         return cell
     }

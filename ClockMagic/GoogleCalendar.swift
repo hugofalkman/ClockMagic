@@ -34,6 +34,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             //  Get photos in background and when finished notify caller
             DispatchQueue.global().async { [unowned self] in
                 self.getCreatorPhotos()
+                self.getAttachmentPhotos()
                 DispatchQueue.main.async {
                     self.eventsInError = false
                     NotificationCenter.default.post(name: .EventsDidChange, object: self)
@@ -222,7 +223,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             query.timeMin = GTLRDateTime(date: startDate)
             // 48 hours of calendar data
             query.timeMax = GTLRDateTime(date: Date(timeInterval: 2 * 86400, since: startDate))
-            query.fields = "items(start,summary,creator,description)"
+            query.fields = "items(start,summary,creator,description,attachments(fileUrl,title))"
             query.singleEvents = true
             query.orderBy = kGTLRCalendarOrderByStartTime
             
@@ -231,7 +232,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             service.executeQuery(query) { (ticket, response, error) in
                 
                 if let error = error as NSError? {
-                    // Save error and wait for other calendar Id background tasks
+                    // Save error and wait for other calendar Id background threads
                     self.eventsSemaphore.wait()
                     self.saveError = error
                     self.eventsSemaphore.signal()
@@ -249,7 +250,14 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                             let summary = item.summary ?? ""
                             let hasTime = start.hasTime
                             let creator = hasTime ? (item.creator?.email ?? "") : ""
-                            self.events.append(Event(start: start.date, hasTime: hasTime, summary: summary, detail: item.descriptionProperty ?? "", creator: creator))
+                            
+                            var event = Event(start: start.date, hasTime: hasTime, summary: summary, detail: item.descriptionProperty ?? "", creator: creator)
+                            
+                            if let attachment = item.attachments?.first {
+                                event.attachUrl = attachment.fileUrl ?? ""
+                                event.attachTitle = attachment.title ?? ""
+                            }
+                            self.events.append(event)
                         }
                         self.eventsSemaphore.signal()
                 }
@@ -299,6 +307,19 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                 }
             } else {
                 events[eventIndex].photo = nil
+            }
+        }
+    }
+    private func getAttachmentPhotos() {
+        guard !events.isEmpty else { return }
+        for eventIndex in events.indices {
+            let urlString = events[eventIndex].attachUrl
+            if let url = URL(string: urlString),
+                // also discards the case urlString == ""
+                let data = try? Data(contentsOf: url) {
+                    events[eventIndex].attachPhoto = UIImage(data: data)
+            } else {
+                events[eventIndex].attachPhoto = nil
             }
         }
     }

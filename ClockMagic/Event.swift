@@ -15,6 +15,9 @@ struct Event {
     var detail: String
     var creator: String
     var photo: UIImage?
+    var attachUrl: String
+    var attachTitle: String
+    var attachPhoto: UIImage?
     
     private let dateFormatter = DateFormatter()
     
@@ -23,21 +26,19 @@ struct Event {
         self.hasTime = hasTime
         self.detail = detail
         self.creator = creator
-        self.photo = nil
+        self.attachUrl = ""
+        self.attachTitle = ""
         
-        //        dateFormatter.dateStyle = .medium
-        //        dateFormatter.timeStyle = .none
-        //        var startDate = dateFormatter.string(from: start)
-        //        startDate = String(startDate.dropLast(5)) // drop year
-        
-        guard hasTime else {
-            self.title = summary
-            return
+        self.title = summary
+        if hasTime {
+            dateFormatter.dateStyle = .none
+            dateFormatter.timeStyle = .short
+            self.title = dateFormatter.string(from: start) + " - " + summary
         }
-        dateFormatter.dateStyle = .none
-        dateFormatter.timeStyle = .short
-        let startTime = dateFormatter.string(from: start)
-        self.title = startTime + " - " + summary
-        // self.title = startDate + " " + startTime + " - " + summary
     }
 }
+
+
+
+
+
