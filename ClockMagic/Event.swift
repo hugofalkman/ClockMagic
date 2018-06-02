@@ -15,7 +15,7 @@ struct Event {
     var detail: String
     var creator: String
     var photo: UIImage?
-    var attachUrl: String
+    var attachId: String
     var attachTitle: String
     var attachPhoto: UIImage?
     
@@ -26,7 +26,7 @@ struct Event {
         self.hasTime = hasTime
         self.detail = detail
         self.creator = creator
-        self.attachUrl = ""
+        self.attachId = ""
         self.attachTitle = ""
         
         self.title = summary

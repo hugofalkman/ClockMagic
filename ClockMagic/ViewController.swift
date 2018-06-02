@@ -13,16 +13,10 @@ import GoogleSignIn
 
 class ViewCell: UITableViewCell {
     
-    override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        layoutIfNeeded()
-    }
-    
     @IBOutlet weak var creatorPhoto: UIImageView!
     @IBOutlet weak var headerLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var attachPhoto: UIImageView!
-    
 }
 
 class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegate, GIDSignInUIDelegate {
@@ -38,7 +32,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     @IBOutlet weak var seasonLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
     
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var tableView: MyUITableView!
     
     @IBOutlet weak var spinner: UIActivityIndicatorView!
 
@@ -187,7 +181,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
             spinner.startAnimating()
             googleCalendar.getEvents()
             
-            // Refresh events
+            // Refresh events regularly
             if eventTimer == nil {
                 eventTimer = Timer.scheduledTimer(
                     timeInterval: 120, target: googleCalendar,
@@ -325,7 +319,6 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! ViewCell
-        
         let row = indexPath.row
         let section = indexPath.section
         
@@ -336,12 +329,21 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         } else {
             cell.backgroundColor = nil
         }
-        
+        if let attach = eventsByDay[section][row].attachPhoto {
+            let cellWidth = cell.attachPhoto.frame.size.width
+            let scale = cellWidth / attach.size.width
+            let size = CGSize(width: cellWidth, height: attach.size.height * scale)
+            
+            UIGraphicsBeginImageContextWithOptions(size, true, 0.0)
+            attach.draw(in: CGRect(origin: CGPoint.zero, size: size))
+            cell.attachPhoto.image = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+        } else {
+            cell.attachPhoto.image = nil
+        }
         cell.headerLabel.text = eventsByDay[section][row].title
         cell.descriptionLabel.text = eventsByDay[section][row].detail
         cell.creatorPhoto.image = eventsByDay[section][row].photo
-        cell.attachPhoto.image = eventsByDay[section][row].attachPhoto
-        cell.layoutIfNeeded()
         return cell
     }
     

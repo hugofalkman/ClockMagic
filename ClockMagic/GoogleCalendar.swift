@@ -34,7 +34,6 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             //  Get photos in background and when finished notify caller
             DispatchQueue.global().async { [unowned self] in
                 self.getCreatorPhotos()
-                self.getAttachmentPhotos()
                 DispatchQueue.main.async {
                     self.eventsInError = false
                     NotificationCenter.default.post(name: .EventsDidChange, object: self)
@@ -59,6 +58,9 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         service2.isRetryEnabled = true
         service2.maxRetryInterval = 30
         service2.callbackQueue = DispatchQueue.global()
+        service3.isRetryEnabled = true
+        service3.maxRetryInterval = 30
+        service3.callbackQueue = DispatchQueue.global()
     }
     
     // MARK: - GID SignIn Delegate
@@ -69,11 +71,13 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         if let error = error {
             userInfo["error"] = error
             self.service.authorizer = nil
-            self.service.authorizer = nil
+            self.service2.authorizer = nil
+            self.service3.authorizer = nil
         } else {
             let authorizer = user.authentication.fetcherAuthorizer()
             self.service.authorizer = authorizer
             self.service2.authorizer = authorizer
+            self.service3.authorizer = authorizer
         }
         NotificationCenter.default.post(name: .GoogleSignedIn,
             object: self, userInfo: userInfo)
@@ -100,10 +104,12 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     // When scopes change, delete access token in Keychain by uninstalling the app
     private let scopes = [
         kGTLRAuthScopeCalendarReadonly,
-        kGTLRAuthScopePeopleServiceContactsReadonly
+        kGTLRAuthScopePeopleServiceContactsReadonly,
+        kGTLRAuthScopeDriveReadonly
     ]
     private let service = GTLRCalendarService()
     private let service2 = GTLRPeopleServiceService()
+    private let service3 = GTLRDriveService()
     
     // MARK: - Get Google Contacts
     
@@ -223,7 +229,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             query.timeMin = GTLRDateTime(date: startDate)
             // 48 hours of calendar data
             query.timeMax = GTLRDateTime(date: Date(timeInterval: 2 * 86400, since: startDate))
-            query.fields = "items(start,summary,creator,description,attachments(fileUrl,title))"
+            query.fields = "items(start,summary,creator,description,attachments(fileId,title))"
             query.singleEvents = true
             query.orderBy = kGTLRCalendarOrderByStartTime
             
@@ -254,7 +260,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                             var event = Event(start: start.date, hasTime: hasTime, summary: summary, detail: item.descriptionProperty ?? "", creator: creator)
                             
                             if let attachment = item.attachments?.first {
-                                event.attachUrl = attachment.fileUrl ?? ""
+                                event.attachId = attachment.fileId ?? ""
                                 event.attachTitle = attachment.title ?? ""
                             }
                             self.events.append(event)
@@ -279,16 +285,43 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                 self.events = [Event(start: start, hasTime: true,
                     summary: summary, detail: "", creator: "")]
             }
+            self.getAttachmentPhotos()
+        }
+    }
+    
+    // MARK: - Get Calendar Attachment Photos from Google Drive
+    
+    private func getAttachmentPhotos() {
+        guard !events.isEmpty else { return }
+        for eventIndex in events.indices {
+            let fileId = events[eventIndex].attachId
+            if fileId != "" {
+                let url = "https://www.googleapis.com/drive/v3/files/\(fileId)?alt=media"
+                let fetcher = service3.fetcherService.fetcher(withURLString: url)
+                dispatchGroupEvents.enter()
+                fetcher.beginFetch { (data, error) in
+                    
+                    if error != nil {
+                        // Continue without adding photo to event
+                        self.dispatchGroupEvents.leave()
+                        return
+                    }
+                    self.eventsSemaphore.wait()
+                    if let data = data,
+                        let photo = UIImage(data: data) {
+                        self.events[eventIndex].attachPhoto = photo
+                    }
+                    self.eventsSemaphore.signal()
+                    self.dispatchGroupEvents.leave()
+                }
+            }
+        }
+        dispatchGroupEvents.notify(queue: .main) {
             self.dispatchGroupContacts.leave()
         }
     }
     
-    private func flagError(error: NSError) {
-        eventsInError = true
-        let userInfo = ["error": error]
-        NotificationCenter.default.post(name: .EventsDidChange,
-            object: self, userInfo: userInfo)
-    }
+    // MARK: - Adding photos from Google Contacts to Google Calendar events
     
     private func getCreatorPhotos() {
         guard !contacts.isEmpty else { return }
@@ -310,17 +343,13 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             }
         }
     }
-    private func getAttachmentPhotos() {
-        guard !events.isEmpty else { return }
-        for eventIndex in events.indices {
-            let urlString = events[eventIndex].attachUrl
-            if let url = URL(string: urlString),
-                // also discards the case urlString == ""
-                let data = try? Data(contentsOf: url) {
-                    events[eventIndex].attachPhoto = UIImage(data: data)
-            } else {
-                events[eventIndex].attachPhoto = nil
-            }
-        }
+    
+    // MARK: - Returning Error
+    
+    private func flagError(error: NSError) {
+        eventsInError = true
+        let userInfo = ["error": error]
+        NotificationCenter.default.post(name: .EventsDidChange,
+                                        object: self, userInfo: userInfo)
     }
 }

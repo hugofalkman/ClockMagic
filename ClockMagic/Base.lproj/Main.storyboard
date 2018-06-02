@@ -23,7 +23,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="-1" estimatedRowHeight="150" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="m9k-WX-omO">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="-1" estimatedRowHeight="150" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="m9k-WX-omO" customClass="MyUITableView" customModule="ClockMagic" customModuleProvider="target">
                                 <rect key="frame" x="520" y="20" width="504" height="748"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
@@ -62,17 +62,17 @@
                                                         </stackView>
                                                     </subviews>
                                                 </stackView>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="fjb-N1-dtx">
-                                                    <rect key="frame" x="0.0" y="125.5" width="496" height="173"/>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="fjb-N1-dtx">
+                                                    <rect key="frame" x="0.0" y="125.5" width="504" height="181"/>
                                                 </imageView>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="OaY-qA-Wee" firstAttribute="top" secondItem="3ut-wf-9Zz" secondAttribute="top" constant="8" id="3lG-1J-Vk9"/>
                                                 <constraint firstItem="fjb-N1-dtx" firstAttribute="leading" secondItem="3ut-wf-9Zz" secondAttribute="leading" id="GoM-gG-mXI"/>
                                                 <constraint firstAttribute="trailing" secondItem="OaY-qA-Wee" secondAttribute="trailing" constant="8" id="OZI-4n-zHO"/>
-                                                <constraint firstAttribute="trailing" secondItem="fjb-N1-dtx" secondAttribute="trailing" constant="8" id="SJa-K2-xCg"/>
+                                                <constraint firstAttribute="trailing" secondItem="fjb-N1-dtx" secondAttribute="trailing" id="SJa-K2-xCg"/>
                                                 <constraint firstItem="OaY-qA-Wee" firstAttribute="leading" secondItem="3ut-wf-9Zz" secondAttribute="leading" id="Zyn-qs-1Ds"/>
-                                                <constraint firstAttribute="bottom" secondItem="fjb-N1-dtx" secondAttribute="bottom" constant="8" id="aNt-nr-hvK"/>
+                                                <constraint firstAttribute="bottom" secondItem="fjb-N1-dtx" secondAttribute="bottom" id="aNt-nr-hvK"/>
                                                 <constraint firstItem="fjb-N1-dtx" firstAttribute="top" secondItem="OaY-qA-Wee" secondAttribute="bottom" constant="8" id="oPs-Bw-Orh"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -184,7 +184,7 @@ For instructions and help on setting up the Google account, contact list, and ca
                         <outlet property="spinner" destination="oD6-7a-gFK" id="TAR-gE-vUy"/>
                         <outlet property="startMessage" destination="SeA-EX-QoE" id="2bB-Yc-0D7"/>
                         <outlet property="subView" destination="K8H-XV-U8S" id="I14-Tg-4jd"/>
-                        <outlet property="tableView" destination="m9k-WX-omO" id="bqe-vP-IfD"/>
+                        <outlet property="tableView" destination="m9k-WX-omO" id="hBV-Ih-8BP"/>
                         <outlet property="timeOfDayLabel" destination="gD9-3p-WRI" id="DZv-eN-aQI"/>
                     </connections>
                 </viewController>
