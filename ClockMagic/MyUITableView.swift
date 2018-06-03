@@ -10,7 +10,7 @@ import UIKit
 
 class MyUITableView: UITableView {
     
-    // Makes real device cell width available to test for in "cellForRowAt indexPath"
+    // Makes real device cell width available in "cellForRowAt indexPath"
     override func dequeueReusableCell(withIdentifier identifier: String, for indexPath: IndexPath) -> UITableViewCell {
         let cell = super.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
         cell.frame.size.width = self.frame.size.width
