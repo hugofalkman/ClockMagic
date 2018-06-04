@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		321A4A3E452DEBF298C8B7D9 /* Pods_ClockMagic.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFF974629FC93B4C43D041C6 /* Pods_ClockMagic.framework */; };
 		B11CC08B20C2F82B00CB47A2 /* MyUITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11CC08A20C2F82B00CB47A2 /* MyUITableView.swift */; };
+		B14F251420C5A03C0068393F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B14F251620C5A03C0068393F /* InfoPlist.strings */; };
 		B1B08A6C20B573FC004DE743 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B08A6B20B573FC004DE743 /* Event.swift */; };
 		B1B08A6E20B57670004DE743 /* GoogleCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B08A6D20B57670004DE743 /* GoogleCalendar.swift */; };
 		B1C6669520A3145100904F2C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B1C6669720A3145100904F2C /* Localizable.strings */; };
@@ -24,11 +25,16 @@
 
 /* Begin PBXFileReference section */
 		B11CC08A20C2F82B00CB47A2 /* MyUITableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyUITableView.swift; sourceTree = "<group>"; };
+		B14F251020C58BC20068393F /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		B14F251120C58DE40068393F /* sv-SE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sv-SE"; path = "sv-SE.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		B14F251520C5A03C0068393F /* sv-SE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sv-SE"; path = "sv-SE.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		B14F251720C5A04A0068393F /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B14F251820C5A04C0068393F /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B14F251920C5A04C0068393F /* en-US */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-US"; path = "en-US.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		B14F251A20C5A04E0068393F /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		B1B08A6B20B573FC004DE743 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		B1B08A6D20B57670004DE743 /* GoogleCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCalendar.swift; sourceTree = "<group>"; };
 		B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ClockMagic-bridging-header.h"; sourceTree = "<group>"; };
-		B1C6669620A3145100904F2C /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
-		B1C6669820A3147000904F2C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B1C6669920A3333600904F2C /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B1C6669A20A3334C00904F2C /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B1C6669B20A3374000904F2C /* en-US */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-US"; path = "en-US.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -90,10 +96,11 @@
 				B1FD2171209723F900AF26E0 /* Color.swift */,
 				B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */,
 				B1FD216020971D7F00AF26E0 /* Assets.xcassets */,
-				B1C6669720A3145100904F2C /* Localizable.strings */,
 				B1FD216220971D7F00AF26E0 /* LaunchScreen.storyboard */,
 				B1CCE5F020AA935100F5C686 /* ClockMagic.jpg */,
 				B1FD216520971D7F00AF26E0 /* Info.plist */,
+				B1C6669720A3145100904F2C /* Localizable.strings */,
+				B14F251620C5A03C0068393F /* InfoPlist.strings */,
 			);
 			path = ClockMagic;
 			sourceTree = "<group>";
@@ -155,14 +162,15 @@
 			};
 			buildConfigurationList = B1FD215120971D7D00AF26E0 /* Build configuration list for PBXProject "ClockMagic" */;
 			compatibilityVersion = "Xcode 9.3";
-			developmentRegion = sv;
+			developmentRegion = "sv-SE";
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				Base,
-				en,
 				de,
 				nl,
 				"en-US",
+				"en-GB",
+				"sv-SE",
 			);
 			mainGroup = B1FD214D20971D7D00AF26E0;
 			productRefGroup = B1FD215720971D7E00AF26E0 /* Products */;
@@ -180,6 +188,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B1CCE5F120AA935100F5C686 /* ClockMagic.jpg in Resources */,
+				B14F251420C5A03C0068393F /* InfoPlist.strings in Resources */,
 				B1FD216420971D7F00AF26E0 /* LaunchScreen.storyboard in Resources */,
 				B1C6669520A3145100904F2C /* Localizable.strings in Resources */,
 				B1FD216120971D7F00AF26E0 /* Assets.xcassets in Resources */,
@@ -270,14 +279,26 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		B14F251620C5A03C0068393F /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B14F251520C5A03C0068393F /* sv-SE */,
+				B14F251720C5A04A0068393F /* de */,
+				B14F251820C5A04C0068393F /* nl */,
+				B14F251920C5A04C0068393F /* en-US */,
+				B14F251A20C5A04E0068393F /* en-GB */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		B1C6669720A3145100904F2C /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				B1C6669620A3145100904F2C /* sv */,
-				B1C6669820A3147000904F2C /* en */,
 				B1C6669920A3333600904F2C /* de */,
 				B1C6669A20A3334C00904F2C /* nl */,
 				B1C6669B20A3374000904F2C /* en-US */,
+				B14F251020C58BC20068393F /* en-GB */,
+				B14F251120C58DE40068393F /* sv-SE */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

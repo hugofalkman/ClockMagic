@@ -322,7 +322,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         let row = indexPath.row
         let section = indexPath.section
         
-        if section == 0 && row == 0 && isRedBackground == true {
+        if section == 0 && row == 0 && isRedBackground {
             cell.backgroundColor = Color.red
         } else if !eventsByDay[section][row].hasTime {
             cell.backgroundColor = Color.yellowBackground
