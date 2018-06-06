@@ -259,9 +259,12 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                             
                             var event = Event(start: start.date, hasTime: hasTime, summary: summary, detail: item.descriptionProperty ?? "", creator: creator)
                             
-                            if let attachment = item.attachments?.first {
-                                event.attachId = attachment.fileId ?? ""
-                                event.attachTitle = attachment.title ?? ""
+                            if let attachments = item.attachments, !attachments.isEmpty {
+                                for attachment in attachments {
+                                    if let fileId = attachment.fileId {
+                                        event.attachId.append(fileId)
+                                    }
+                                }
                             }
                             self.events.append(event)
                         }
@@ -295,24 +298,26 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         guard !events.isEmpty else { return }
         for eventIndex in events.indices {
             let fileId = events[eventIndex].attachId
-            if fileId != "" {
-                let url = "https://www.googleapis.com/drive/v3/files/\(fileId)?alt=media"
-                let fetcher = service3.fetcherService.fetcher(withURLString: url)
-                dispatchGroupEvents.enter()
-                fetcher.beginFetch { (data, error) in
-                    
-                    if error != nil {
-                        // Continue without adding photo to event
+            if !fileId.isEmpty {
+                for id in fileId {
+                    let url = "https://www.googleapis.com/drive/v3/files/\(id)?alt=media"
+                    let fetcher = service3.fetcherService.fetcher(withURLString: url)
+                    dispatchGroupEvents.enter()
+                    fetcher.beginFetch { (data, error) in
+                        
+                        if error != nil {
+                            // Continue without adding photo to event
+                            self.dispatchGroupEvents.leave()
+                            return
+                        }
+                        self.eventsSemaphore.wait()
+                        if let data = data,
+                            let photo = UIImage(data: data) {
+                            self.events[eventIndex].attachPhoto.append(photo)
+                        }
+                        self.eventsSemaphore.signal()
                         self.dispatchGroupEvents.leave()
-                        return
                     }
-                    self.eventsSemaphore.wait()
-                    if let data = data,
-                        let photo = UIImage(data: data) {
-                        self.events[eventIndex].attachPhoto = photo
-                    }
-                    self.eventsSemaphore.signal()
-                    self.dispatchGroupEvents.leave()
                 }
             }
         }

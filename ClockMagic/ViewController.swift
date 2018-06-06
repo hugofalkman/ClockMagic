@@ -48,7 +48,8 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
     private var signedInObserver: NSObjectProtocol?
     
     private let googleCalendar = GoogleCalendar()
-    private var eventTimer: Timer?
+    private weak var eventTimer: Timer?
+    private weak var photoTimer: Timer?
     
     private let dateFormatter = DateFormatter()
     
@@ -269,6 +270,39 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         eventsByDay.append(events.filter {!calendar.isDateInToday($0.start) && !calendar.isDateInTomorrow($0.start) })
         
         tableView.reloadData()
+        
+        if photoTimer == nil {
+        photoTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(updateSlideShow), userInfo: nil, repeats: true)
+        }
+    }
+    
+    @objc func updateSlideShow() {
+        if let cells = tableView.visibleCells as? [ViewCell] {
+            guard !cells.isEmpty else { return }
+            var indexPaths = [IndexPath]()
+            
+            for cell in cells{
+                if let indexPath = tableView.indexPath(for: cell) {
+                    let section = indexPath.section
+                    let row = indexPath.row
+                    var photos = eventsByDay[section][row].attachPhoto
+                    if photos.count > 1 {
+                        indexPaths.append(indexPath)
+                        photos.insert(photos.popLast()!, at: 0)
+                        eventsByDay[section][row].attachPhoto = photos
+                    }
+                }
+            }
+            if !indexPaths.isEmpty {
+                tableView.reloadRows(at: indexPaths, with: .right)
+            } else {
+                // Turn off timer till events change next time
+                if photoTimer != nil {
+                    photoTimer?.invalidate()
+                    photoTimer = nil
+                }
+            }
+        }
     }
     
     // MARK: - TableView Data Source/Delegate
@@ -329,7 +363,7 @@ class ViewController: UIViewController, UITableViewDataSource,UITableViewDelegat
         } else {
             cell.backgroundColor = nil
         }
-        if let attach = eventsByDay[section][row].attachPhoto {
+        if let attach = eventsByDay[section][row].attachPhoto.first {
             let cellWidth = cell.attachPhoto.frame.size.width
             let scale = cellWidth / attach.size.width
             let size = CGSize(width: cellWidth, height: attach.size.height * scale)

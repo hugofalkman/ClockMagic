@@ -15,9 +15,8 @@ struct Event {
     var detail: String
     var creator: String
     var photo: UIImage?
-    var attachId: String
-    var attachTitle: String
-    var attachPhoto: UIImage?
+    var attachId: [String]
+    var attachPhoto: [UIImage]
     
     private let dateFormatter = DateFormatter()
     
@@ -26,8 +25,8 @@ struct Event {
         self.hasTime = hasTime
         self.detail = detail
         self.creator = creator
-        self.attachId = ""
-        self.attachTitle = ""
+        self.attachId = []
+        self.attachPhoto = []
         
         self.title = summary
         if hasTime {
