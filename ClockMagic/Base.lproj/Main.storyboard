@@ -77,10 +77,10 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="attachPhoto" destination="fjb-N1-dtx" id="f4W-KD-Nd4"/>
-                                            <outlet property="creatorPhoto" destination="Fzp-HN-Ue1" id="RbN-yV-34w"/>
-                                            <outlet property="descriptionLabel" destination="Pxc-WM-2Nr" id="nfI-cb-0aG"/>
-                                            <outlet property="headerLabel" destination="6S3-kN-kh7" id="Rli-qH-ymP"/>
+                                            <outlet property="attachPhoto" destination="fjb-N1-dtx" id="EqW-MY-JJ1"/>
+                                            <outlet property="creatorPhoto" destination="Fzp-HN-Ue1" id="b52-79-6CA"/>
+                                            <outlet property="descriptionLabel" destination="Pxc-WM-2Nr" id="diU-rr-XaW"/>
+                                            <outlet property="headerLabel" destination="6S3-kN-kh7" id="xXc-jB-jxm"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -190,7 +190,7 @@ For instructions and help on setting up the Google account, contact list, and ca
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="125.97656249999999" y="135.9375"/>
+            <point key="canvasLocation" x="-42" y="84"/>
         </scene>
     </scenes>
 </document>

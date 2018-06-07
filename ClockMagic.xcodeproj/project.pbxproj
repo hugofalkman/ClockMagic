@@ -10,6 +10,7 @@
 		321A4A3E452DEBF298C8B7D9 /* Pods_ClockMagic.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFF974629FC93B4C43D041C6 /* Pods_ClockMagic.framework */; };
 		B11CC08B20C2F82B00CB47A2 /* MyUITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11CC08A20C2F82B00CB47A2 /* MyUITableView.swift */; };
 		B14F251420C5A03C0068393F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B14F251620C5A03C0068393F /* InfoPlist.strings */; };
+		B14F251E20C9314B0068393F /* EventDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14F251D20C9314B0068393F /* EventDataSource.swift */; };
 		B1B08A6C20B573FC004DE743 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B08A6B20B573FC004DE743 /* Event.swift */; };
 		B1B08A6E20B57670004DE743 /* GoogleCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B08A6D20B57670004DE743 /* GoogleCalendar.swift */; };
 		B1C6669520A3145100904F2C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B1C6669720A3145100904F2C /* Localizable.strings */; };
@@ -32,6 +33,7 @@
 		B14F251820C5A04C0068393F /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B14F251920C5A04C0068393F /* en-US */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-US"; path = "en-US.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		B14F251A20C5A04E0068393F /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		B14F251D20C9314B0068393F /* EventDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDataSource.swift; sourceTree = "<group>"; };
 		B1B08A6B20B573FC004DE743 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		B1B08A6D20B57670004DE743 /* GoogleCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCalendar.swift; sourceTree = "<group>"; };
 		B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ClockMagic-bridging-header.h"; sourceTree = "<group>"; };
@@ -92,6 +94,7 @@
 				B1FD216D2097206F00AF26E0 /* ClockView.swift */,
 				B1B08A6D20B57670004DE743 /* GoogleCalendar.swift */,
 				B11CC08A20C2F82B00CB47A2 /* MyUITableView.swift */,
+				B14F251D20C9314B0068393F /* EventDataSource.swift */,
 				B1B08A6B20B573FC004DE743 /* Event.swift */,
 				B1FD2171209723F900AF26E0 /* Color.swift */,
 				B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */,
@@ -271,6 +274,7 @@
 				B1FD2172209723F900AF26E0 /* Color.swift in Sources */,
 				B1FD215A20971D7E00AF26E0 /* AppDelegate.swift in Sources */,
 				B11CC08B20C2F82B00CB47A2 /* MyUITableView.swift in Sources */,
+				B14F251E20C9314B0068393F /* EventDataSource.swift in Sources */,
 				B1B08A6E20B57670004DE743 /* GoogleCalendar.swift in Sources */,
 				B1B08A6C20B573FC004DE743 /* Event.swift in Sources */,
 			);
