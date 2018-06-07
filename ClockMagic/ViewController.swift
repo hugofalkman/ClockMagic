@@ -36,7 +36,6 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     private let googleCalendar = GoogleCalendar()
     
     private weak var eventTimer: Timer?
-    private weak var photoTimer: Timer?
     
     private let dateFormatter = DateFormatter()
     
@@ -68,7 +67,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         signInButton.style = GIDSignInButtonStyle.wide
         signInButton.colorScheme = GIDSignInButtonColorScheme.dark
         
-        // Start GoogleCalendar GID Signin and wait for it to complete
+        // Start Google GID Signin and wait for it to complete
         signedInObserver = NotificationCenter.default.addObserver(
             forName: .GoogleSignedIn,
             object: googleCalendar,
@@ -165,7 +164,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             // Refresh events regularly
             if eventTimer == nil {
                 eventTimer = Timer.scheduledTimer(
-                    timeInterval: 120, target: googleCalendar,
+                    timeInterval: 300, target: googleCalendar,
                     selector: #selector(googleCalendar.getEvents),
                     userInfo: nil, repeats: true)
             }
@@ -195,7 +194,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             // save results for possible later display if the connection to Google goes down
             oldEvents = events
             
-            prepareForTableView(isRedBackground: false)
+            tableView.setup(events: events, isRedBackground: false, currentDate: currentDate)
         }
     }
     
@@ -235,57 +234,10 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
                 comment: "Error detail")
             events.insert(Event(start: start, hasTime: true, summary: summary,
                 detail: detail, creator: ""), at: 0)
-            prepareForTableView(isRedBackground: true)
+            tableView.setup(events: events, isRedBackground: true, currentDate: currentDate)
         }
     }
     
-    // MARK: - Prepare for TableView
-    
-    private func prepareForTableView(isRedBackground isRed: Bool) {
-        tableView.currentDate = currentDate
-        tableView.isRedBackground = isRed
-        tableView.eventsByDay = []
-        let calendar = Calendar.current
-        tableView.eventsByDay.append(events.filter {calendar.isDateInToday($0.start) })
-        tableView.eventsByDay.append(events.filter {calendar.isDateInTomorrow($0.start) })
-        tableView.eventsByDay.append(events.filter {!calendar.isDateInToday($0.start) && !calendar.isDateInTomorrow($0.start) })
-        
-        tableView.reloadData()
-        
-        if photoTimer == nil {
-        photoTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(updateSlideShow), userInfo: nil, repeats: true)
-        }
-    }
-    
-    @objc func updateSlideShow() {
-        if let cells = tableView.visibleCells as? [ViewCell] {
-            guard !cells.isEmpty else { return }
-            var indexPaths = [IndexPath]()
-            
-            for cell in cells{
-                if let indexPath = tableView.indexPath(for: cell) {
-                    let section = indexPath.section
-                    let row = indexPath.row
-                    var photos = tableView.eventsByDay[section][row].attachPhoto
-                    if photos.count > 1 {
-                        indexPaths.append(indexPath)
-                        photos.insert(photos.popLast()!, at: 0)
-                        tableView.eventsByDay[section][row].attachPhoto = photos
-                    }
-                }
-            }
-            if !indexPaths.isEmpty {
-                tableView.reloadRows(at: indexPaths, with: .right)
-            } else {
-                // Turn off timer till events change next time
-                if photoTimer != nil {
-                    photoTimer?.invalidate()
-                    photoTimer = nil
-                }
-            }
-        }
-    }
-        
     // MARK: - Showing Alert helper function
     
     private func showAlert(title : String, message: String,

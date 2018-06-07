@@ -306,6 +306,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                     fetcher.beginFetch { (data, error) in
                         
                         if error != nil {
+                            print((error as NSError?)!.localizedDescription)
                             // Continue without adding photo to event
                             self.dispatchGroupEvents.leave()
                             return

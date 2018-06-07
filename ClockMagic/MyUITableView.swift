@@ -40,13 +40,62 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - "Public" API
     
-    var eventsByDay = [[Event]]()
-    var isRedBackground = false
-    var currentDate = Date()
+    func setup(events: [Event], isRedBackground isRed: Bool, currentDate: Date) {
+        self.currentDate = currentDate
+        isRedBackground = isRed
+        
+        eventsByDay = []
+        let calendar = Calendar.current
+        eventsByDay.append(events.filter {calendar.isDateInToday($0.start) })
+        eventsByDay.append(events.filter {calendar.isDateInTomorrow($0.start) })
+        eventsByDay.append(events.filter {!calendar.isDateInToday($0.start) && !calendar.isDateInTomorrow($0.start) })
+        
+        reloadData()
+        
+        if !(events.filter { $0.attachPhoto.count > 1 }).isEmpty {
+            if photoTimer == nil {
+                photoTimer = Timer.scheduledTimer(timeInterval: 8, target: self, selector: #selector(updateSlideShow), userInfo: nil, repeats: true)
+            }
+        }
+    }
     
     // MARK: - Properties
     
+    private var eventsByDay = [[Event]]()
+    private var isRedBackground = false
+    private var currentDate = Date()
     private let dateFormatter = DateFormatter()
+    private weak var photoTimer: Timer?
+    
+    // MARK: - SlideShow
+    
+    @objc private func updateSlideShow() {
+        if let cells = visibleCells as? [ViewCell] {
+            guard !cells.isEmpty else { return }
+            var indexPaths = [IndexPath]()
+            
+            for cell in cells{
+                if let indexPath = indexPath(for: cell) {
+                    let section = indexPath.section
+                    let row = indexPath.row
+                    var photos = eventsByDay[section][row].attachPhoto
+                    if photos.count > 1 {
+                        indexPaths.append(indexPath)
+                        photos.insert(photos.popLast()!, at: 0)
+                        eventsByDay[section][row].attachPhoto = photos
+                    }
+                }
+            }
+            if !indexPaths.isEmpty {
+                reloadRows(at: indexPaths, with: .right)
+            } else {
+                // Turn off timer till events change next time
+//                if photoTimer != nil {
+//                    photoTimer?.invalidate()
+//                }
+            }
+        }
+    }
     
     // MARK: - TableView Data Source
     
@@ -54,9 +103,8 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
         return 3
     }
     
-    // This returns 0 until (some) data has been retrieved from web. The 0 signals to TableView not to continue. Once all photos have been retrieved on background thread, tableView.reloadData is invoked on the main thread finishing populating the tableView
+    // This returns 0 until data has been retrieved from web. The 0 signals to TableView not to continue. Once events have been retrieved, tableView.reloadData is invoked populating the tableView.
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
         guard !eventsByDay.isEmpty else { return 0 }
         return eventsByDay[section].count
     }
@@ -74,7 +122,7 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
             cell.backgroundColor = nil
         }
         if let attach = eventsByDay[section][row].attachPhoto.first {
-            let cellWidth = cell.attachPhoto.frame.size.width
+            let cellWidth = cell.frame.size.width
             let scale = cellWidth / attach.size.width
             let size = CGSize(width: cellWidth, height: attach.size.height * scale)
             
