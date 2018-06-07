@@ -12,20 +12,17 @@ import GoogleSignIn
 class ViewController: UIViewController, GIDSignInUIDelegate {
     
     // MARK: - Properties
- 
-    @IBOutlet private weak var startMessage: UITextView!
-    
-    @IBOutlet private weak var subView: UIView!
     
     @IBOutlet private weak var dayOfWeekLabel: UILabel!
     @IBOutlet private weak var timeOfDayLabel: UILabel!
     @IBOutlet private weak var seasonLabel: UILabel!
     @IBOutlet private weak var dateLabel: UILabel!
     
+    @IBOutlet private weak var subView: UIView!
     @IBOutlet private weak var tableView: MyUITableView!
-    
     @IBOutlet private weak var spinner: UIActivityIndicatorView!
-
+    
+    @IBOutlet private weak var startMessage: UITextView!
     @IBOutlet private weak var signInButton: GIDSignInButton!
     
     private var events = [Event]()
@@ -37,7 +34,6 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     private var signedInObserver: NSObjectProtocol?
     
     private let googleCalendar = GoogleCalendar()
-    private let dataSource = EventDataSource()
     
     private weak var eventTimer: Timer?
     private weak var photoTimer: Timer?
@@ -49,7 +45,6 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             let clockView = self.clockView
             clockView?.removeFromSuperview()
         }
-        
         didSet {
             if let clockView = clockView {
                 clockView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -83,10 +78,6 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             }
         )
         googleCalendar.setupGIDSignIn()
-        
-        // Setup TableView
-        tableView.delegate = dataSource
-        tableView.dataSource = dataSource
         
         // Setup ClockView and start clock
         clockView = ClockView.init(frame: subView.bounds)
@@ -251,13 +242,13 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     // MARK: - Prepare for TableView
     
     private func prepareForTableView(isRedBackground isRed: Bool) {
-        dataSource.currentDate = currentDate
-        dataSource.isRedBackground = isRed
-        dataSource.eventsByDay = []
+        tableView.currentDate = currentDate
+        tableView.isRedBackground = isRed
+        tableView.eventsByDay = []
         let calendar = Calendar.current
-        dataSource.eventsByDay.append(events.filter {calendar.isDateInToday($0.start) })
-        dataSource.eventsByDay.append(events.filter {calendar.isDateInTomorrow($0.start) })
-        dataSource.eventsByDay.append(events.filter {!calendar.isDateInToday($0.start) && !calendar.isDateInTomorrow($0.start) })
+        tableView.eventsByDay.append(events.filter {calendar.isDateInToday($0.start) })
+        tableView.eventsByDay.append(events.filter {calendar.isDateInTomorrow($0.start) })
+        tableView.eventsByDay.append(events.filter {!calendar.isDateInToday($0.start) && !calendar.isDateInTomorrow($0.start) })
         
         tableView.reloadData()
         
@@ -275,11 +266,11 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
                 if let indexPath = tableView.indexPath(for: cell) {
                     let section = indexPath.section
                     let row = indexPath.row
-                    var photos = dataSource.eventsByDay[section][row].attachPhoto
+                    var photos = tableView.eventsByDay[section][row].attachPhoto
                     if photos.count > 1 {
                         indexPaths.append(indexPath)
                         photos.insert(photos.popLast()!, at: 0)
-                        dataSource.eventsByDay[section][row].attachPhoto = photos
+                        tableView.eventsByDay[section][row].attachPhoto = photos
                     }
                 }
             }
