@@ -17,6 +17,12 @@ extension Notification.Name {
 
 class GoogleCalendar: NSObject, GIDSignInDelegate {
     
+    override init() {
+        super.init()
+        session = URLSession(configuration: .default)
+        // session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+    }
+    
     // MARK: - "Public" API (also sends above two notifications)
     
     private(set) var currentDate = Date()
@@ -25,19 +31,14 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     
     @objc func getEvents() {
         dispatchGroupContacts = DispatchGroup()
-        
         fetchContacts()
         getCalendarList()
-        
         dispatchGroupContacts.notify(queue: .main) {
-            
-            //  Get photos in background and when finished notify caller
-            DispatchQueue.global().async { [unowned self] in
-                self.getCreatorPhotos()
-                DispatchQueue.main.async {
-                    self.eventsInError = false
-                    NotificationCenter.default.post(name: .EventsDidChange, object: self)
-                }
+            //  Get contact photos and when finished notify caller
+            self.getCreatorPhotos()
+            self.dispatchGroupEvents.notify(queue: .main) {
+                self.eventsInError = false
+                NotificationCenter.default.post(name: .EventsDidChange, object: self)
             }
         }
     }
@@ -110,6 +111,9 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     private let service = GTLRCalendarService()
     private let service2 = GTLRPeopleServiceService()
     private let service3 = GTLRDriveService()
+    
+    private var session: URLSession?
+    private var dataTask: URLSessionDataTask?
     
     // MARK: - Get Google Contacts
     
@@ -280,7 +284,6 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                 self.flagError(error: error)
                 return
             }
-            
             if self.events.isEmpty {
                 let start = self.currentDate
                 let summary = NSLocalizedString("Inga kommande händelser",
@@ -296,15 +299,18 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     
     private func getAttachmentPhotos() {
         guard !events.isEmpty else { return }
+        
         for eventIndex in events.indices {
             let fileId = events[eventIndex].attachId
             if !fileId.isEmpty {
                 for id in fileId {
-                    let url = "https://www.googleapis.com/drive/v3/files/\(id)?alt=media"
-                    let fetcher = service3.fetcherService.fetcher(withURLString: url)
+                    let query = GTLRDriveQuery_FilesGet.queryForMedia(withFileId: id)
+                    var downloadRequest = service3.request(for: query) as URLRequest
+                    downloadRequest.cachePolicy = .useProtocolCachePolicy
+                    downloadRequest.timeoutInterval = 30
+                    let fetcher = service3.fetcherService.fetcher(with: downloadRequest)
                     dispatchGroupEvents.enter()
                     fetcher.beginFetch { (data, error) in
-                        
                         if error != nil {
                             print((error as NSError?)!.localizedDescription)
                             // Continue without adding photo to event
@@ -337,10 +343,23 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             if let index = contactsEmail.index(of: events[eventIndex].creator),
                 events[eventIndex].creator != "" {
                 let urlString = contacts[index].photoUrl
-                if let url = URL(string: urlString),
-                    // also discards the case urlString == ""
-                    let data = try? Data(contentsOf: url) { // stacked if lets
-                        events[eventIndex].photo = UIImage(data: data)
+                if let url = URL(string: urlString) { // also discards the case urlString == ""
+                    dispatchGroupEvents.enter()
+                    let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 30)
+                    dataTask = session?.dataTask(with: urlRequest) { (data, response, error) in
+                        if error != nil {
+                            print((error as NSError?)!.localizedDescription)
+                            // Continue without adding photo to event
+                            return
+                        }
+                        self.eventsSemaphore.wait()
+                        if let data = data, let photo = UIImage(data: data) {
+                            self.events[eventIndex].photo = photo
+                        }
+                        self.eventsSemaphore.signal()
+                        self.dispatchGroupEvents.leave()
+                    }
+                    dataTask?.resume()
                 } else {
                     events[eventIndex].photo = nil
                 }

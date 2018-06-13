@@ -57,6 +57,9 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+//        let cache = URLCache(memoryCapacity: 100000000, diskCapacity: 100000000, diskPath: "magic2")
+//        URLCache.shared = cache
+        
         // Configure Google Sign-in.
         GIDSignIn.sharedInstance().uiDelegate = self
         
