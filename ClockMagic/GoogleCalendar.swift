@@ -294,9 +294,12 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                     let downloadRequest = service3.request(for: query) as URLRequest
                     
                     let fetcher = service3.fetcherService.fetcher(with: downloadRequest)
-                    fetcher.configuration = URLSessionConfiguration.default
+                    fetcher.configuration = .default
                     fetcher.configurationBlock = { (fetcher, config) in
-                        config.urlCache = URLCache(memoryCapacity: 0, diskCapacity: 200 * 1024 * 1024, diskPath: "magic")
+                        config.urlCache = URLCache(
+                            memoryCapacity: 0,
+                            diskCapacity: 200 * 1024 * 1024,
+                            diskPath: "magic")
                         config.requestCachePolicy = .returnCacheDataElseLoad
                         config.timeoutIntervalForRequest = 30
                     }
