@@ -121,7 +121,6 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         query.personFields = "names,emailAddresses,photos"
         
         dispatchGroupContacts.enter()
-        //  Runs in background
         service2.executeQuery(
             query,
             delegate: self,
@@ -159,7 +158,6 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                         }
                     }
                 }
-                
                 var url = ""
                 if let photos = connection.photos, !photos.isEmpty {
                     for photo in photos {
@@ -168,7 +166,6 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                         }
                     }
                 }
-                
                 contacts.append(Contact(email: email, name: primaryName, photoUrl: url))
             }
         }
@@ -299,7 +296,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                     let fetcher = service3.fetcherService.fetcher(with: downloadRequest)
                     fetcher.configuration = URLSessionConfiguration.default
                     fetcher.configurationBlock = { (fetcher, config) in
-                        config.urlCache = URLCache.shared
+                        config.urlCache = URLCache(memoryCapacity: 0, diskCapacity: 200 * 1024 * 1024, diskPath: "magic")
                         config.requestCachePolicy = .returnCacheDataElseLoad
                         config.timeoutIntervalForRequest = 30
                     }
@@ -312,8 +309,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                             return
                         }
                         self.eventsSemaphore.wait()
-                        if let data = data,
-                            let photo = UIImage(data: data) {
+                        if let data = data, let photo = UIImage(data: data) {
                             self.events[eventIndex].attachPhoto.append(photo)
                         }
                         self.eventsSemaphore.signal()
