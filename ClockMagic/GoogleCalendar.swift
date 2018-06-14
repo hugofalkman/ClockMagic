@@ -19,7 +19,11 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     
     override init() {
         super.init()
-        session = URLSession(configuration: .default)
+        let config = URLSessionConfiguration.default
+        config.urlCache = URLCache.shared
+        config.requestCachePolicy = .returnCacheDataElseLoad
+        config.timeoutIntervalForRequest = 30
+        session = URLSession(configuration: config)
     }
     
     // MARK: - "Public" API (also sends above two notifications)
@@ -291,7 +295,9 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             if !fileId.isEmpty {
                 for id in fileId {
                     let query = GTLRDriveQuery_FilesGet.queryForMedia(withFileId: id)
-                    let downloadRequest = service3.request(for: query) as URLRequest
+                    var downloadRequest = service3.request(for: query) as URLRequest
+                    downloadRequest.cachePolicy = .returnCacheDataElseLoad
+                    downloadRequest.timeoutInterval = 30
                     
                     let fetcher = service3.fetcherService.fetcher(with: downloadRequest)
                     fetcher.configuration = .default
@@ -299,7 +305,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                         config.urlCache = URLCache(
                             memoryCapacity: 0,
                             diskCapacity: 200 * 1024 * 1024,
-                            diskPath: "magic")
+                            diskPath: nil)
                         config.requestCachePolicy = .returnCacheDataElseLoad
                         config.timeoutIntervalForRequest = 30
                     }
@@ -338,6 +344,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                 let urlString = contacts[index].photoUrl
                 if let url = URL(string: urlString) { // also discards the case urlString == ""
                     let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 30)
+                    dispatchGroupEvents.enter()
                     dataTask = session?.dataTask(with: urlRequest) { (data, response, error) in
                         if error != nil {
                             print((error as NSError?)!.localizedDescription)
@@ -351,9 +358,8 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                         self.eventsSemaphore.signal()
                         self.dispatchGroupEvents.leave()
                     }
-                    dispatchGroupEvents.enter()
-                    // dispatchGroupEvents.notify up in "public" func getEvents
                     dataTask?.resume()
+                    // dispatchGroupEvents.notify is up in the "public" func getEvents
                 } else {
                     events[eventIndex].photo = nil
                 }
