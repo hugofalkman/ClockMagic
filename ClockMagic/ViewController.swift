@@ -57,9 +57,6 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        let cache = URLCache(memoryCapacity: 100000000, diskCapacity: 100000000, diskPath: "magic2")
-//        URLCache.shared = cache
-        
         // Configure Google Sign-in.
         GIDSignIn.sharedInstance().uiDelegate = self
         
@@ -230,6 +227,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
                 self.signInButton.isHidden = false
             }
         } else {
+            // If not first time continue displaying old events but with a warning at the beginning
             events = oldEvents
             let start = currentDate
             let summary = NSLocalizedString("Fel. Kunde inte läsa kalendern.", comment: "Error message")
