@@ -1,0 +1,9 @@
+/* 
+  InfoPlist.strings
+  ClockMagic
+
+  Created by H Hugo Falkman on 2018-06-04.
+  Copyright © 2018 H Hugo Falkman. All rights reserved.
+*/
+
+CFBundleDisplayName = "Magiska Klockan";

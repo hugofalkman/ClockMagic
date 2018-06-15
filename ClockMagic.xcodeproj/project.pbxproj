@@ -32,6 +32,8 @@
 		B14F251820C5A04C0068393F /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B14F251920C5A04C0068393F /* en-US */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-US"; path = "en-US.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		B14F251A20C5A04E0068393F /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		B16EEDAA20D2C2EB00F2242A /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
+		B16EEDAB20D2C2EB00F2242A /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B1B08A6B20B573FC004DE743 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		B1B08A6D20B57670004DE743 /* GoogleCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCalendar.swift; sourceTree = "<group>"; };
 		B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ClockMagic-bridging-header.h"; sourceTree = "<group>"; };
@@ -152,7 +154,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0930;
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = "H Hugo Falkman";
 				TargetAttributes = {
 					B1FD215520971D7E00AF26E0 = {
@@ -171,6 +173,7 @@
 				"en-US",
 				"en-GB",
 				"sv-SE",
+				sv,
 			);
 			mainGroup = B1FD214D20971D7D00AF26E0;
 			productRefGroup = B1FD215720971D7E00AF26E0 /* Products */;
@@ -287,6 +290,7 @@
 				B14F251820C5A04C0068393F /* nl */,
 				B14F251920C5A04C0068393F /* en-US */,
 				B14F251A20C5A04E0068393F /* en-GB */,
+				B16EEDAB20D2C2EB00F2242A /* sv */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -299,6 +303,7 @@
 				B1C6669B20A3374000904F2C /* en-US */,
 				B14F251020C58BC20068393F /* en-GB */,
 				B14F251120C58DE40068393F /* sv-SE */,
+				B16EEDAA20D2C2EB00F2242A /* sv */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -374,7 +379,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -429,7 +434,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -456,7 +461,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "5d7fb2e5-0243-4bf6-87f7-b7c06f72708d";
 				PROVISIONING_PROFILE_SPECIFIER = ClockMagicDevelopmentProfile;
-				SDKROOT = iphoneos11.3;
+				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "ClockMagic/ClockMagic-bridging-header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -481,7 +486,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "42661e34-d7e2-42c6-baaf-365f0bf0612b";
 				PROVISIONING_PROFILE_SPECIFIER = ClockMagicDistributionProfile;
-				SDKROOT = iphoneos11.3;
+				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "ClockMagic/ClockMagic-bridging-header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
