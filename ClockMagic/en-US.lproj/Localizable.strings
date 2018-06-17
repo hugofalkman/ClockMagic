@@ -28,4 +28,4 @@
 "Följande händelser kanske inte längre är aktuella." = "The following events may no longer be valid.";
 "Inga kalendrar funna" = "No calendars found";
 
-"Logga in på ditt Google-konto" = "\nLog in to your Google account and authorize access to its contact list and primary calendar.\n\nAuthorization information is stored in your Keychain, so subsequent executions will not prompt for authorization.\n\nTo switch to a different Google account delete the app and reinstall it.\n\nFor instructions and help on setting up the Google account, contact list, and calendar see https://themagicclock.wordpress.com";
+"Logga in på ditt Google-konto" = "\nLog in to your Google account and authorize access to its contact list and primary calendar.\n\nAuthorization information is stored in your Keychain, so subsequent executions will not prompt for authorization.\n\nTo switch to a different Google account delete the app and reinstall it.\n\nFor instructions and help on setting up the Google account, contact list, and calendar see https://magicalclock.wordpress.com";
