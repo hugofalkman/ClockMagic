@@ -71,7 +71,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
               withError error: Error!) {
-        var userInfo = [String: Error]()
+        var userInfo = [String: Any]()
         if let error = error {
             userInfo["error"] = error
             self.service.authorizer = nil
@@ -82,14 +82,13 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             self.service.authorizer = authorizer
             self.service2.authorizer = authorizer
             self.service3.authorizer = authorizer
+            userInfo["name"] = user.profile.givenName
         }
         NotificationCenter.default.post(name: .GoogleSignedIn,
             object: self, userInfo: userInfo)
     }
     
     // MARK: - Private properties and struct
-    
-    private let dateFormatter = DateFormatter()
     
     private var dispatchGroupContacts = DispatchGroup()
     private var dispatchGroupEvents = DispatchGroup()

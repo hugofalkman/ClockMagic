@@ -8,6 +8,7 @@
 
 import UIKit
 import GoogleSignIn
+import AVFoundation
 
 class ViewController: UIViewController, GIDSignInUIDelegate {
     
@@ -36,6 +37,8 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     private let googleCalendar = GoogleCalendar()
     
     private weak var eventTimer: Timer?
+    private var speechTimer: Timer?
+    private var userName: String?
     
     private let dateFormatter = DateFormatter()
     
@@ -146,8 +149,13 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             if let observer = signedInObserver {
                 NotificationCenter.default.removeObserver(observer)
             }
-            self.startMessage.isHidden = true
-            self.signInButton.isHidden = true
+            startMessage.isHidden = true
+            signInButton.isHidden = true
+            
+            userName = userInfo?["name"] as? String
+            
+            // Speaking time a first time
+            speakTime()
             
             // Request events from GoogleCalendar and wait for request to complete
             eventsObserver = NotificationCenter.default.addObserver(
@@ -180,18 +188,31 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             spinner.stopAnimating()
         }
         
+        // Speaking time on the hour
+        // assuming event refresh rate is less than one hour does not need to repeat
+        if speechTimer == nil {
+            let date = Date()
+            let comps = Calendar.current.dateComponents([.hour, .minute], from: date)
+            let firingDate = Calendar.current.date(bySettingHour: (comps.hour ?? 0) + 1, minute: 0, second: 1, of: date)
+            if let firing = firingDate {
+                speechTimer = Timer(fireAt: firing, interval: 0, target: self, selector: #selector(speakTime), userInfo: nil, repeats: false)
+                speechTimer?.tolerance = 45
+                RunLoop.main.add(speechTimer!, forMode: RunLoopMode.commonModes)
+            }
+        }
+        
         let error = googleCalendar.eventsInError
         if error {
             displayError(error: userInfo?["error"] as? NSError)
         } else {
-            // sort events on time
+            // Sort events on time, all day events first
             events = googleCalendar.events.sorted {
                 if $0.hasTime == $1.hasTime {
                     return $0.start < $1.start
                 }
                 return !$0.hasTime && $1.hasTime }
             
-            // save results for possible later display if the connection to Google goes down
+            // Save results for possible later display if the connection to Google goes down
             oldEvents = events
             
             tableView.setup(events: events, isRedBackground: false, currentDate: currentDate)
@@ -208,6 +229,10 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             if eventTimer != nil {
                 eventTimer?.invalidate()
                 eventTimer = nil
+            }
+            if speechTimer != nil {
+                speechTimer?.invalidate()
+                speechTimer = nil
             }
             
             let message = NSLocalizedString(
@@ -237,6 +262,23 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
                 detail: detail, creator: ""), at: 0)
             tableView.setup(events: events, isRedBackground: true, currentDate: currentDate)
         }
+    }
+    
+    // MARK: - Speech output
+    
+    @objc private func speakTime() {
+        speechTimer = nil
+        let hello = NSLocalizedString("Hej %@, klockan är %@.", comment: "Hello Name, it's Time")
+        dateFormatter.dateStyle = .none
+        dateFormatter.timeStyle = .short
+        let time = dateFormatter.string(from: Date())
+        
+        let speech = String.localizedStringWithFormat(hello, userName ?? "", time)
+        let language = Locale.current.identifier
+        let utterance = AVSpeechUtterance(string: speech as String)
+        utterance.voice = AVSpeechSynthesisVoice(language: language)
+        let synthesizer = AVSpeechSynthesizer()
+        synthesizer.speak(utterance)
     }
     
     // MARK: - Showing Alert helper function
