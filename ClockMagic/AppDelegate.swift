@@ -17,6 +17,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Google Id Signin
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        
+        // Prevent screen lock
+        application.isIdleTimerDisabled = true
+        
         // Sign in app (not user) to Google
         GIDSignIn.sharedInstance().clientID = "551431945575-rnbgghorufel62o0b9bp7rj0umtnp8rq.apps.googleusercontent.com"
         return true
