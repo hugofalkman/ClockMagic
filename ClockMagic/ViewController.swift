@@ -36,11 +36,13 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     
     private let googleCalendar = GoogleCalendar()
     
+    private weak var clockTimer: Timer?
     private weak var eventTimer: Timer?
     private var speechTimer: Timer?
     private var userName: String?
     
     private let dateFormatter = DateFormatter()
+    private let synthesizer = AVSpeechSynthesizer()
     
     private var clockView: ClockView? {
         willSet {
@@ -83,10 +85,18 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         
         // Setup ClockView and start clock
         clockView = ClockView.init(frame: subView.bounds)
-        Timer.scheduledTimer(timeInterval: 0.25, target: self, selector: #selector(updateClock), userInfo: nil, repeats: true)
+        clockTimer = Timer.scheduledTimer(timeInterval: TimingConstants.clockTimer, target: self, selector: #selector(updateClock), userInfo: nil, repeats: true)
         
         // Initialize local Calendar
         updateCalendar()
+        
+        // Prepare to enter background
+        NotificationCenter.default.addObserver(forName: .UIApplicationDidEnterBackground,
+            object: UIApplication.shared, queue: OperationQueue.main) { notification in self.didEnterBackgrund()
+        }
+        NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground,
+            object: UIApplication.shared, queue: OperationQueue.main) { notification in self.willEnterForeground()
+        }
     }
     
     @objc private func updateClock() {
@@ -153,7 +163,6 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             signInButton.isHidden = true
             
             userName = userInfo?["name"] as? String
-            
             // Speaking time a first time
             speakTime()
             
@@ -172,7 +181,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             // Refresh events regularly
             if eventTimer == nil {
                 eventTimer = Timer.scheduledTimer(
-                    timeInterval: 300, target: googleCalendar,
+                    timeInterval: TimingConstants.eventTimer, target: googleCalendar,
                     selector: #selector(googleCalendar.getEvents),
                     userInfo: nil, repeats: true)
             }
@@ -191,14 +200,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         // Speaking time on the hour
         // assuming event refresh rate is less than one hour does not need to repeat
         if speechTimer == nil {
-            let date = Date()
-            let comps = Calendar.current.dateComponents([.hour, .minute], from: date)
-            let firingDate = Calendar.current.date(bySettingHour: (comps.hour ?? 0) + 1, minute: 0, second: 1, of: date)
-            if let firing = firingDate {
-                speechTimer = Timer(fireAt: firing, interval: 0, target: self, selector: #selector(speakTime), userInfo: nil, repeats: false)
-                speechTimer?.tolerance = 45
-                RunLoop.main.add(speechTimer!, forMode: RunLoopMode.commonModes)
-            }
+            startSpeechTimer()
         }
         
         let error = googleCalendar.eventsInError
@@ -216,6 +218,18 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             oldEvents = events
             
             tableView.setup(events: events, isRedBackground: false, currentDate: currentDate)
+        }
+    }
+    
+    private func startSpeechTimer() {
+        let date = Date()
+        let comps = Calendar.current.dateComponents([.hour, .minute], from: date)
+        let firingDate = Calendar.current.date(bySettingHour:
+            (comps.hour ?? 0) + TimingConstants.speakTimeHour,
+                                               minute: 0, second: 1, of: date)
+        if let firing = firingDate {
+            speechTimer = Timer(fireAt: firing, interval: 0, target: self, selector: #selector(speakTime), userInfo: nil, repeats: false)
+            RunLoop.main.add(speechTimer!, forMode: RunLoopMode.commonModes)
         }
     }
     
@@ -277,8 +291,40 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         let language = Locale.current.identifier
         let utterance = AVSpeechUtterance(string: speech as String)
         utterance.voice = AVSpeechSynthesisVoice(language: language)
-        let synthesizer = AVSpeechSynthesizer()
         synthesizer.speak(utterance)
+    }
+    
+    // MARK: - Application Life Cycle - methods triggered by ViewDidLoad Notifications
+    
+    private func didEnterBackgrund() {
+        // print("Entering Background")
+        if clockTimer != nil {
+            clockTimer?.invalidate()
+        }
+        if eventTimer != nil {
+            eventTimer?.invalidate()
+        }
+        if speechTimer != nil {
+            speechTimer?.invalidate()
+            speechTimer = nil
+        }
+    }
+    
+    private func willEnterForeground() {
+        // print("Entering Foreground")
+        if clockTimer == nil {
+            clockTimer = Timer.scheduledTimer(timeInterval: TimingConstants.clockTimer,
+            target: self, selector: #selector(updateClock), userInfo: nil, repeats: true)
+        }
+        if eventTimer == nil {
+            eventTimer = Timer.scheduledTimer(timeInterval: TimingConstants.eventTimer,
+            target: googleCalendar, selector: #selector(googleCalendar.getEvents),
+            userInfo: nil, repeats: true)
+        }
+        speakTime()
+        if speechTimer == nil {
+            startSpeechTimer()
+        }
     }
     
     // MARK: - Showing Alert helper function
@@ -301,3 +347,19 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         }
     }
 }
+
+// MARK: - Constants
+
+struct TimingConstants {
+    static let clockTimer = 0.25
+    static let eventTimer = 5 * 60.0
+    static let speakTimeHour = 1
+    static let googleTimeout = 30.0
+    static let calendarEventMax = 2 * 24 * 3600.0
+    static let cacheDisk = 200 * 1024 * 1024
+}
+
+
+
+
+

@@ -22,7 +22,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         let config = URLSessionConfiguration.default
         config.urlCache = URLCache.shared
         config.requestCachePolicy = .returnCacheDataElseLoad
-        config.timeoutIntervalForRequest = 30
+        config.timeoutIntervalForRequest = TimingConstants.googleTimeout
         session = URLSession(configuration: config)
     }
     
@@ -57,13 +57,13 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         
         // Configure GTLR services
         service.isRetryEnabled = true
-        service.maxRetryInterval = 30
+        service.maxRetryInterval = TimingConstants.googleTimeout
         service.callbackQueue = DispatchQueue.global()
         service2.isRetryEnabled = true
-        service2.maxRetryInterval = 30
+        service2.maxRetryInterval = TimingConstants.googleTimeout
         service2.callbackQueue = DispatchQueue.global()
         service3.isRetryEnabled = true
-        service3.maxRetryInterval = 30
+        service3.maxRetryInterval = TimingConstants.googleTimeout
         service3.callbackQueue = DispatchQueue.global()
     }
     
@@ -224,8 +224,8 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             let query = GTLRCalendarQuery_EventsList.query(withCalendarId: calendarId)
             let startDate = currentDate
             query.timeMin = GTLRDateTime(date: startDate)
-            // 48 hours of calendar data
-            query.timeMax = GTLRDateTime(date: Date(timeInterval: 2 * 86400, since: startDate))
+            query.timeMax = GTLRDateTime(
+                date: Date(timeInterval: TimingConstants.calendarEventMax, since: startDate))
             query.fields = "items(start,summary,creator,description,attachments(fileId,title))"
             query.singleEvents = true
             query.orderBy = kGTLRCalendarOrderByStartTime
@@ -296,17 +296,17 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                     let query = GTLRDriveQuery_FilesGet.queryForMedia(withFileId: id)
                     var downloadRequest = service3.request(for: query) as URLRequest
                     downloadRequest.cachePolicy = .returnCacheDataElseLoad
-                    downloadRequest.timeoutInterval = 30
+                    downloadRequest.timeoutInterval = TimingConstants.googleTimeout
                     
                     let fetcher = service3.fetcherService.fetcher(with: downloadRequest)
                     fetcher.configuration = .default
                     fetcher.configurationBlock = { (fetcher, config) in
                         config.urlCache = URLCache(
                             memoryCapacity: 0,
-                            diskCapacity: 200 * 1024 * 1024,
+                            diskCapacity: TimingConstants.cacheDisk,
                             diskPath: nil)
                         config.requestCachePolicy = .returnCacheDataElseLoad
-                        config.timeoutIntervalForRequest = 30
+                        config.timeoutIntervalForRequest = TimingConstants.googleTimeout
                     }
                     dispatchGroupEvents.enter()
                     fetcher.beginFetch { (data, error) in
@@ -342,7 +342,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                 events[eventIndex].creator != "" {
                 let urlString = contacts[index].photoUrl
                 if let url = URL(string: urlString) { // also discards the case urlString == ""
-                    let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 30)
+                    let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: TimingConstants.googleTimeout)
                     dispatchGroupEvents.enter()
                     dataTask = session?.dataTask(with: urlRequest) { (data, response, error) in
                         if error != nil {
