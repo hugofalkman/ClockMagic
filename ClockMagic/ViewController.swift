@@ -28,21 +28,21 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     
     private var events = [Event]()
     private var oldEvents = [Event]()
-    
     private var currentDate = Date()
+    
+    private let googleCalendar = GoogleCalendar()
+    private let synthesizer = AVSpeechSynthesizer()
+    private let dateFormatter = DateFormatter()
     
     private var eventsObserver: NSObjectProtocol?
     private var signedInObserver: NSObjectProtocol?
-    
-    private let googleCalendar = GoogleCalendar()
+    private var backgroundObserver: NSObjectProtocol?
+    private var foregroundObserver: NSObjectProtocol?
     
     private weak var clockTimer: Timer?
     private weak var eventTimer: Timer?
     private var speechTimer: Timer?
     private var userName: String?
-    
-    private let dateFormatter = DateFormatter()
-    private let synthesizer = AVSpeechSynthesizer()
     
     private var clockView: ClockView? {
         willSet {
@@ -61,16 +61,14 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Configure Google Sign-in.
+        // Configure Google Sign-in and the sign-in button
         GIDSignIn.sharedInstance().uiDelegate = self
-        
-        // Set up Start Message
-        startMessage.text = NSLocalizedString("Logga in på ditt Google-konto", comment: "Initially displayed message")
-        
-        // Configure the sign-in button.
         signInButton.style = GIDSignInButtonStyle.wide
         signInButton.colorScheme = GIDSignInButtonColorScheme.dark
+        
+        // Setup Start Message and initialize ClockView
+        startMessage.text = NSLocalizedString("Logga in på ditt Google-konto", comment: "Initially displayed message")
+        clockView = ClockView.init(frame: subView.bounds)
         
         // Start Google GID Signin and wait for it to complete
         signedInObserver = NotificationCenter.default.addObserver(
@@ -82,22 +80,149 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             }
         )
         googleCalendar.setupGIDSignIn()
+    }
+    
+    // MARK: - Google ID Signin
+    
+    private func googleSignedIn(userInfo: [AnyHashable: Any]?) {
         
-        // Setup ClockView and start clock
-        clockView = ClockView.init(frame: subView.bounds)
-        clockTimer = Timer.scheduledTimer(timeInterval: TimingConstants.clockTimer, target: self, selector: #selector(updateClock), userInfo: nil, repeats: true)
-        
-        // Initialize local Calendar
-        updateCalendar()
-        
-        // Prepare to enter background
-        NotificationCenter.default.addObserver(forName: .UIApplicationDidEnterBackground,
-            object: UIApplication.shared, queue: OperationQueue.main) { notification in self.didEnterBackgrund()
-        }
-        NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground,
-            object: UIApplication.shared, queue: OperationQueue.main) { notification in self.willEnterForeground()
+        if let error = userInfo?["error"] as? Error {
+            // Ignore errors before viewDidLoad complete
+            if self.isViewLoaded && (self.view.window != nil) { showAlert(
+                title: NSLocalizedString("Auktoriseringsfel",
+                comment: "Wrong password or similar"),
+                message: error.localizedDescription, okAction: nil)
+            }
+        } else {
+            if let observer = signedInObserver {
+                NotificationCenter.default.removeObserver(observer)
+                signedInObserver = nil
+            }
+            startMessage.isHidden = true
+            signInButton.isHidden = true
+            userName = userInfo?["name"] as? String
+            spinner.startAnimating()
+            
+            // Same process as when (later) returning to foregrund from background
+            willEnterForeground()
         }
     }
+    
+    // MARK: - Application Life Cycle
+    
+    private func willEnterForeground() {
+        print("Entering Foreground")
+        
+        // Switch background/foreground observer
+        if let observer = foregroundObserver {
+            NotificationCenter.default.removeObserver(observer)
+            foregroundObserver = nil
+        }
+        backgroundObserver = NotificationCenter.default.addObserver(
+            forName: .UIApplicationDidEnterBackground,
+            object: UIApplication.shared, queue: OperationQueue.main)
+            { notification in self.didEnterBackgrund() }
+        
+        // Start clock
+        if clockTimer == nil {
+            clockTimer = Timer.scheduledTimer(timeInterval: TimingConstants.clockTimer, target: self, selector: #selector(updateClock), userInfo: nil, repeats: true)
+        }
+        
+        // Initialize local Calendar and speak first time
+        currentDate = Date()
+        updateCalendar()
+        speakTime()
+        
+        // Request events from GoogleCalendar and wait for request to complete
+        eventsObserver = NotificationCenter.default.addObserver(
+            forName: .EventsDidChange,
+            object: googleCalendar,
+            queue: OperationQueue.main,
+            using: { (notification) in
+                self.eventsDidChange(userInfo: notification.userInfo)
+            }
+        )
+        googleCalendar.getEvents()
+        
+        // Refresh events regularly
+        if eventTimer == nil {
+            eventTimer = Timer.scheduledTimer(timeInterval: TimingConstants.eventTimer,
+                target: googleCalendar, selector: #selector(googleCalendar.getEvents),
+                userInfo: nil, repeats: true)
+        }
+    }
+    
+    private func eventsDidChange(userInfo: [AnyHashable: Any]?) {
+        currentDate = googleCalendar.currentDate
+        updateCalendar()
+        
+        // oldEvents is only empty very first time
+        if oldEvents.isEmpty {
+            spinner.stopAnimating()
+        }
+        
+        // Speaking time on the hour
+        // assuming event refresh rate is less than one hour does not need to repeat
+        if speechTimer == nil {
+            startSpeechTimer()
+        }
+        
+        let error = googleCalendar.eventsInError
+        if error {
+            displayError(error: userInfo?["error"] as? NSError)
+        } else {
+            // Sort events on time, all day events first
+            events = googleCalendar.events.sorted {
+                if $0.hasTime == $1.hasTime {
+                    return $0.start < $1.start
+                }
+                return !$0.hasTime && $1.hasTime }
+            
+            // Save results for possible later display if the connection to Google goes down
+            oldEvents = events
+            
+            tableView.setup(events: events, isRedBackground: false, currentDate: currentDate)
+        }
+    }
+    
+    private func didEnterBackgrund() {
+        print("Entering Background")
+        
+        // Switch background/foreground observer
+        if let observer = backgroundObserver {
+            NotificationCenter.default.removeObserver(observer)
+            backgroundObserver = nil
+        }
+        foregroundObserver = NotificationCenter.default.addObserver(
+            forName: .UIApplicationWillEnterForeground,
+            object: UIApplication.shared, queue: OperationQueue.main)
+            { notification in self.willEnterForeground() }
+        
+        // Remove observers and invalidate timers
+        if let observer = eventsObserver {
+            NotificationCenter.default.removeObserver(observer)
+            eventsObserver = nil
+        }
+        if let observer = signedInObserver {
+            NotificationCenter.default.removeObserver(observer)
+            signedInObserver = nil
+        }
+        if clockTimer != nil {
+            clockTimer?.invalidate()
+        }
+        if eventTimer != nil {
+            eventTimer?.invalidate()
+        }
+        if tableView.photoTimer != nil {
+            tableView.photoTimer?.invalidate()
+        }
+        if speechTimer != nil {
+            speechTimer?.invalidate()
+            speechTimer = nil
+        }
+    }
+    
+    // MARK: - Update clock and local calendar
     
     @objc private func updateClock() {
         if let clockView = clockView {
@@ -143,83 +268,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         dateLabel.text = dateFormatter.string(from: currentDate)
     }
     
-    // MARK: - Google ID Signin
-    
-    private func googleSignedIn(userInfo: [AnyHashable: Any]?) {
-        
-        if let error = userInfo?["error"] as? Error {
-            // Ignore errors before viewDidLoad complete
-            if self.isViewLoaded && (self.view.window != nil) {
-                showAlert(title: NSLocalizedString("Auktoriseringsfel",
-                    comment: "Wrong password or similar"),
-                    message: error.localizedDescription,
-                    okAction: nil)
-            }
-        } else {
-            if let observer = signedInObserver {
-                NotificationCenter.default.removeObserver(observer)
-            }
-            startMessage.isHidden = true
-            signInButton.isHidden = true
-            
-            userName = userInfo?["name"] as? String
-            // Speaking time a first time
-            speakTime()
-            
-            // Request events from GoogleCalendar and wait for request to complete
-            eventsObserver = NotificationCenter.default.addObserver(
-                forName: .EventsDidChange,
-                object: googleCalendar,
-                queue: OperationQueue.main,
-                using: { (notification) in
-                    self.eventsDidChange(userInfo: notification.userInfo)
-                }
-            )
-            spinner.startAnimating()
-            googleCalendar.getEvents()
-            
-            // Refresh events regularly
-            if eventTimer == nil {
-                eventTimer = Timer.scheduledTimer(
-                    timeInterval: TimingConstants.eventTimer, target: googleCalendar,
-                    selector: #selector(googleCalendar.getEvents),
-                    userInfo: nil, repeats: true)
-            }
-        }
-    }
-    
-    private func eventsDidChange(userInfo: [AnyHashable: Any]?) {
-        currentDate = googleCalendar.currentDate
-        updateCalendar()
-        
-        // oldEvents only empty first time
-        if oldEvents.isEmpty {
-            spinner.stopAnimating()
-        }
-        
-        // Speaking time on the hour
-        // assuming event refresh rate is less than one hour does not need to repeat
-        if speechTimer == nil {
-            startSpeechTimer()
-        }
-        
-        let error = googleCalendar.eventsInError
-        if error {
-            displayError(error: userInfo?["error"] as? NSError)
-        } else {
-            // Sort events on time, all day events first
-            events = googleCalendar.events.sorted {
-                if $0.hasTime == $1.hasTime {
-                    return $0.start < $1.start
-                }
-                return !$0.hasTime && $1.hasTime }
-            
-            // Save results for possible later display if the connection to Google goes down
-            oldEvents = events
-            
-            tableView.setup(events: events, isRedBackground: false, currentDate: currentDate)
-        }
-    }
+    // MARK: - Speech output
     
     private func startSpeechTimer() {
         let date = Date()
@@ -233,6 +282,22 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         }
     }
     
+    @objc private func speakTime() {
+        speechTimer = nil
+        let hello = NSLocalizedString("Hej %@, klockan är %@.", comment: "Hello Name, it's Time")
+        dateFormatter.dateStyle = .none
+        dateFormatter.timeStyle = .short
+        let time = dateFormatter.string(from: Date())
+        
+        let speech = String.localizedStringWithFormat(hello, userName ?? "", time)
+        let language = Locale.current.identifier
+        let utterance = AVSpeechUtterance(string: speech as String)
+        utterance.voice = AVSpeechSynthesisVoice(language: language)
+        synthesizer.speak(utterance)
+    }
+    
+    // MARK: - Displaying errors
+    
     private func displayError(error: NSError?) {
         if let error = error {
             print("\(error.code) " + error.localizedDescription)
@@ -242,7 +307,6 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             // very first getEvents request resulted in error
             if eventTimer != nil {
                 eventTimer?.invalidate()
-                eventTimer = nil
             }
             if speechTimer != nil {
                 speechTimer?.invalidate()
@@ -278,56 +342,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         }
     }
     
-    // MARK: - Speech output
-    
-    @objc private func speakTime() {
-        speechTimer = nil
-        let hello = NSLocalizedString("Hej %@, klockan är %@.", comment: "Hello Name, it's Time")
-        dateFormatter.dateStyle = .none
-        dateFormatter.timeStyle = .short
-        let time = dateFormatter.string(from: Date())
-        
-        let speech = String.localizedStringWithFormat(hello, userName ?? "", time)
-        let language = Locale.current.identifier
-        let utterance = AVSpeechUtterance(string: speech as String)
-        utterance.voice = AVSpeechSynthesisVoice(language: language)
-        synthesizer.speak(utterance)
-    }
-    
-    // MARK: - Application Life Cycle - methods triggered by ViewDidLoad Notifications
-    
-    private func didEnterBackgrund() {
-        // print("Entering Background")
-        if clockTimer != nil {
-            clockTimer?.invalidate()
-        }
-        if eventTimer != nil {
-            eventTimer?.invalidate()
-        }
-        if speechTimer != nil {
-            speechTimer?.invalidate()
-            speechTimer = nil
-        }
-    }
-    
-    private func willEnterForeground() {
-        // print("Entering Foreground")
-        if clockTimer == nil {
-            clockTimer = Timer.scheduledTimer(timeInterval: TimingConstants.clockTimer,
-            target: self, selector: #selector(updateClock), userInfo: nil, repeats: true)
-        }
-        if eventTimer == nil {
-            eventTimer = Timer.scheduledTimer(timeInterval: TimingConstants.eventTimer,
-            target: googleCalendar, selector: #selector(googleCalendar.getEvents),
-            userInfo: nil, repeats: true)
-        }
-        speakTime()
-        if speechTimer == nil {
-            startSpeechTimer()
-        }
-    }
-    
-    // MARK: - Showing Alert helper function
+    // MARK: - Displaying Alert helper function
     
     private func showAlert(title : String, message: String,
         okAction: ((UIAlertAction) -> Void)?) {
@@ -353,13 +368,10 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
 struct TimingConstants {
     static let clockTimer = 0.25
     static let eventTimer = 5 * 60.0
+    static let photoTimer = 8.0
     static let speakTimeHour = 1
     static let googleTimeout = 30.0
     static let calendarEventMax = 2 * 24 * 3600.0
     static let cacheDisk = 200 * 1024 * 1024
 }
-
-
-
-
 

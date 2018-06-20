@@ -40,6 +40,8 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - "Public" API
     
+    weak var photoTimer: Timer?
+    
     func setup(events: [Event], isRedBackground isRed: Bool, currentDate: Date) {
         self.currentDate = currentDate
         isRedBackground = isRed
@@ -54,7 +56,8 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
         
         if !(events.filter { $0.attachPhoto.count > 1 }).isEmpty {
             if photoTimer == nil {
-                photoTimer = Timer.scheduledTimer(timeInterval: 8, target: self, selector: #selector(updateSlideShow), userInfo: nil, repeats: true)
+                photoTimer = Timer.scheduledTimer(timeInterval: TimingConstants.photoTimer,
+                target: self, selector: #selector(updateSlideShow), userInfo: nil, repeats: true)
             }
         }
     }
@@ -65,7 +68,6 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
     private var isRedBackground = false
     private var currentDate = Date()
     private let dateFormatter = DateFormatter()
-    private weak var photoTimer: Timer?
     
     // MARK: - SlideShow
     
@@ -88,11 +90,6 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
             }
             if !indexPaths.isEmpty {
                 reloadRows(at: indexPaths, with: .right)
-            } else {
-                // Turn off timer till events change next time
-//                if photoTimer != nil {
-//                    photoTimer?.invalidate()
-//                }
             }
         }
     }
