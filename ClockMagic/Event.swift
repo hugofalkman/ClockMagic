@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Event {
+struct Event: Equatable {
     var start: Date
     var hasTime: Bool
     var title: String
@@ -18,7 +18,7 @@ struct Event {
     var attachId: [String]
     var attachPhoto: [UIImage]
     
-    private let dateFormatter = DateFormatter()
+    private let dateFormatter = DateFormatter.shared
     
     init(start: Date, hasTime: Bool, summary: String, detail: String, creator: String) {
         self.start = start

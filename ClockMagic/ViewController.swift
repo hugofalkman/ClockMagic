@@ -32,7 +32,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     
     private let googleCalendar = GoogleCalendar()
     private let synthesizer = AVSpeechSynthesizer()
-    private let dateFormatter = DateFormatter()
+    private let dateFormatter = DateFormatter.shared
     
     private var eventsObserver: NSObjectProtocol?
     private var signedInObserver: NSObjectProtocol?
@@ -41,7 +41,9 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     
     private weak var clockTimer: Timer?
     private weak var eventTimer: Timer?
-    private var speechTimer: Timer?
+    private var speakEventTimer: Timer?
+    private var firstEvent: Event?
+    private var speakTimeTimer: Timer?
     private var userName: String?
     
     private var clockView: ClockView? {
@@ -111,8 +113,6 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     // MARK: - Application Life Cycle
     
     private func willEnterForeground() {
-        print("Entering Foreground")
-        
         // Switch background/foreground observer
         if let observer = foregroundObserver {
             NotificationCenter.default.removeObserver(observer)
@@ -131,7 +131,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         // Initialize local Calendar and speak first time
         currentDate = Date()
         updateCalendar()
-        speakTime()
+        speakTime(first: true)
         
         // Request events from GoogleCalendar and wait for request to complete
         eventsObserver = NotificationCenter.default.addObserver(
@@ -156,15 +156,15 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         currentDate = googleCalendar.currentDate
         updateCalendar()
         
-        // oldEvents is only empty very first time
+        // oldEvents is only empty the very first time
         if oldEvents.isEmpty {
             spinner.stopAnimating()
         }
         
         // Speaking time on the hour
-        // assuming event refresh rate is less than one hour does not need to repeat
-        if speechTimer == nil {
-            startSpeechTimer()
+        // Assuming event refresh rate is less than one hour does not need to repeat
+        if speakTimeTimer == nil {
+            startSpeakTimeTimer()
         }
         
         let error = googleCalendar.eventsInError
@@ -181,13 +181,14 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             // Save results for possible later display if the connection to Google goes down
             oldEvents = events
             
+            // Check if speakEvent needs initiating
+            checkSpeakEventTimer()
+            
             tableView.setup(events: events, isRedBackground: false, currentDate: currentDate)
         }
     }
     
     private func didEnterBackgrund() {
-        print("Entering Background")
-        
         // Switch background/foreground observer
         if let observer = backgroundObserver {
             NotificationCenter.default.removeObserver(observer)
@@ -216,9 +217,13 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         if tableView.photoTimer != nil {
             tableView.photoTimer?.invalidate()
         }
-        if speechTimer != nil {
-            speechTimer?.invalidate()
-            speechTimer = nil
+        if speakTimeTimer != nil {
+            speakTimeTimer?.invalidate()
+            speakTimeTimer = nil
+        }
+        if speakEventTimer != nil {
+            speakEventTimer?.invalidate()
+            speakEventTimer = nil
         }
     }
     
@@ -231,9 +236,10 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     }
     
     @objc private func updateCalendar() {
-        dayOfWeekLabel.text = dateFormatter.weekdaySymbols[Calendar.current.component(.weekday, from: currentDate) - 1]
+        dateFormatter.formattingContext = .standalone
+        dayOfWeekLabel.text = dateFormatter.weekdaySymbols[Calendar.autoupdatingCurrent.component(.weekday, from: currentDate) - 1]
         
-        let hour = Calendar.current.component(.hour, from: currentDate)
+        let hour = Calendar.autoupdatingCurrent.component(.hour, from: currentDate)
         switch hour {
         case 22...23, 0...5:
             timeOfDayLabel.text = NSLocalizedString("natt", comment: "time of day")
@@ -249,7 +255,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             timeOfDayLabel.text = nil
         }
         
-        let monthday = Calendar.current.dateComponents([.month, .day], from: currentDate)
+        let monthday = Calendar.autoupdatingCurrent.dateComponents([.month, .day], from: currentDate)
         switch (monthday.month ?? 0, monthday.day ?? 0) {
         case (1...4, _), (12, _):
             seasonLabel.text = NSLocalizedString("vinter", comment: "season")
@@ -263,37 +269,82 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             seasonLabel.text = nil
         }
         
-        dateFormatter.dateStyle = .medium
-        dateFormatter.timeStyle = .none
+        dateFormatter.setLocalizedDateFormatFromTemplate("MMMM d, YYYY")
         dateLabel.text = dateFormatter.string(from: currentDate)
     }
     
     // MARK: - Speech output
     
-    private func startSpeechTimer() {
-        let date = Date()
-        let comps = Calendar.current.dateComponents([.hour, .minute], from: date)
-        let firingDate = Calendar.current.date(bySettingHour:
-            (comps.hour ?? 0) + TimingConstants.speakTimeHour,
-                                               minute: 0, second: 1, of: date)
-        if let firing = firingDate {
-            speechTimer = Timer(fireAt: firing, interval: 0, target: self, selector: #selector(speakTime), userInfo: nil, repeats: false)
-            RunLoop.main.add(speechTimer!, forMode: RunLoopMode.commonModes)
+    private func startSpeakTimeTimer() {
+        if let date = Calendar.autoupdatingCurrent.date(byAdding: .hour,
+            value: TimingConstants.speakTimeHour, to: Date()) {
+            let hour = Calendar.autoupdatingCurrent.component(.hour, from: date)
+            if let firingDate = Calendar.autoupdatingCurrent.date(
+                bySettingHour: hour, minute: 0, second: 1, of: date) {
+                speakTimeTimer = Timer(fireAt: firingDate, interval: 0, target: self, selector: #selector(speakTime), userInfo: nil, repeats: false)
+                RunLoop.main.add(speakTimeTimer!, forMode: .commonModes)
+            }
         }
     }
     
-    @objc private func speakTime() {
-        speechTimer = nil
+    @objc private func speakTime(first: Bool = false) {
+        speakTimeTimer = nil
         let hello = NSLocalizedString("Hej %@, klockan är %@.", comment: "Hello Name, it's Time")
-        dateFormatter.dateStyle = .none
-        dateFormatter.timeStyle = .short
-        let time = dateFormatter.string(from: Date())
+        var time = ""
+        var date = Date()
+        let hour = Calendar.autoupdatingCurrent.component(.hour, from: date)
+        
+        if "sv" == Locale.autoupdatingCurrent.languageCode {
+            if first {
+                let minute = Calendar.autoupdatingCurrent.component(.minute, from: date)
+                time = DateComponentsFormatter.localizedString(from:
+                    DateComponents(hour: hour, minute: minute), unitsStyle: .positional) ?? ""
+            } else {
+                time = DateComponentsFormatter.localizedString(from:
+                    DateComponents(hour: (hour == 0) ? 24: hour), unitsStyle: .positional) ?? ""
+            }
+        } else {
+            dateFormatter.dateStyle = .none
+            dateFormatter.timeStyle = .short
+            if !first {
+                date = Calendar.autoupdatingCurrent.date(bySettingHour: hour, minute: 0, second: 0, of: date) ?? date
+            }
+            time = dateFormatter.string(from: date)
+        }
         
         let speech = String.localizedStringWithFormat(hello, userName ?? "", time)
-        let language = Locale.current.identifier
+        let language = Locale.autoupdatingCurrent.identifier
         let utterance = AVSpeechUtterance(string: speech as String)
         utterance.voice = AVSpeechSynthesisVoice(language: language)
         synthesizer.speak(utterance)
+    }
+    
+    private func checkSpeakEventTimer() {
+        let newFirstEvent = findFirstEvent()
+        guard newFirstEvent != firstEvent else { return }
+        firstEvent = newFirstEvent
+        if speakEventTimer != nil {
+            speakEventTimer?.invalidate()
+            speakEventTimer = nil
+        }
+        guard let event = newFirstEvent else { return }
+        let date = event.start - TimingConstants.speakEventNoticeTime
+        speakEventTimer = Timer(fireAt: date, interval: 0, target: self, selector: #selector(speakEvent), userInfo: nil, repeats: false)
+        RunLoop.main.add(speakEventTimer!, forMode: .commonModes)
+    }
+    
+    @objc private func speakEvent() {
+        speakEventTimer = nil
+    }
+    
+    private func findFirstEvent() -> Event? {
+        let earliestEvent = events.filter { $0.hasTime }.first
+        if let event = earliestEvent {
+            let noticeTimeInterval = event.start.timeIntervalSinceNow - TimingConstants.speakEventNoticeTime
+            if noticeTimeInterval > 1 && noticeTimeInterval < TimingConstants.speakEventTimerMax {
+                return event
+            } else { return nil }
+        } else { return nil }
     }
     
     // MARK: - Displaying errors
@@ -308,9 +359,9 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             if eventTimer != nil {
                 eventTimer?.invalidate()
             }
-            if speechTimer != nil {
-                speechTimer?.invalidate()
-                speechTimer = nil
+            if speakTimeTimer != nil {
+                speakTimeTimer?.invalidate()
+                speakTimeTimer = nil
             }
             
             let message = NSLocalizedString(
@@ -363,15 +414,21 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     }
 }
 
-// MARK: - Constants
+// MARK: - Constants and global variables
+
+extension DateFormatter {
+    static let shared = DateFormatter()
+}
 
 struct TimingConstants {
     static let clockTimer = 0.25
     static let eventTimer = 5 * 60.0
     static let photoTimer = 8.0
     static let speakTimeHour = 1
+    static let speakEventTimerMax = 60 * 60.0
+    static let speakEventNoticeTime = 10 * 60.0
     static let googleTimeout = 30.0
-    static let calendarEventMax = 2 * 24 * 3600.0
+    static let calendarEventMax = 4.5 * 24 * 3600.0
     static let cacheDisk = 200 * 1024 * 1024
 }
 

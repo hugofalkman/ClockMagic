@@ -19,7 +19,8 @@
 
 "I dag" = "Today";
 "I morgon" = "Tomorrow";
-"I övermorgon" = "The day after tomorrow";
+// "I övermorgon" = "The day after tomorrow";
+"I övermorgon" = "";
 
 "Inga kommande händelser" = "No upcoming events found.";
 "Auktoriseringsfel" = "Authorisation error";

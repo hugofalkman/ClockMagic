@@ -46,12 +46,12 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
         self.currentDate = currentDate
         isRedBackground = isRed
         
-        eventsByDay = []
+        eventsByDay = [[Event]](repeating: [], count: numberDays)
         let calendar = Calendar.current
-        eventsByDay.append(events.filter {calendar.isDateInToday($0.start) })
-        eventsByDay.append(events.filter {calendar.isDateInTomorrow($0.start) })
-        eventsByDay.append(events.filter {!calendar.isDateInToday($0.start) && !calendar.isDateInTomorrow($0.start) })
-        
+        for i in 0..<numberDays {
+            let date = calendar.date(byAdding: .day, value: i, to: currentDate)
+            eventsByDay[i] = events.filter { calendar.isDate($0.start, inSameDayAs: date!) }
+        }
         reloadData()
         
         if !(events.filter { $0.attachPhoto.count > 1 }).isEmpty {
@@ -67,7 +67,8 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
     private var eventsByDay = [[Event]]()
     private var isRedBackground = false
     private var currentDate = Date()
-    private let dateFormatter = DateFormatter()
+    private let dateFormatter = DateFormatter.shared
+    private let numberDays = 1 + Int(ceil(TimingConstants.calendarEventMax / (24 * 3600.0)))
     
     // MARK: - SlideShow
     
@@ -97,7 +98,7 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
     // MARK: - TableView Data Source
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return numberDays
     }
     
     // This returns 0 until data has been retrieved from web. The 0 signals to TableView not to continue. Once events have been retrieved, tableView.reloadData is invoked populating the tableView.
@@ -149,25 +150,20 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
         header.lineBreakMode = .byWordWrapping
         header.sizeToFit()
         
-        var day = currentDate
         switch section {
         case 0:
             header.text = NSLocalizedString("I dag", comment: "header")
         case 1:
             header.text = NSLocalizedString("I morgon", comment: "header")
-            day = Calendar.current.date(byAdding: .day, value: 1, to: day)!
         case 2:
             header.text = NSLocalizedString("I övermorgon", comment: "header")
-            day = Calendar.current.date(byAdding: .day, value: 2, to: day)!
-            
         default:
-            header.text = "error"
+            header.text = ""
         }
-        dateFormatter.dateStyle = .medium
-        dateFormatter.timeStyle = .none
-        var formattedDay = dateFormatter.string(from: day)
-        formattedDay = String(formattedDay.dropLast(5)) // drop year
-        header.text = (header.text! + " " + formattedDay).uppercased()
+        
+        let day = Calendar.current.date(byAdding: .day, value: section, to: currentDate)!
+        dateFormatter.setLocalizedDateFormatFromTemplate("EEEE MMMM d")
+        header.text = (header.text! + " " + dateFormatter.string(from: day)).uppercased()
         return header
     }
 }

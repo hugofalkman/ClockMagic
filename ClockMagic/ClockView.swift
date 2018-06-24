@@ -16,6 +16,7 @@ class ClockView: UIView {
         return clockFrame(forBounds: bounds)
     }
     let fontName = "HelveticaNeue-Light"
+    private let dateFormatter = DateFormatter.shared
     
     override var frame: CGRect {
         didSet {
@@ -36,7 +37,6 @@ class ClockView: UIView {
         drawTicks()
         drawNumbers()
         
-        let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .none
         dateFormatter.timeStyle = .medium
         let time = dateFormatter.string(from: Date())
