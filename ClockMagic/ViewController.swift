@@ -31,6 +31,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     private var currentDate = Date()
     
     private let googleCalendar = GoogleCalendar()
+    private let speaker = Speaker()
     private let synthesizer = AVSpeechSynthesizer()
     private let dateFormatter = DateFormatter.shared
     
@@ -42,9 +43,12 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     private weak var clockTimer: Timer?
     private weak var eventTimer: Timer?
     private var speakEventTimer: Timer?
-    private var firstEvent: Event?
     private var speakTimeTimer: Timer?
+    
+    private var dispatchGroupSpeech = DispatchGroup()
     private var userName: String?
+    private var firstEvents = [Event]()
+    private var numberMinutes = Int(TimingConstants.speakEventNoticeTime / (60.0))
     
     private var clockView: ClockView? {
         willSet {
@@ -289,20 +293,14 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     
     @objc private func speakTime(first: Bool = false) {
         speakTimeTimer = nil
-        let hello = NSLocalizedString("Hej %@, klockan är %@.", comment: "Hello Name, it's Time")
+        let hello = NSLocalizedString("Hej %@, klockan är %@.", comment: "Hey tame, it's time")
         var time = ""
         var date = Date()
         let hour = Calendar.autoupdatingCurrent.component(.hour, from: date)
         
-        if "sv" == Locale.autoupdatingCurrent.languageCode {
-            if first {
-                let minute = Calendar.autoupdatingCurrent.component(.minute, from: date)
-                time = DateComponentsFormatter.localizedString(from:
-                    DateComponents(hour: hour, minute: minute), unitsStyle: .positional) ?? ""
-            } else {
+        if "sv" == Locale.autoupdatingCurrent.languageCode && !first {
                 time = DateComponentsFormatter.localizedString(from:
                     DateComponents(hour: (hour == 0) ? 24: hour), unitsStyle: .positional) ?? ""
-            }
         } else {
             dateFormatter.dateStyle = .none
             dateFormatter.timeStyle = .short
@@ -320,31 +318,51 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     }
     
     private func checkSpeakEventTimer() {
-        let newFirstEvent = findFirstEvent()
-        guard newFirstEvent != firstEvent else { return }
-        firstEvent = newFirstEvent
+        let newFirstEvents = findFirstEvents()
+        guard newFirstEvents.first != firstEvents.first else { return }
+        firstEvents = newFirstEvents
         if speakEventTimer != nil {
             speakEventTimer?.invalidate()
             speakEventTimer = nil
         }
-        guard let event = newFirstEvent else { return }
-        let date = event.start - TimingConstants.speakEventNoticeTime
-        speakEventTimer = Timer(fireAt: date, interval: 0, target: self, selector: #selector(speakEvent), userInfo: nil, repeats: false)
-        RunLoop.main.add(speakEventTimer!, forMode: .commonModes)
+        func startTimer() {
+            guard let event = firstEvents.first else { return }
+            let date = event.start - TimingConstants.speakEventNoticeTime
+            dispatchGroupSpeech.enter()
+            speakEventTimer = Timer(fireAt: date, interval: 0, target: self, selector: #selector(speakEvent), userInfo: nil, repeats: false)
+            RunLoop.main.add(speakEventTimer!, forMode: .commonModes)
+        }
+        startTimer()
+        
+        dispatchGroupSpeech.notify(queue: .main) {
+            self.firstEvents.removeFirst()
+            startTimer()
+        }
     }
     
     @objc private func speakEvent() {
         speakEventTimer = nil
+        let event = NSLocalizedString("Hej %@, om %d minuter: %@ -- %@.", comment: "Hey name, in x minutes: title -- description")
+        let speech = String.localizedStringWithFormat(event, userName ?? "", numberMinutes, firstEvents.first?.title ?? "", firstEvents.first?.detail ?? "")
+        let language = Locale.autoupdatingCurrent.identifier
+        let utterance = AVSpeechUtterance(string: speech as String)
+        utterance.voice = AVSpeechSynthesisVoice(language: language)
+        synthesizer.speak(utterance)
+        dispatchGroupSpeech.leave()
     }
     
-    private func findFirstEvent() -> Event? {
-        let earliestEvent = events.filter { $0.hasTime }.first
-        if let event = earliestEvent {
+    private func findFirstEvents() -> [Event] {
+        let eventsWithTime = events.filter { $0.hasTime }
+        guard !eventsWithTime.isEmpty else { return []}
+        
+        func isNearEvent(event: Event) -> Bool {
             let noticeTimeInterval = event.start.timeIntervalSinceNow - TimingConstants.speakEventNoticeTime
             if noticeTimeInterval > 1 && noticeTimeInterval < TimingConstants.speakEventTimerMax {
-                return event
-            } else { return nil }
-        } else { return nil }
+                return true
+            } else { return false }
+        }
+        let earlyEvents = eventsWithTime.filter { isNearEvent(event: $0) }
+        return earlyEvents
     }
     
     // MARK: - Displaying errors

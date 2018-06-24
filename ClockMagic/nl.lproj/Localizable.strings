@@ -31,3 +31,5 @@
 "Logga in på ditt Google-konto" = "\nMeld u aan bij uw Google-account en geef toegang tot de contactenlijst en de primaire agenda.\n\nAutorisatie-informatie wordt opgeslagen in uw sleutelbos, zodat latere uitvoeringen geen toestemming vragen.\n\nAls u wilt overschakelen naar een ander Google-account, verwijdert u de app en installeert u deze opnieuw.\n\nGa naar https://magicalclock.wordpress.com voor instructies en hulp bij het instellen van uw Google-account, contactpersonenlijst en agenda.";
 
 "Hej %@, klockan är %@." = "Hé %@, het is %@ uur.";
+"Hej %@, om %d minuter: %@ -- %@." = "Hé %@, over %d minuten: %@ -- %@.";
+
