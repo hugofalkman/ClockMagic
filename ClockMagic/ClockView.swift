@@ -10,12 +10,24 @@ import UIKit
 
 class ClockView: UIView {
     
+    // MARK: - "Public" API
+    
+    weak var clockTimer: Timer?
+    
+    func startClock() {
+        if clockTimer == nil {
+            clockTimer = Timer.scheduledTimer(timeInterval: TimingConstants.clockTimer,
+                target: self, selector: #selector(update), userInfo: nil, repeats: true)
+        }
+    }
+    
     // MARK: - Properties
     
     var clockFrame: CGRect {
         return clockFrame(forBounds: bounds)
     }
     let fontName = "HelveticaNeue-Light"
+    
     private let dateFormatter = DateFormatter.shared
     
     override var frame: CGRect {
@@ -25,6 +37,10 @@ class ClockView: UIView {
     }
     
     // MARK: - NSView
+    
+    @objc private func update() {
+        setNeedsDisplay()
+    }
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)

@@ -38,34 +38,26 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     private var backgroundObserver: NSObjectProtocol?
     private var foregroundObserver: NSObjectProtocol?
     
-    private weak var clockTimer: Timer?
     private weak var eventTimer: Timer?
     
-    private var clockView: ClockView? {
-        willSet {
-            let clockView = self.clockView
-            clockView?.removeFromSuperview()
-        }
-        didSet {
-            if let clockView = clockView {
-                clockView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                subView.addSubview(clockView)
-            }
-        }
-    }
+    private lazy var clockView: ClockView = {
+        let clock = ClockView(frame: subView.bounds)
+        clock.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        subView.addSubview(clock)
+        return clock
+    }()
     
     // MARK: - View Controller Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Configure Google Sign-in and the sign-in button
+        
+        // Configure Google Sign-in and the sign-in button, setup Start message
         GIDSignIn.sharedInstance().uiDelegate = self
         signInButton.style = GIDSignInButtonStyle.wide
         signInButton.colorScheme = GIDSignInButtonColorScheme.dark
-        
-        // Setup Start Message and initialize ClockView
-        startMessage.text = NSLocalizedString("Logga in på ditt Google-konto", comment: "Initially displayed message")
-        clockView = ClockView.init(frame: subView.bounds)
+        startMessage.text = NSLocalizedString("Logga in på ditt Google-konto",
+            comment: "Initially displayed message")
         
         // Start Google GID Signin and wait for it to complete
         signedInObserver = NotificationCenter.default.addObserver(
@@ -118,12 +110,8 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             object: UIApplication.shared, queue: OperationQueue.main)
             { notification in self.didEnterBackgrund() }
         
-        // Start clock
-        if clockTimer == nil {
-            clockTimer = Timer.scheduledTimer(timeInterval: TimingConstants.clockTimer, target: self, selector: #selector(updateClock), userInfo: nil, repeats: true)
-        }
-        
-        // Initialize local Calendar and speak first time
+        // Start clock, initialize local Calendar and speak first time
+        clockView.startClock()
         localCalendarView.update(currentDate: Date())
         speaker.speakTimeFirst()
         
@@ -143,12 +131,6 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             eventTimer = Timer.scheduledTimer(timeInterval: TimingConstants.eventTimer,
                 target: googleCalendar, selector: #selector(googleCalendar.getEvents),
                 userInfo: nil, repeats: true)
-        }
-    }
-    
-    @objc private func updateClock() {
-        if let clockView = clockView {
-            clockView.setNeedsDisplay(clockView.clockFrame)
         }
     }
     
@@ -206,8 +188,8 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             NotificationCenter.default.removeObserver(observer)
             signedInObserver = nil
         }
-        if clockTimer != nil {
-            clockTimer?.invalidate()
+        if clockView.clockTimer != nil {
+            clockView.clockTimer?.invalidate()
         }
         if eventTimer != nil {
             eventTimer?.invalidate()
