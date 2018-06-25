@@ -6,7 +6,7 @@
 //  Copyright © 2018 H Hugo Falkman. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 struct Color {
     

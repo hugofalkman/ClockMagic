@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="ipad9_7" orientation="landscape">
         <adaptation id="fullscreen"/>
     </device>
@@ -104,7 +104,7 @@
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" secondItem="K8H-XV-U8S" secondAttribute="height" multiplier="1:1" id="f6h-LR-qkh"/>
                                 </constraints>
                             </view>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="a4S-rw-faT">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="a4S-rw-faT" customClass="LocalCalendarView" customModule="ClockMagic" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="524" width="512" height="244"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Day of the Week" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4xa-IM-DoH">
@@ -136,6 +136,12 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
+                                <connections>
+                                    <outlet property="dateLabel" destination="HRr-3i-6cg" id="q9o-0Y-fTk"/>
+                                    <outlet property="dayOfWeekLabel" destination="4xa-IM-DoH" id="QCL-3o-Avv"/>
+                                    <outlet property="seasonLabel" destination="VLq-vd-6MC" id="hRl-F1-zNc"/>
+                                    <outlet property="timeOfDayLabel" destination="gD9-3p-WRI" id="uDJ-RO-f9S"/>
+                                </connections>
                             </stackView>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="SeA-EX-QoE">
                                 <rect key="frame" x="0.0" y="20" width="512" height="748"/>
@@ -177,15 +183,12 @@ For instructions and help on setting up the Google account, contact list, and ca
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
-                        <outlet property="dateLabel" destination="HRr-3i-6cg" id="i0h-ir-Biz"/>
-                        <outlet property="dayOfWeekLabel" destination="4xa-IM-DoH" id="0x5-vt-P2m"/>
-                        <outlet property="seasonLabel" destination="VLq-vd-6MC" id="3SW-f8-xFL"/>
+                        <outlet property="localCalendarView" destination="a4S-rw-faT" id="gwo-Mg-zP0"/>
                         <outlet property="signInButton" destination="zbY-Ii-G3C" id="gwL-0W-Ojl"/>
                         <outlet property="spinner" destination="oD6-7a-gFK" id="TAR-gE-vUy"/>
                         <outlet property="startMessage" destination="SeA-EX-QoE" id="2bB-Yc-0D7"/>
                         <outlet property="subView" destination="K8H-XV-U8S" id="I14-Tg-4jd"/>
                         <outlet property="tableView" destination="m9k-WX-omO" id="hBV-Ih-8BP"/>
-                        <outlet property="timeOfDayLabel" destination="gD9-3p-WRI" id="DZv-eN-aQI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

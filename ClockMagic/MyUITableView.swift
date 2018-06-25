@@ -47,7 +47,7 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
         isRedBackground = isRed
         
         eventsByDay = [[Event]](repeating: [], count: numberDays)
-        let calendar = Calendar.current
+        let calendar = Calendar.autoupdatingCurrent
         for i in 0..<numberDays {
             let date = calendar.date(byAdding: .day, value: i, to: currentDate)
             eventsByDay[i] = events.filter { calendar.isDate($0.start, inSameDayAs: date!) }
