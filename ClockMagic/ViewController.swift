@@ -135,13 +135,11 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         if oldEvents.isEmpty {
             spinner.stopAnimating()
         }
-        
         // Speaking time on the hour
         // Assuming event refresh rate is less than one hour does not need to repeat
         if speaker.speakTimeTimer == nil {
             speaker.startSpeakTimeTimer()
         }
-        
         let error = googleCalendar.eventsInError
         if error {
             displayError(error: userInfo?["error"] as? NSError)
@@ -216,7 +214,6 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
                 speaker.speakTimeTimer?.invalidate()
                 speaker.speakTimeTimer = nil
             }
-            
             let message = NSLocalizedString(
                 "Fel. Kunde inte läsa kalendern.", comment: "Error message")
             showAlert(title: NSLocalizedString("Åtkomstfel",comment: "Error message"),

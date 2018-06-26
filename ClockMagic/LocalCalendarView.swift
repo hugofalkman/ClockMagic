@@ -9,15 +9,19 @@
 import UIKit
 
 class LocalCalendarView: UIStackView {
-
+    
+    // MARK: - Properties
+    
     @IBOutlet private weak var dayOfWeekLabel: UILabel!
     @IBOutlet private weak var timeOfDayLabel: UILabel!
     @IBOutlet private weak var seasonLabel: UILabel!
     @IBOutlet private weak var dateLabel: UILabel!
+    
+    private let dateFormatter = DateFormatter.shared
 
     // MARK: - "Public" API
     
-    @objc func update(currentDate: Date) {
+    func update(currentDate: Date) {
         dateFormatter.formattingContext = .standalone
         dayOfWeekLabel.text = dateFormatter.weekdaySymbols[Calendar.autoupdatingCurrent.component(.weekday, from: currentDate) - 1]
         
@@ -36,7 +40,6 @@ class LocalCalendarView: UIStackView {
         default:
             timeOfDayLabel.text = nil
         }
-        
         let monthday = Calendar.autoupdatingCurrent.dateComponents([.month, .day], from: currentDate)
         switch (monthday.month ?? 0, monthday.day ?? 0) {
         case (1...4, _), (12, _):
@@ -50,13 +53,7 @@ class LocalCalendarView: UIStackView {
         default:
             seasonLabel.text = nil
         }
-        
         dateFormatter.setLocalizedDateFormatFromTemplate("MMMM d, YYYY")
         dateLabel.text = dateFormatter.string(from: currentDate)
     }
-    
-    // MARK: - Properties
-    
-    private let dateFormatter = DateFormatter.shared
-    
 }
