@@ -97,7 +97,7 @@
                                     <constraint firstAttribute="width" constant="312" id="r7B-VY-dBl"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K8H-XV-U8S">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K8H-XV-U8S" customClass="ClockView" customModule="ClockMagic" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="20" width="512" height="512"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
@@ -183,11 +183,11 @@ For instructions and help on setting up the Google account, contact list, and ca
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="clockView" destination="K8H-XV-U8S" id="WVR-bY-n7G"/>
                         <outlet property="localCalendarView" destination="a4S-rw-faT" id="gwo-Mg-zP0"/>
                         <outlet property="signInButton" destination="zbY-Ii-G3C" id="gwL-0W-Ojl"/>
                         <outlet property="spinner" destination="oD6-7a-gFK" id="TAR-gE-vUy"/>
                         <outlet property="startMessage" destination="SeA-EX-QoE" id="2bB-Yc-0D7"/>
-                        <outlet property="subView" destination="K8H-XV-U8S" id="I14-Tg-4jd"/>
                         <outlet property="tableView" destination="m9k-WX-omO" id="hBV-Ih-8BP"/>
                     </connections>
                 </viewController>

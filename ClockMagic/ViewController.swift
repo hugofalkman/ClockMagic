@@ -17,7 +17,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     
     // MARK: - Properties
     
-    @IBOutlet private weak var subView: UIView!
+    @IBOutlet private weak var clockView: ClockView!
     @IBOutlet private weak var localCalendarView: LocalCalendarView!
     @IBOutlet private weak var tableView: MyUITableView!
     @IBOutlet private weak var spinner: UIActivityIndicatorView!
@@ -39,13 +39,6 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     private var foregroundObserver: NSObjectProtocol?
     
     private weak var eventTimer: Timer?
-    
-    private lazy var clockView: ClockView = {
-        let clock = ClockView(frame: subView.bounds)
-        clock.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        subView.addSubview(clock)
-        return clock
-    }()
     
     // MARK: - View Controller Lifecycle
     

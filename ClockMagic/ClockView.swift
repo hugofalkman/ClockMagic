@@ -36,7 +36,7 @@ class ClockView: UIView {
         }
     }
     
-    // MARK: - NSView
+    // MARK: - UIView
     
     @objc private func update() {
         setNeedsDisplay()
