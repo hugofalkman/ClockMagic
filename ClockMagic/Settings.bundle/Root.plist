@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>StringsTable</key>
+	<string>Root</string>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Google authorization</string>
+			<key>FooterText</key>
+			<string>Saved in iOS keychain. Turn off to switch to a different Google account.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Save authorization</string>
+			<key>Key</key>
+			<string>saveAuthorization</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Google calendar</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Calendar events shown</string>
+			<key>FooterText</key>
+			<string>Number of 24 hour periods from the Google calendar visible in The Magic Clock. Minimum 1, maximum 7, default set to 3 (72 hours).</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSSliderSpecifier</string>
+			<key>Key</key>
+			<string>calendarEventMax</string>
+			<key>DefaultValue</key>
+			<integer>3</integer>
+			<key>MinimumValue</key>
+			<integer>1</integer>
+			<key>MaximumValue</key>
+			<integer>7</integer>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Calendar refresh rate</string>
+			<key>FooterText</key>
+			<string>Number of minutes before The Magic Clock refreshes calendar events from the Google calendar. Minimum 5, maximum 90, default set to 15 minutes.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSSliderSpecifier</string>
+			<key>Key</key>
+			<string>eventTimer</string>
+			<key>DefaultValue</key>
+			<integer>15</integer>
+			<key>MinimumValue</key>
+			<integer>5</integer>
+			<key>MaximumValue</key>
+			<integer>90</integer>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Timeout</string>
+			<key>FooterText</key>
+			<string>Number of seconds before requests over the internet to the Google API times out. Minimum 30, maximum 90, default set to 30 seconds.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSSliderSpecifier</string>
+			<key>Key</key>
+			<string>googleTimeout</string>
+			<key>DefaultValue</key>
+			<integer>30</integer>
+			<key>MinimumValue</key>
+			<integer>30</integer>
+			<key>MaximumValue</key>
+			<integer>90</integer>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Speech</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enabled</string>
+			<key>Key</key>
+			<string>speechEnabled</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Reminder interval</string>
+			<key>FooterText</key>
+			<string>Number of minutes ahead of an event The Magic Clock speaks a reminder. Minimum 0, maximum 120, default set to 10 minutes.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSSliderSpecifier</string>
+			<key>Key</key>
+			<string>speakEventNoticeTime</string>
+			<key>DefaultValue</key>
+			<integer>10</integer>
+			<key>MinimumValue</key>
+			<integer>0</integer>
+			<key>MaximumValue</key>
+			<integer>120</integer>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Photos</string>
+			<key>FooterText</key>
+			<string>Number of seconds The Magic Clock shows each photo in a siideshow. Minimum 1, maximum 60, default set to 8 seconds.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSSliderSpecifier</string>
+			<key>Key</key>
+			<string>photoTimer</string>
+			<key>DefaultValue</key>
+			<integer>8</integer>
+			<key>MinimumValue</key>
+			<integer>1</integer>
+			<key>MaximumValue</key>
+			<integer>60</integer>
+		</dict>
+	</array>
+</dict>
+</plist>

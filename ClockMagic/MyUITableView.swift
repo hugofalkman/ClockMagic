@@ -45,6 +45,7 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
     func setup(events: [Event], isRedBackground isRed: Bool, currentDate: Date) {
         self.currentDate = currentDate
         isRedBackground = isRed
+        numberDays = 1 + Int(ceil(TimingConstants.calendarEventMax / (24 * 3600.0)))
         
         eventsByDay = [[Event]](repeating: [], count: numberDays)
         let calendar = Calendar.autoupdatingCurrent
@@ -68,7 +69,7 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
     private var isRedBackground = false
     private var currentDate = Date()
     private let dateFormatter = DateFormatter.shared
-    private let numberDays = 1 + Int(ceil(TimingConstants.calendarEventMax / (24 * 3600.0)))
+    private var numberDays = 0
     
     // MARK: - SlideShow
     

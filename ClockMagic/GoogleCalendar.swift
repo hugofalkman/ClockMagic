@@ -53,18 +53,18 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         GIDSignIn.sharedInstance().language = Locale.current.languageCode
         
         // Automatic Google Sign-in if access token saved in Keychain
-        GIDSignIn.sharedInstance().signInSilently()
+        if TimingConstants.saveAuthorization {
+            GIDSignIn.sharedInstance().signInSilently()
+        } else {
+            GIDSignIn.sharedInstance().disconnect()
+        }
         
         // Configure GTLR services
-        service.isRetryEnabled = true
-        service.maxRetryInterval = TimingConstants.googleTimeout
-        service.callbackQueue = DispatchQueue.global()
-        service2.isRetryEnabled = true
-        service2.maxRetryInterval = TimingConstants.googleTimeout
-        service2.callbackQueue = DispatchQueue.global()
-        service3.isRetryEnabled = true
-        service3.maxRetryInterval = TimingConstants.googleTimeout
-        service3.callbackQueue = DispatchQueue.global()
+        for service in [service, service2, service3] {
+            service.isRetryEnabled = true
+            service.maxRetryInterval = TimingConstants.googleTimeout
+            service.callbackQueue = DispatchQueue.global()
+        }
     }
     
     // MARK: - GID SignIn Delegate
@@ -124,55 +124,48 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         query.personFields = "names,emailAddresses,photos"
         
         dispatchGroupContacts.enter()
-        service2.executeQuery(
-            query,
-            delegate: self,
-            didFinish: #selector(self.getContactsFromTicket(ticket:finishedWithObject:error:)))
-    }
-    
-    @objc private func getContactsFromTicket(
-        ticket: GTLRServiceTicket,
-        finishedWithObject response: GTLRPeopleService_ListConnectionsResponse,
-        error: NSError?) {
-        
-        contacts = []
-        if error != nil {
-        // Continue fetching calendar events, just leaving them without photos of the creator
-            dispatchGroupContacts.leave()
-            return
-        }
-        if let connections = response.connections, !connections.isEmpty {
-            loop: for connection in connections {
-                var email = ""
-                if let emailAddresses = connection.emailAddresses, !emailAddresses.isEmpty {
-                    for address in emailAddresses {
-                        if let _ = address.metadata?.primary {
-                            email = address.value ?? ""
-                        }
-                    }
-                }
-                if email == "" { continue loop }
-                
-                var primaryName = ""
-                if let names = connection.names, !names.isEmpty {
-                    for name in names {
-                        if let _ = name.metadata?.primary {
-                            primaryName = name.displayName ?? ""
-                        }
-                    }
-                }
-                var url = ""
-                if let photos = connection.photos, !photos.isEmpty {
-                    for photo in photos {
-                        if let _ = photo.metadata?.primary {
-                            url = photo.url ?? ""
-                        }
-                    }
-                }
-                contacts.append(Contact(email: email, name: primaryName, photoUrl: url))
+        service2.executeQuery(query) { (ticket, responseAny, error) in
+            self.contacts = []
+            if error != nil {
+                print("Contacts " + (error as NSError?)!.localizedDescription)
+                // Continue fetching calendar events, just leaving them without photos of the creator
+                self.dispatchGroupContacts.leave()
+                return
             }
+            if let response = responseAny as? GTLRPeopleService_ListConnectionsResponse,
+                let connections = response.connections, !connections.isEmpty {
+                loop: for connection in connections {
+                    var email = ""
+                    if let emailAddresses = connection.emailAddresses, !emailAddresses.isEmpty {
+                        for address in emailAddresses {
+                            if let _ = address.metadata?.primary {
+                                email = address.value ?? ""
+                            }
+                        }
+                    }
+                    if email == "" { continue loop }
+                    
+                    var primaryName = ""
+                    if let names = connection.names, !names.isEmpty {
+                        for name in names {
+                            if let _ = name.metadata?.primary {
+                                primaryName = name.displayName ?? ""
+                            }
+                        }
+                    }
+                    var url = ""
+                    if let photos = connection.photos, !photos.isEmpty {
+                        for photo in photos {
+                            if let _ = photo.metadata?.primary {
+                                url = photo.url ?? ""
+                            }
+                        }
+                    }
+                    self.contacts.append(Contact(email: email, name: primaryName, photoUrl: url))
+                }
+            }
+            self.dispatchGroupContacts.leave()
         }
-        dispatchGroupContacts.leave()
     }
     
     // MARK: - Get list of Calendar ids
@@ -311,7 +304,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                     dispatchGroupEvents.enter()
                     fetcher.beginFetch { (data, error) in
                         if error != nil {
-                            print((error as NSError?)!.localizedDescription)
+                            print("Attach photos " + (error as NSError?)!.localizedDescription)
                             // Continue without adding photo to event
                             self.dispatchGroupEvents.leave()
                             return

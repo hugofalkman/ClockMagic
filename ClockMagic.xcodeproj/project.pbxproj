@@ -13,6 +13,7 @@
 		B1397E6D20E0FE5000E89E62 /* LocalCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1397E6C20E0FE5000E89E62 /* LocalCalendarView.swift */; };
 		B1397E6F20E1121100E89E62 /* TimingConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1397E6E20E1121100E89E62 /* TimingConstants.swift */; };
 		B14F251420C5A03C0068393F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B14F251620C5A03C0068393F /* InfoPlist.strings */; };
+		B18C012020E3EC0200AFCF45 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B18C011F20E3EC0200AFCF45 /* Settings.bundle */; };
 		B1B08A6C20B573FC004DE743 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B08A6B20B573FC004DE743 /* Event.swift */; };
 		B1B08A6E20B57670004DE743 /* GoogleCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B08A6D20B57670004DE743 /* GoogleCalendar.swift */; };
 		B1C6669520A3145100904F2C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B1C6669720A3145100904F2C /* Localizable.strings */; };
@@ -40,6 +41,7 @@
 		B14F251A20C5A04E0068393F /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		B16EEDAA20D2C2EB00F2242A /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B16EEDAB20D2C2EB00F2242A /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B18C011F20E3EC0200AFCF45 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		B1B08A6B20B573FC004DE743 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		B1B08A6D20B57670004DE743 /* GoogleCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCalendar.swift; sourceTree = "<group>"; };
 		B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ClockMagic-bridging-header.h"; sourceTree = "<group>"; };
@@ -79,6 +81,7 @@
 				B1FD216220971D7F00AF26E0 /* LaunchScreen.storyboard */,
 				B1FD216520971D7F00AF26E0 /* Info.plist */,
 				B14F251620C5A03C0068393F /* InfoPlist.strings */,
+				B18C011F20E3EC0200AFCF45 /* Settings.bundle */,
 				B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */,
 			);
 			name = "Supporting files";
@@ -199,6 +202,11 @@
 				TargetAttributes = {
 					B1FD215520971D7E00AF26E0 = {
 						CreatedOnToolsVersion = 9.3;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+						};
 					};
 				};
 			};
@@ -234,6 +242,7 @@
 				B1FD216420971D7F00AF26E0 /* LaunchScreen.storyboard in Resources */,
 				B1C6669520A3145100904F2C /* Localizable.strings in Resources */,
 				B1FD216120971D7F00AF26E0 /* Assets.xcassets in Resources */,
+				B18C012020E3EC0200AFCF45 /* Settings.bundle in Resources */,
 				B1FD215F20971D7E00AF26E0 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

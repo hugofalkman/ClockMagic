@@ -14,27 +14,32 @@ class Speaker: NSObject {
     // MARK: - "Public" API
     
     var userName: String?
-    var speakEventTimer: Timer?
     var speakTimeTimer: Timer?
+    var speakEventTimer: Timer?
     
     func startSpeakTimeTimer() {
+        guard TimingConstants.speechEnabled else { return }
         if let date = Calendar.autoupdatingCurrent.date(byAdding: .hour,
             value: TimingConstants.speakTimeHour, to: Date()) {
             let hour = Calendar.autoupdatingCurrent.component(.hour, from: date)
             if let firingDate = Calendar.autoupdatingCurrent.date(
                 bySettingHour: hour, minute: 0, second: 1, of: date) {
-                speakTimeTimer = Timer(fireAt: firingDate, interval: 0, target: self,
-                    selector: #selector(speakTime), userInfo: nil, repeats: false)
-                RunLoop.main.add(speakTimeTimer!, forMode: .commonModes)
+                speakTimeTimer = Timer(fireAt: firingDate,
+                    interval: Double(TimingConstants.speakTimeHour) * 3600.0, target: self,
+                    selector: #selector(speakTime), userInfo: nil, repeats: true)
+                RunLoop.current.add(speakTimeTimer!, forMode: .commonModes)
             }
         }
     }
     
     func speakTimeFirst() {
+        guard TimingConstants.speechEnabled else { return }
         speakTime(first: true)
     }
     
     func checkSpeakEventTimer(events: [Event]) {
+        guard TimingConstants.speechEnabled else { return }
+        numberMinutes = Int(TimingConstants.speakEventNoticeTime / (60.0))
         let newEvents = findFirstEvents(events: events)
         guard newEvents.first != firstEvents.first else { return }
         firstEvents = newEvents
@@ -64,13 +69,13 @@ class Speaker: NSObject {
     
     private let dispatchGroupSpeech = DispatchGroup()
     private var firstEvents = [Event]()
-    private let numberMinutes = Int(TimingConstants.speakEventNoticeTime / (60.0))
+    private var numberMinutes = 0
     
     // MARK: - Speech output
     
     @objc private func speakTime(first: Bool = false) {
         speakTimeTimer = nil
-        let hello = NSLocalizedString("Hej %@, klockan är %@.", comment: "Hey tame, it's time")
+        let hello = NSLocalizedString("Hej %@, klockan är %@.", comment: "Hey name, it's time")
         var time = ""
         var date = Date()
         let hour = Calendar.autoupdatingCurrent.component(.hour, from: date)
@@ -110,7 +115,8 @@ class Speaker: NSObject {
         
         func isNearEvent(event: Event) -> Bool {
             let noticeTimeInterval = event.start.timeIntervalSinceNow - TimingConstants.speakEventNoticeTime
-            if noticeTimeInterval > 1 && noticeTimeInterval < TimingConstants.speakEventTimerMax {
+            if noticeTimeInterval > 1 && noticeTimeInterval <
+                max(TimingConstants.speakEventTimerMax, TimingConstants.eventTimer)  {
                 return true
             } else { return false }
         }

@@ -11,14 +11,18 @@ import Foundation
 struct TimingConstants {
     
     static let clockTimer = 0.25
-    static let eventTimer = 5 * 60.0 // if >= speakTimeHour rewrite speaker speakTime
-    static let photoTimer = 8.0
     static let speakTimeHour = 1
     static let speakEventTimerMax = 60 * 60.0
-    static let speakEventNoticeTime = 10 * 60.0
-    static let googleTimeout = 30.0
-    static let calendarEventMax = 4.5 * 24 * 3600.0
     static let cacheDisk = 200 * 1024 * 1024
+    
+    // Set by registerSettingsBundle method in ViewController
+    static var saveAuthorization = false
+    static var calendarEventMax = 0.0
+    static var eventTimer = 0.0
+    static var googleTimeout = 0.0
+    static var speechEnabled = false
+    static var speakEventNoticeTime = 0.0
+    static var photoTimer = 0.0
     
     private init() {}
 }
