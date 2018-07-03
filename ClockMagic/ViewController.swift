@@ -40,9 +40,6 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     
     private weak var eventTimer: Timer?
     
-    private var firstTimeUserDefaults = true
-    private var isInBackground = false
-    
     // MARK: - View Controller Lifecycle
     
     override func viewDidLoad() {
@@ -50,7 +47,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         registerSettingsBundle()
         updateConstantsFromDefaults()
         NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: OperationQueue.main)
-        { notification in self.defaultsChanged() }
+            { notification in self.updateConstantsFromDefaults() }
         
         // Configure Google Sign-in and the sign-in button. Setup Start message.
         GIDSignIn.sharedInstance().uiDelegate = self
@@ -59,16 +56,8 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         startMessage.text = NSLocalizedString("Logga in på ditt Google-konto",
             comment: "Initially displayed message")
         
-        // Start Google GID Signin and wait for it to complete
-        signedInObserver = NotificationCenter.default.addObserver(
-            forName: .GoogleSignedIn,
-            object: googleCalendar,
-            queue: OperationQueue.main,
-            using: { (notification) in
-                self.googleSignedIn(userInfo: notification.userInfo)
-            }
-        )
-        googleCalendar.setupGIDSignIn()
+        // Same process as when (later) returning to foregrund from background
+        willEnterForeground()
     }
     
     //MARK: - Settings bundle and UserDefault
@@ -81,7 +70,6 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     }
     
     private func updateConstantsFromDefaults() {
-        print("constants updated")
         let defaults = UserDefaults.standard
         TimingConstants.saveAuthorization = defaults.bool(forKey: "saveAuthorization")
         TimingConstants.calendarEventMax = defaults.double(forKey: "calendarEventMax") * 24 * 3600.0
@@ -92,52 +80,9 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         TimingConstants.photoTimer = defaults.double(forKey: "photoTimer")
     }
     
-    private func defaultsChanged() {
-        print("defaults changed")
-        updateConstantsFromDefaults()
-        // First time switch
-        // Bug in UserDefaults.didChangeNotification, triggers when TableView is initialized
-//        if !firstTimeUserDefaults {
-//            willEnterForeground()
-//        } else {
-//            firstTimeUserDefaults = false
-//        }
-    }
-    
-    // MARK: - Google ID Signin
-    
-    private func googleSignedIn(userInfo: [AnyHashable: Any]?) {
-        
-        if let error = userInfo?["error"] as? Error {
-            // Ignore errors before viewDidLoad complete
-            if self.isViewLoaded && (self.view.window != nil) { showAlert(
-                title: NSLocalizedString("Auktoriseringsfel",
-                comment: "Wrong password or similar"),
-                message: error.localizedDescription, okAction: nil)
-            }
-        } else {
-            if let observer = signedInObserver {
-                NotificationCenter.default.removeObserver(observer)
-                signedInObserver = nil
-            }
-            startMessage.isHidden = true
-            signInButton.isHidden = true
-
-            speaker.userName = userInfo?["name"] as? String
-            events = []
-            oldEvents = []
-            currentDate = Date()
-            spinner.startAnimating()
-            
-            // Same process as when (later) returning to foregrund from background
-            willEnterForeground()
-        }
-    }
-    
-    // MARK: - Application Life Cycle
+    // MARK: - Application Life Cycle, entering foreground
     
     private func willEnterForeground() {
-        print("Enters foreground")
         // Switch background/foreground observer
         if let observer = foregroundObserver {
             NotificationCenter.default.removeObserver(observer)
@@ -148,14 +93,38 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             object: UIApplication.shared, queue: OperationQueue.main)
             { notification in self.didEnterBackgrund() }
         
-        if isInBackground && !TimingConstants.saveAuthorization {
-            isInBackground = false
+        // Start Google GID Signin and wait for it to complete
+        signedInObserver = NotificationCenter.default.addObserver(
+            forName: .GoogleSignedIn, object: googleCalendar, queue: OperationQueue.main)
+            { notification in self.googleSignedIn(userInfo: notification.userInfo) }
+        googleCalendar.setupGIDSignIn()
+    }
+    
+    // MARK: - Google signed in
+    
+    private func googleSignedIn(userInfo: [AnyHashable: Any]?) {
+        if let error = userInfo?["error"] as? Error {
+            // Ignore errors before viewDidLoad complete
+            if self.isViewLoaded && (self.view.window != nil) { showAlert(
+                title: NSLocalizedString("Auktoriseringsfel", comment: "Wrong password or similar"),
+                message: error.localizedDescription, okAction: nil)
+            }
+        } else {
+            if let observer = signedInObserver {
+                NotificationCenter.default.removeObserver(observer)
+                signedInObserver = nil
+            }
+            startMessage.isHidden = true
+            signInButton.isHidden = true
+            
+            speaker.userName = userInfo?["name"] as? String
+            events = []
+            oldEvents = []
+            currentDate = Date()
             tableView.isHidden = true
-            googleSignout()
-            return
+            spinner.startAnimating()
         }
-        isInBackground = false
-        
+    
         // Start clock, initialize local Calendar and speak first time
         clockView.startClock()
         localCalendarView.update(currentDate: Date())
@@ -168,13 +137,8 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         
         // Request events from GoogleCalendar and wait for request to complete
         eventsObserver = NotificationCenter.default.addObserver(
-            forName: .EventsDidChange,
-            object: googleCalendar,
-            queue: OperationQueue.main,
-            using: { (notification) in
-                self.eventsDidChange(userInfo: notification.userInfo)
-            }
-        )
+            forName: .EventsDidChange, object: googleCalendar, queue: OperationQueue.main)
+            { notification in self.eventsDidChange(userInfo: notification.userInfo) }
         googleCalendar.getEvents()
         
         // Refresh events regularly
@@ -184,6 +148,8 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
                 userInfo: nil, repeats: true)
         }
     }
+    
+    // MARK: - Events refreshed by model
     
     private func eventsDidChange(userInfo: [AnyHashable: Any]?) {
         currentDate = googleCalendar.currentDate
@@ -214,8 +180,9 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         }
     }
     
+    // MARK: - Aoplication Life Cycle, entered background
+    
     private func didEnterBackgrund() {
-        isInBackground = true
         // Switch background/foreground observer
         if let observer = backgroundObserver {
             NotificationCenter.default.removeObserver(observer)
@@ -226,15 +193,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             object: UIApplication.shared, queue: OperationQueue.main)
             { notification in self.willEnterForeground() }
         
-        // Remove observers and invalidate timers
-        if let observer = eventsObserver {
-            NotificationCenter.default.removeObserver(observer)
-            eventsObserver = nil
-        }
-        if let observer = signedInObserver {
-            NotificationCenter.default.removeObserver(observer)
-            signedInObserver = nil
-        }
+        // Invalidate timers
         if clockView.clockTimer != nil {
             clockView.clockTimer?.invalidate()
         }
@@ -252,6 +211,22 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             speaker.speakEventTimer?.invalidate()
             speaker.speakEventTimer = nil
         }
+        
+        // Remove observers
+        if let observer = eventsObserver {
+            NotificationCenter.default.removeObserver(observer)
+            eventsObserver = nil
+        }
+        if let observer = signedInObserver {
+            NotificationCenter.default.removeObserver(observer)
+            signedInObserver = nil
+        }
+        
+        signInButton.isHidden = false
+        tableView.isHidden = true
+        
+        // Get a new instance of the model
+        googleCalendar = GoogleCalendar()
     }
     
     // MARK: - Displaying errors
@@ -273,10 +248,8 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             let message = NSLocalizedString(
                 "Fel. Kunde inte läsa kalendern.", comment: "Error message")
             showAlert(title: NSLocalizedString("Åtkomstfel",comment: "Error message"),
-                message: message) { action in
-                // Signout and start again
-                    self.googleSignout()
-            }
+                message: message)
+                { action in self.googleSignout() } // Signout and start again
         } else {
             // If not first time continue displaying old events but with a warning at the beginning
             events = oldEvents
@@ -291,17 +264,11 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     }
     
     private func googleSignout() {
-        GIDSignIn.sharedInstance().disconnect()
         GIDSignIn.sharedInstance().signOut()
-        self.signedInObserver = NotificationCenter.default.addObserver(
-            forName: .GoogleSignedIn,
-            object: self.googleCalendar,
-            queue: OperationQueue.main,
-            using: { (notification) in
-                self.googleSignedIn(userInfo: notification.userInfo)
-            }
-        )
-        self.signInButton.isHidden = false
+        signedInObserver = NotificationCenter.default.addObserver(
+            forName: .GoogleSignedIn, object: self.googleCalendar, queue: OperationQueue.main)
+            { notification in self.googleSignedIn(userInfo: notification.userInfo) }
+        signInButton.isHidden = false
     }
     
     // MARK: - Displaying Alert helper function
@@ -310,17 +277,11 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         okAction: ((UIAlertAction) -> Void)?) {
         if presentedViewController == nil {
             let alert = UIAlertController(
-                title: title,
-                message: message,
-                preferredStyle: UIAlertControllerStyle.alert
-            )
+                title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
             let ok = UIAlertAction(
-                title: "OK",
-                style: UIAlertActionStyle.default,
-                handler: okAction
-            )
+                title: "OK", style: UIAlertActionStyle.default, handler: okAction)
             alert.addAction(ok)
-            self.present(alert, animated: true, completion: nil)
+            present(alert, animated: true, completion: nil)
         }
     }
 }

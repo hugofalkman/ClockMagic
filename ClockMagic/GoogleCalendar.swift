@@ -39,7 +39,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         dispatchGroupContacts.notify(queue: .main) { [weak self] in
             //  Get contact photos and when finished notify caller
             self?.getCreatorPhotos()
-            self?.dispatchGroupEvents.notify(queue: .main) {
+            self?.dispatchGroupEvents.notify(queue: .main) { [weak self] in
                 self?.eventsInError = false
                 NotificationCenter.default.post(name: .EventsDidChange, object: self)
             }
@@ -53,14 +53,14 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         GIDSignIn.sharedInstance().language = Locale.current.languageCode
         
         // Automatic Google Sign-in if access token saved in Keychain
-        if TimingConstants.saveAuthorization {
+        if TimingConstants.saveAuthorization && GIDSignIn.sharedInstance().hasAuthInKeychain() {
             GIDSignIn.sharedInstance().signInSilently()
         } else {
-            GIDSignIn.sharedInstance().disconnect()
+            GIDSignIn.sharedInstance().signOut()
         }
         
         // Configure GTLR services
-        for service in [service, service2, service3] {
+        services.forEach { service in
             service.isRetryEnabled = true
             service.maxRetryInterval = TimingConstants.googleTimeout
             service.callbackQueue = DispatchQueue.global()
@@ -74,14 +74,10 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         var userInfo = [String: Any]()
         if let error = error {
             userInfo["error"] = error
-            service.authorizer = nil
-            service2.authorizer = nil
-            service3.authorizer = nil
+            services.forEach { service in service.authorizer = nil }
         } else {
             let authorizer = user.authentication.fetcherAuthorizer()
-            service.authorizer = authorizer
-            service2.authorizer = authorizer
-            service3.authorizer = authorizer
+            services.forEach { service in service.authorizer = authorizer }
             userInfo["name"] = user.profile.givenName
         }
         NotificationCenter.default.post(name: .GoogleSignedIn,
@@ -113,6 +109,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     private let service = GTLRCalendarService()
     private let service2 = GTLRPeopleServiceService()
     private let service3 = GTLRDriveService()
+    private lazy var services: [GTLRService] = { return [service,service2,service3] }()
     
     private var session: URLSession
     private var dataTask: URLSessionDataTask?
