@@ -150,7 +150,7 @@
 			<key>Title</key>
 			<string>Photos</string>
 			<key>FooterText</key>
-			<string>Number of seconds The Magic Clock shows each photo in a siideshow. Minimum 1, maximum 60, default set to 8 seconds.</string>
+			<string>Number of seconds The Magic Clock shows each photo in a slideshow. Minimum 1, maximum 60, default set to 8 seconds.</string>
 		</dict>
 		<dict>
 			<key>Type</key>
