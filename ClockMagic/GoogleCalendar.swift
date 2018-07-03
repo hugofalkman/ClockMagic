@@ -18,12 +18,12 @@ extension Notification.Name {
 class GoogleCalendar: NSObject, GIDSignInDelegate {
     
     override init() {
-        super.init()
         let config = URLSessionConfiguration.default
         config.urlCache = URLCache.shared
         config.requestCachePolicy = .returnCacheDataElseLoad
         config.timeoutIntervalForRequest = TimingConstants.googleTimeout
         session = URLSession(configuration: config)
+        super.init()
     }
     
     // MARK: - "Public" API (also sends above two notifications)
@@ -36,11 +36,11 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         dispatchGroupContacts = DispatchGroup()
         fetchContacts()
         getCalendarList()
-        dispatchGroupContacts.notify(queue: .main) {
+        dispatchGroupContacts.notify(queue: .main) { [weak self] in
             //  Get contact photos and when finished notify caller
-            self.getCreatorPhotos()
-            self.dispatchGroupEvents.notify(queue: .main) {
-                self.eventsInError = false
+            self?.getCreatorPhotos()
+            self?.dispatchGroupEvents.notify(queue: .main) {
+                self?.eventsInError = false
                 NotificationCenter.default.post(name: .EventsDidChange, object: self)
             }
         }
@@ -74,14 +74,14 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         var userInfo = [String: Any]()
         if let error = error {
             userInfo["error"] = error
-            self.service.authorizer = nil
-            self.service2.authorizer = nil
-            self.service3.authorizer = nil
+            service.authorizer = nil
+            service2.authorizer = nil
+            service3.authorizer = nil
         } else {
             let authorizer = user.authentication.fetcherAuthorizer()
-            self.service.authorizer = authorizer
-            self.service2.authorizer = authorizer
-            self.service3.authorizer = authorizer
+            service.authorizer = authorizer
+            service2.authorizer = authorizer
+            service3.authorizer = authorizer
             userInfo["name"] = user.profile.givenName
         }
         NotificationCenter.default.post(name: .GoogleSignedIn,
@@ -114,7 +114,7 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     private let service2 = GTLRPeopleServiceService()
     private let service3 = GTLRDriveService()
     
-    private var session: URLSession?
+    private var session: URLSession
     private var dataTask: URLSessionDataTask?
     
     // MARK: - Get Google Contacts
@@ -124,12 +124,12 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         query.personFields = "names,emailAddresses,photos"
         
         dispatchGroupContacts.enter()
-        service2.executeQuery(query) { (ticket, responseAny, error) in
-            self.contacts = []
+        service2.executeQuery(query) { [weak self] (ticket, responseAny, error) in
+            self?.contacts = []
             if error != nil {
                 print("Contacts " + (error as NSError?)!.localizedDescription)
                 // Continue fetching calendar events, just leaving them without photos of the creator
-                self.dispatchGroupContacts.leave()
+                self?.dispatchGroupContacts.leave()
                 return
             }
             if let response = responseAny as? GTLRPeopleService_ListConnectionsResponse,
@@ -161,10 +161,10 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                             }
                         }
                     }
-                    self.contacts.append(Contact(email: email, name: primaryName, photoUrl: url))
+                    self?.contacts.append(Contact(email: email, name: primaryName, photoUrl: url))
                 }
             }
-            self.dispatchGroupContacts.leave()
+            self?.dispatchGroupContacts.leave()
         }
     }
     
@@ -177,27 +177,27 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         let query = GTLRCalendarQuery_CalendarListList.query()
         query.fields = "items/id"
         dispatchGroupContacts.enter()
-        service.executeQuery(query) { (ticket, response, error) in
+        service.executeQuery(query) { [weak self] (ticket, response, error) in
             if let error = error as NSError? {
                 // Flag error and return
-                self.flagError(error: error)
+                self?.flagError(error: error)
                 return
             }
             if let list = response as? GTLRCalendar_CalendarList,
                 let items = list.items {
                     for item in items where item.identifier != nil {
                         let calendarId = item.identifier!
-                        self.calendarIds.append(calendarId)
+                        self?.calendarIds.append(calendarId)
                     }
             }
-            if self.calendarIds.isEmpty {
+            if let ids = self?.calendarIds, ids.isEmpty {
                 // Flag error and return
                 let error = NSError(domain: "com.clockmagic.error", code: 999, userInfo: [NSLocalizedDescriptionKey : NSLocalizedString("Inga kalendrar funna", comment: "Error message no calendars" )])
-                self.flagError(error: error)
+                self?.flagError(error: error)
                 return
             }
             DispatchQueue.main.async {
-                self.fetchEvents()
+                self?.fetchEvents()
             }
         }
     }
@@ -224,18 +224,18 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
             query.orderBy = kGTLRCalendarOrderByStartTime
             
             dispatchGroupEvents.enter()
-            service.executeQuery(query) { (ticket, response, error) in
+            service.executeQuery(query) { [weak self] (ticket, response, error) in
                 if let error = error as NSError? {
                     // Save error and wait for other calendar Id background threads
-                    self.eventsSemaphore.wait()
-                    self.saveError = error
-                    self.eventsSemaphore.signal()
-                    self.dispatchGroupEvents.leave()
+                    self?.eventsSemaphore.wait()
+                    self?.saveError = error
+                    self?.eventsSemaphore.signal()
+                    self?.dispatchGroupEvents.leave()
                     return
                 }
                 if let list = response as? GTLRCalendar_Events,
                     let items = list.items, !items.isEmpty {
-                        self.eventsSemaphore.wait()
+                    self?.eventsSemaphore.wait()
                         for item in items {
                             // If hasTime is false, start.date is set to noon GMT
                             // to make day correct in all timezones
@@ -253,14 +253,15 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                                     }
                                 }
                             }
-                            self.events.append(event)
+                            self?.events.append(event)
                         }
-                        self.eventsSemaphore.signal()
+                    self?.eventsSemaphore.signal()
                 }
-                self.dispatchGroupEvents.leave()
+                self?.dispatchGroupEvents.leave()
             }
         }
-        dispatchGroupEvents.notify(queue: .main) {
+        dispatchGroupEvents.notify(queue: .main) { [weak self] in
+            guard let `self` = self else { return }
             if let error = self.saveError {
                 // Flag error and return
                 self.flagError(error: error)
@@ -302,25 +303,25 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                         config.timeoutIntervalForRequest = TimingConstants.googleTimeout
                     }
                     dispatchGroupEvents.enter()
-                    fetcher.beginFetch { (data, error) in
+                    fetcher.beginFetch { [weak self] (data, error) in
                         if error != nil {
                             print("Attach photos " + (error as NSError?)!.localizedDescription)
                             // Continue without adding photo to event
-                            self.dispatchGroupEvents.leave()
+                            self?.dispatchGroupEvents.leave()
                             return
                         }
-                        self.eventsSemaphore.wait()
+                        self?.eventsSemaphore.wait()
                         if let data = data, let photo = UIImage(data: data) {
-                            self.events[eventIndex].attachPhoto.append(photo)
+                            self?.events[eventIndex].attachPhoto.append(photo)
                         }
-                        self.eventsSemaphore.signal()
-                        self.dispatchGroupEvents.leave()
+                        self?.eventsSemaphore.signal()
+                        self?.dispatchGroupEvents.leave()
                     }
                 }
             }
         }
-        dispatchGroupEvents.notify(queue: .main) {
-            self.dispatchGroupContacts.leave()
+        dispatchGroupEvents.notify(queue: .main) { [weak self] in
+            self?.dispatchGroupContacts.leave()
         }
     }
     
@@ -337,18 +338,19 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
                 if let url = URL(string: urlString) { // also discards the case urlString == ""
                     let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: TimingConstants.googleTimeout)
                     dispatchGroupEvents.enter()
-                    dataTask = session?.dataTask(with: urlRequest) { (data, response, error) in
+                    dataTask = session.dataTask(with: urlRequest) {
+                        [weak self] (data, response, error) in
                         if error != nil {
                             print((error as NSError?)!.localizedDescription)
                             // Continue without adding photo to event
                             return
                         }
-                        self.eventsSemaphore.wait()
+                        self?.eventsSemaphore.wait()
                         if let data = data, let photo = UIImage(data: data) {
-                            self.events[eventIndex].photo = photo
+                            self?.events[eventIndex].photo = photo
                         }
-                        self.eventsSemaphore.signal()
-                        self.dispatchGroupEvents.leave()
+                        self?.eventsSemaphore.signal()
+                        self?.dispatchGroupEvents.leave()
                     }
                     dataTask?.resume()
                     // dispatchGroupEvents.notify is up in the "public" func getEvents

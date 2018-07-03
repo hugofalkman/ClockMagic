@@ -122,7 +122,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             }
             startMessage.isHidden = true
             signInButton.isHidden = true
-            // tableView.isHidden = false
+
             speaker.userName = userInfo?["name"] as? String
             events = []
             oldEvents = []
