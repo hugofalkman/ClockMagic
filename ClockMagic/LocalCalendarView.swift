@@ -22,6 +22,17 @@ class LocalCalendarView: UIStackView {
     // MARK: - "Public" API
     
     func update(currentDate: Date) {
+        
+        var font = Fonts.localCalendar
+        if #available(iOS 11.0, *) {
+            let metrics = UIFontMetrics(forTextStyle: .body)
+            font = metrics.scaledFont(for: font)
+        }
+            dayOfWeekLabel.font = font
+            timeOfDayLabel.font = font
+            seasonLabel.font = font
+            dateLabel.font = font
+        
         dateFormatter.formattingContext = .standalone
         dayOfWeekLabel.text = dateFormatter.weekdaySymbols[Calendar.autoupdatingCurrent.component(.weekday, from: currentDate) - 1]
         

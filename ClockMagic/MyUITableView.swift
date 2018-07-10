@@ -132,6 +132,17 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
         } else {
             cell.attachPhoto.image = nil
         }
+        
+        var headerFont = Fonts.TableView.title
+        var descriptionFont = Fonts.TableView.description
+        if #available(iOS 11.0, *) {
+            let metrics = UIFontMetrics(forTextStyle: .body)
+            headerFont = metrics.scaledFont(for: headerFont)
+            descriptionFont = metrics.scaledFont(for: descriptionFont)
+        }
+        
+        cell.headerLabel.font = headerFont
+        cell.descriptionLabel.font = descriptionFont
         cell.headerLabel.text = eventsByDay[section][row].title
         cell.descriptionLabel.text = eventsByDay[section][row].detail
         cell.creatorPhoto.image = eventsByDay[section][row].photo
@@ -145,8 +156,13 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
         guard !eventsByDay.isEmpty else { return nil }
         guard !eventsByDay[section].isEmpty else { return nil }
         
+        var font = Fonts.TableView.sectionHeader
+        if #available(iOS 11.0, *) {
+            let metrics = UIFontMetrics(forTextStyle: .body)
+            font = metrics.scaledFont(for: font)
+        }
         let header = UILabel()
-        header.font = UIFont.systemFont(ofSize: 25, weight: .medium)
+        header.font = font
         header.numberOfLines = 0
         header.lineBreakMode = .byWordWrapping
         header.sizeToFit()
