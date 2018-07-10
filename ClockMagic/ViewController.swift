@@ -121,8 +121,6 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             UIView.transition(with: signInButton, duration: 0.5, options: [.transitionCrossDissolve,
                 .curveEaseInOut], animations: { self.signInButton.isHidden = true })
             
-
-            
             speaker.userName = userInfo?["name"] as? String
             events = []
             oldEvents = []

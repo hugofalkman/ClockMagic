@@ -43,6 +43,17 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
     weak var photoTimer: Timer?
     
     func setup(events: [Event], isRedBackground isRed: Bool, currentDate: Date) {
+        
+        sectionFont = Fonts.TableView.sectionHeader
+        titleFont = Fonts.TableView.title
+        descriptionFont = Fonts.TableView.description
+        if #available(iOS 11.0, *) {
+            let metrics = UIFontMetrics(forTextStyle: .body)
+            sectionFont = metrics.scaledFont(for: sectionFont)
+            titleFont = metrics.scaledFont(for: titleFont)
+            descriptionFont = metrics.scaledFont(for: descriptionFont)
+        }
+        
         self.currentDate = currentDate
         isRedBackground = isRed
         numberDays = 1 + Int(ceil(TimingConstants.calendarEventMax / (24 * 3600.0)))
@@ -70,6 +81,10 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
     private var currentDate = Date()
     private let dateFormatter = DateFormatter.shared
     private var numberDays = 0
+    
+    private var sectionFont = Fonts.TableView.sectionHeader
+    private var titleFont = Fonts.TableView.title
+    private var descriptionFont = Fonts.TableView.description
     
     // MARK: - SlideShow
     
@@ -133,15 +148,7 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
             cell.attachPhoto.image = nil
         }
         
-        var headerFont = Fonts.TableView.title
-        var descriptionFont = Fonts.TableView.description
-        if #available(iOS 11.0, *) {
-            let metrics = UIFontMetrics(forTextStyle: .body)
-            headerFont = metrics.scaledFont(for: headerFont)
-            descriptionFont = metrics.scaledFont(for: descriptionFont)
-        }
-        
-        cell.headerLabel.font = headerFont
+        cell.headerLabel.font = titleFont
         cell.descriptionLabel.font = descriptionFont
         cell.headerLabel.text = eventsByDay[section][row].title
         cell.descriptionLabel.text = eventsByDay[section][row].detail
@@ -152,17 +159,11 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
     // MARK: - TableView Delegate
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        
         guard !eventsByDay.isEmpty else { return nil }
         guard !eventsByDay[section].isEmpty else { return nil }
         
-        var font = Fonts.TableView.sectionHeader
-        if #available(iOS 11.0, *) {
-            let metrics = UIFontMetrics(forTextStyle: .body)
-            font = metrics.scaledFont(for: font)
-        }
         let header = UILabel()
-        header.font = font
+        header.font = sectionFont
         header.numberOfLines = 0
         header.lineBreakMode = .byWordWrapping
         header.sizeToFit()
@@ -177,7 +178,7 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
         default:
             header.text = ""
         }
-        
+
         let day = Calendar.current.date(byAdding: .day, value: section, to: currentDate)!
         dateFormatter.setLocalizedDateFormatFromTemplate("EEEE MMMM d")
         header.text = (header.text! + " " + dateFormatter.string(from: day)).uppercased()

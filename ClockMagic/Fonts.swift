@@ -14,6 +14,7 @@ struct Fonts {
         static let light = "HelveticaNeue-Light"
         static let regular = "HelveticaNeue"
         static let bold = "HelveticaNeue-Bold"
+        private init() {}
     }
     // Following fonts are dynamically changed if iOS 11.0 or later
     static let localCalendar = UIFont.systemFont(ofSize: 30, weight: .semibold)
@@ -22,7 +23,7 @@ struct Fonts {
         static let sectionHeader = UIFont.systemFont(ofSize: 25, weight: .medium)
         static let title = UIFont.systemFont(ofSize: 25, weight: .semibold)
         static let description = UIFont.systemFont(ofSize: 22, weight: .regular)
+        private init(){}
     }
-    
     private init() {}
 }
