@@ -23,10 +23,9 @@ class ClockView: UIView {
     
     // MARK: - Properties
     
-    var clockFrame: CGRect {
+    private var clockFrame: CGRect {
         return clockFrame(forBounds: bounds)
     }
-    let fontName = "HelveticaNeue-Light"
     
     private let dateFormatter = DateFormatter.shared
     
@@ -96,19 +95,20 @@ class ClockView: UIView {
     }
     
     func draw(time: String, version: String) {
-        let timeBackgroundColor = UIColor(red: 0.894, green: 0.933, blue: 0.965, alpha: 1)
         let clockWidth = clockFrame.size.width
         
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
         
+        // Time
         let string = NSAttributedString(string: time, attributes: [
-            .font: UIFont(name: "HelveticaNeue-Bold", size: clockWidth * 0.09)!,
+            .font: UIFont(name: Fonts.Clock.bold, size: clockWidth * 0.09)!,
             .kern: -1,
             .paragraphStyle: paragraph
             ])
+        // Version
         let string2 = NSAttributedString(string: version, attributes: [
-            .font: UIFont(name: "HelveticaNeue", size: clockWidth * 0.03)!,
+            .font: UIFont(name: Fonts.Clock.regular, size: clockWidth * 0.03)!,
             .kern: -1,
             .paragraphStyle: paragraph
             ])
@@ -117,11 +117,12 @@ class ClockView: UIView {
         stringFrame.size.width += clockWidth * 0.04
         stringFrame.origin.x = clockFrame.origin.x + ((clockWidth - stringFrame.size.width) / 2.0)
         stringFrame.origin.y = clockFrame.origin.y + (clockWidth * 0.6)
+        
         var string2Frame = string2.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil)
         string2Frame.size.width += clockWidth * 0.02
         string2Frame.origin = CGPoint.zero
         
-        timeBackgroundColor.setFill()
+       Color.timeBackground.setFill()
         UIRectFill(stringFrame)
         UIRectFill(string2Frame)
         
@@ -231,7 +232,7 @@ class ClockView: UIView {
         
         let clockWidth = clockFrame.size.width
         let textRadius = clockWidth * CGFloat(radius)
-        let font = UIFont(name: fontName, size: clockWidth * fontSize)!
+        let font = UIFont(name: Fonts.Clock.light, size: clockWidth * fontSize)!
         
         for i in 0..<12 {
             let string = NSAttributedString(string: "\(12 - i)", attributes: [

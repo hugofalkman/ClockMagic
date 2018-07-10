@@ -53,6 +53,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         GIDSignIn.sharedInstance().uiDelegate = self
         signInButton.style = GIDSignInButtonStyle.wide
         signInButton.colorScheme = GIDSignInButtonColorScheme.dark
+        startMessage.isHidden = false
         startMessage.text = NSLocalizedString("Logga in på ditt Google-konto",
             comment: "Initially displayed message")
         
@@ -114,8 +115,13 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
                 NotificationCenter.default.removeObserver(observer)
                 signedInObserver = nil
             }
-            startMessage.isHidden = true
-            signInButton.isHidden = true
+            
+            UIView.transition(with: startMessage, duration: 0.5, options: [.transitionCrossDissolve,
+                .curveEaseInOut], animations: { self.startMessage.isHidden = true })
+            UIView.transition(with: signInButton, duration: 0.5, options: [.transitionCrossDissolve,
+                .curveEaseInOut], animations: { self.signInButton.isHidden = true })
+            
+
             
             speaker.userName = userInfo?["name"] as? String
             events = []
@@ -268,7 +274,8 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         signedInObserver = NotificationCenter.default.addObserver(
             forName: .GoogleSignedIn, object: self.googleCalendar, queue: OperationQueue.main)
             { notification in self.googleSignedIn(userInfo: notification.userInfo) }
-        signInButton.isHidden = false
+        UIView.transition(with: signInButton, duration: 0.5, options: [.transitionCrossDissolve,
+            .curveEaseInOut], animations: { self.signInButton.isHidden = false })
     }
     
     // MARK: - Displaying Alert helper function
