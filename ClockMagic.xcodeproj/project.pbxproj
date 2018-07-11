@@ -13,6 +13,7 @@
 		B1397E6D20E0FE5000E89E62 /* LocalCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1397E6C20E0FE5000E89E62 /* LocalCalendarView.swift */; };
 		B1397E6F20E1121100E89E62 /* TimingConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1397E6E20E1121100E89E62 /* TimingConstants.swift */; };
 		B14AD7FE20F4BE64005FFE30 /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14AD7FD20F4BE64005FFE30 /* Fonts.swift */; };
+		B14AD80020F57F0F005FFE30 /* ClockMagic.png in Resources */ = {isa = PBXBuildFile; fileRef = B14AD7FF20F57F0E005FFE30 /* ClockMagic.png */; };
 		B14F251420C5A03C0068393F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B14F251620C5A03C0068393F /* InfoPlist.strings */; };
 		B18C012020E3EC0200AFCF45 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B18C011F20E3EC0200AFCF45 /* Settings.bundle */; };
 		B1B08A6C20B573FC004DE743 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B08A6B20B573FC004DE743 /* Event.swift */; };
@@ -34,6 +35,7 @@
 		B1397E6E20E1121100E89E62 /* TimingConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimingConstants.swift; sourceTree = "<group>"; };
 		B1397E7520E1199A00E89E62 /* ClockMagic.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = ClockMagic.jpg; path = ../../../../../../Downloads/ClockMagic.jpg; sourceTree = "<group>"; };
 		B14AD7FD20F4BE64005FFE30 /* Fonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
+		B14AD7FF20F57F0E005FFE30 /* ClockMagic.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ClockMagic.png; sourceTree = "<group>"; };
 		B14F251020C58BC20068393F /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		B14F251120C58DE40068393F /* sv-SE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sv-SE"; path = "sv-SE.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		B14F251520C5A03C0068393F /* sv-SE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sv-SE"; path = "sv-SE.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -149,6 +151,7 @@
 				B1C6669720A3145100904F2C /* Localizable.strings */,
 				B1397E7320E1194500E89E62 /* Supporting files */,
 				B1397E7520E1199A00E89E62 /* ClockMagic.jpg */,
+				B14AD7FF20F57F0E005FFE30 /* ClockMagic.png */,
 			);
 			path = ClockMagic;
 			sourceTree = "<group>";
@@ -245,6 +248,7 @@
 				B1FD216420971D7F00AF26E0 /* LaunchScreen.storyboard in Resources */,
 				B1C6669520A3145100904F2C /* Localizable.strings in Resources */,
 				B1FD216120971D7F00AF26E0 /* Assets.xcassets in Resources */,
+				B14AD80020F57F0F005FFE30 /* ClockMagic.png in Resources */,
 				B18C012020E3EC0200AFCF45 /* Settings.bundle in Resources */,
 				B1FD215F20971D7E00AF26E0 /* Main.storyboard in Resources */,
 			);

@@ -53,11 +53,11 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         GIDSignIn.sharedInstance().uiDelegate = self
         signInButton.style = GIDSignInButtonStyle.wide
         signInButton.colorScheme = GIDSignInButtonColorScheme.dark
-        startMessage.isHidden = false
+        startMessage.alpha = 1
         startMessage.text = NSLocalizedString("Logga in på ditt Google-konto",
             comment: "Initially displayed message")
         
-        // Same process as when (later) returning to foregrund from background
+        // Same process as when (later) returning to foreground from background
         willEnterForeground()
     }
     
@@ -127,29 +127,29 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             currentDate = Date()
             tableView.isHidden = true
             spinner.startAnimating()
-        }
     
-        // Start clock, initialize local Calendar and speak first time
-        clockView.startClock()
-        localCalendarView.update(currentDate: Date())
-        speaker.speakTimeFirst()
-        
-        // Speaking time on the hour
-        if speaker.speakTimeTimer == nil {
-            speaker.startSpeakTimeTimer()
-        }
-        
-        // Request events from GoogleCalendar and wait for request to complete
-        eventsObserver = NotificationCenter.default.addObserver(
-            forName: .EventsDidChange, object: googleCalendar, queue: OperationQueue.main)
-            { notification in self.eventsDidChange(userInfo: notification.userInfo) }
-        googleCalendar.getEvents()
-        
-        // Refresh events regularly
-        if eventTimer == nil {
-            eventTimer = Timer.scheduledTimer(timeInterval: TimingConstants.eventTimer,
-                target: googleCalendar, selector: #selector(googleCalendar.getEvents),
-                userInfo: nil, repeats: true)
+            // Start clock, initialize local Calendar and speak first time
+            clockView.startClock()
+            localCalendarView.update(currentDate: Date())
+            speaker.speakTimeFirst()
+            
+            // Speaking time on the hour
+            if speaker.speakTimeTimer == nil {
+                speaker.startSpeakTimeTimer()
+            }
+            
+            // Request events from GoogleCalendar and wait for request to complete
+            eventsObserver = NotificationCenter.default.addObserver(
+                forName: .EventsDidChange, object: googleCalendar, queue: OperationQueue.main)
+                { notification in self.eventsDidChange(userInfo: notification.userInfo) }
+            googleCalendar.getEvents()
+            
+            // Refresh events regularly
+            if eventTimer == nil {
+                eventTimer = Timer.scheduledTimer(timeInterval: TimingConstants.eventTimer,
+                    target: googleCalendar, selector: #selector(googleCalendar.getEvents),
+                    userInfo: nil, repeats: true)
+            }
         }
     }
     
