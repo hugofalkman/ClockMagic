@@ -22,6 +22,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     @IBOutlet private weak var tableView: MyUITableView!
     @IBOutlet private weak var spinner: UIActivityIndicatorView!
     
+    @IBOutlet private weak var loginView: UIStackView!
     @IBOutlet private weak var startMessage: UITextView!
     @IBOutlet private weak var signInButton: GIDSignInButton!
     
@@ -46,7 +47,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         super.viewDidLoad()
         registerSettingsBundle()
         updateConstantsFromDefaults()
-        NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: OperationQueue.main)
+        NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: .main)
             { notification in self.updateConstantsFromDefaults() }
         
         // Configure Google Sign-in and the sign-in button. Setup Start message.
@@ -94,9 +95,19 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             object: UIApplication.shared, queue: OperationQueue.main)
             { notification in self.didEnterBackgrund() }
         
+        // Start clock, initialize local Calendar and speak first time
+        clockView.startClock()
+        localCalendarView.update(currentDate: Date())
+        speaker.speakTimeFirst()
+        
+        // Speaking time on the hour
+        if speaker.speakTimeTimer == nil {
+            speaker.startSpeakTimeTimer()
+        }
+        
         // Start Google GID Signin and wait for it to complete
         signedInObserver = NotificationCenter.default.addObserver(
-            forName: .GoogleSignedIn, object: googleCalendar, queue: OperationQueue.main)
+            forName: .GoogleSignedIn, object: googleCalendar, queue: .main)
             { notification in self.googleSignedIn(userInfo: notification.userInfo) }
         googleCalendar.setupGIDSignIn()
     }
@@ -116,10 +127,8 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
                 signedInObserver = nil
             }
             
-            UIView.transition(with: startMessage, duration: 0.5, options: [.transitionCrossDissolve,
-                .curveEaseInOut], animations: { self.startMessage.isHidden = true })
-            UIView.transition(with: signInButton, duration: 0.5, options: [.transitionCrossDissolve,
-                .curveEaseInOut], animations: { self.signInButton.isHidden = true })
+            UIView.transition(with: loginView, duration: 0.5, options: [.transitionCrossDissolve,
+                .curveEaseInOut], animations: { self.loginView.isHidden = true })
             
             speaker.userName = userInfo?["name"] as? String
             events = []
@@ -127,16 +136,6 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             currentDate = Date()
             tableView.isHidden = true
             spinner.startAnimating()
-    
-            // Start clock, initialize local Calendar and speak first time
-            clockView.startClock()
-            localCalendarView.update(currentDate: Date())
-            speaker.speakTimeFirst()
-            
-            // Speaking time on the hour
-            if speaker.speakTimeTimer == nil {
-                speaker.startSpeakTimeTimer()
-            }
             
             // Request events from GoogleCalendar and wait for request to complete
             eventsObserver = NotificationCenter.default.addObserver(
@@ -226,7 +225,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             signedInObserver = nil
         }
         
-        signInButton.isHidden = false
+        loginView.isHidden = false
         tableView.isHidden = true
         
         // Get a new instance of the model
@@ -272,8 +271,8 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         signedInObserver = NotificationCenter.default.addObserver(
             forName: .GoogleSignedIn, object: self.googleCalendar, queue: OperationQueue.main)
             { notification in self.googleSignedIn(userInfo: notification.userInfo) }
-        UIView.transition(with: signInButton, duration: 0.5, options: [.transitionCrossDissolve,
-            .curveEaseInOut], animations: { self.signInButton.isHidden = false })
+        UIView.transition(with: loginView, duration: 0.5, options: [.transitionCrossDissolve,
+            .curveEaseInOut], animations: { self.loginView.isHidden = false })
     }
     
     // MARK: - Displaying Alert helper function

@@ -89,14 +89,6 @@
                                 <rect key="frame" x="749.5" y="375.5" width="37" height="37"/>
                                 <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             </activityIndicatorView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zbY-Ii-G3C" customClass="GIDSignInButton">
-                                <rect key="frame" x="612" y="370" width="312" height="48"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="48" id="1pn-ZB-tTp"/>
-                                    <constraint firstAttribute="width" constant="312" id="r7B-VY-dBl"/>
-                                </constraints>
-                            </view>
                             <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="K8H-XV-U8S" customClass="ClockView" customModule="ClockMagic" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="20" width="512" height="512"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -143,40 +135,57 @@
                                     <outlet property="timeOfDayLabel" destination="gD9-3p-WRI" id="uDJ-RO-f9S"/>
                                 </connections>
                             </stackView>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.0" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="SeA-EX-QoE">
-                                <rect key="frame" x="0.0" y="20" width="512" height="748"/>
-                                <color key="backgroundColor" red="0.99363827019999995" green="1" blue="0.59624979840000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="25"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="4Bs-KE-45H">
+                                <rect key="frame" x="520" y="20" width="504" height="732"/>
+                                <subviews>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.0" contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" editable="NO" text="Text" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="SeA-EX-QoE">
+                                        <rect key="frame" x="0.0" y="0.0" width="504" height="664"/>
+                                        <color key="backgroundColor" red="0.99363827019999995" green="1" blue="0.59624979840000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="25"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                    </textView>
+                                    <view contentMode="scaleToFill" verticalHuggingPriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="zbY-Ii-G3C" customClass="GIDSignInButton">
+                                        <rect key="frame" x="96" y="684" width="312" height="48"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="48" id="1pn-ZB-tTp"/>
+                                            <constraint firstAttribute="width" constant="312" id="r7B-VY-dBl"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="SeA-EX-QoE" secondAttribute="trailing" id="0JD-Bt-akK"/>
+                                    <constraint firstItem="SeA-EX-QoE" firstAttribute="leading" secondItem="4Bs-KE-45H" secondAttribute="leading" id="bJx-yg-jNH"/>
+                                    <constraint firstItem="SeA-EX-QoE" firstAttribute="top" secondItem="4Bs-KE-45H" secondAttribute="top" id="j6H-eQ-ZIw"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="4Bs-KE-45H" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="12l-WN-ccB"/>
                             <constraint firstItem="a4S-rw-faT" firstAttribute="top" secondItem="K8H-XV-U8S" secondAttribute="bottomMargin" id="50Q-L2-P7K"/>
-                            <constraint firstItem="SeA-EX-QoE" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="5Bb-D4-O6r"/>
                             <constraint firstItem="m9k-WX-omO" firstAttribute="leading" secondItem="K8H-XV-U8S" secondAttribute="trailing" constant="8" id="5Ri-My-Kkq"/>
                             <constraint firstItem="m9k-WX-omO" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="CHB-vF-G3X"/>
-                            <constraint firstItem="SeA-EX-QoE" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="HHS-fO-k4q"/>
-                            <constraint firstItem="SeA-EX-QoE" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="KBj-SK-Gwh"/>
+                            <constraint firstItem="4Bs-KE-45H" firstAttribute="leading" secondItem="K8H-XV-U8S" secondAttribute="trailing" constant="8" id="HtN-j7-jON"/>
                             <constraint firstItem="oD6-7a-gFK" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" multiplier="3:2" id="N2s-a3-TJV"/>
                             <constraint firstItem="m9k-WX-omO" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="Qxi-5Y-9bt"/>
                             <constraint firstItem="K8H-XV-U8S" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="R9Y-YB-MJH"/>
                             <constraint firstItem="m9k-WX-omO" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="SfB-0m-K56"/>
                             <constraint firstItem="K8H-XV-U8S" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="1:2" id="WGh-j1-pu9"/>
-                            <constraint firstItem="zbY-Ii-G3C" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" multiplier="3:2" id="WW7-Hk-LC4"/>
-                            <constraint firstItem="SeA-EX-QoE" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="1:2" id="aal-aL-1tk"/>
                             <constraint firstItem="K8H-XV-U8S" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="bFA-Fi-YZX"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="4Bs-KE-45H" secondAttribute="bottom" constant="16" id="fig-sb-RSQ"/>
+                            <constraint firstItem="4Bs-KE-45H" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="jKI-Pf-T3J"/>
                             <constraint firstItem="m9k-WX-omO" firstAttribute="leading" secondItem="a4S-rw-faT" secondAttribute="trailing" constant="8" id="k5B-hR-5im"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="a4S-rw-faT" secondAttribute="bottom" id="m24-9a-wlp"/>
                             <constraint firstItem="a4S-rw-faT" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="nrL-Qg-gcv"/>
                             <constraint firstItem="oD6-7a-gFK" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="os6-fs-ku8"/>
-                            <constraint firstItem="zbY-Ii-G3C" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="wRw-js-auf"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
                         <outlet property="clockView" destination="K8H-XV-U8S" id="WVR-bY-n7G"/>
                         <outlet property="localCalendarView" destination="a4S-rw-faT" id="gwo-Mg-zP0"/>
+                        <outlet property="loginView" destination="4Bs-KE-45H" id="N2H-ek-L5Z"/>
                         <outlet property="signInButton" destination="zbY-Ii-G3C" id="gwL-0W-Ojl"/>
                         <outlet property="spinner" destination="oD6-7a-gFK" id="TAR-gE-vUy"/>
                         <outlet property="startMessage" destination="SeA-EX-QoE" id="2bB-Yc-0D7"/>
@@ -185,7 +194,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-42" y="84"/>
+            <point key="canvasLocation" x="-33" y="22"/>
         </scene>
     </scenes>
 </document>
