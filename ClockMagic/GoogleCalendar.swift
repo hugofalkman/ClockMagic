@@ -8,14 +8,12 @@
 
 import Foundation
 import GoogleAPIClientForREST
-import GoogleSignIn
 
 extension Notification.Name {
     static let EventsDidChange = Notification.Name("EventsDidChange")
-    static let GoogleSignedIn = Notification.Name("GoogleSignedIn")
 }
 
-class GoogleCalendar: NSObject, GIDSignInDelegate {
+class GoogleCalendar: NSObject {
     
     override init() {
         let config = URLSessionConfiguration.default
@@ -26,8 +24,14 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         super.init()
     }
     
-    // MARK: - "Public" API (also sends above two notifications)
+    // MARK: - "Public" API (also sends above notification)
     
+    // Set when signed in to Google
+    var service = GTLRCalendarService()
+    var service2 = GTLRPeopleServiceService()
+    var service3 = GTLRDriveService()
+    
+    // Returned by getEvents method
     private(set) var currentDate = Date()
     private(set) var events = [Event]()
     private(set) var eventsInError = false
@@ -46,44 +50,6 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
         }
     }
     
-    func setupGIDSignIn() {
-        // Configure Google Sign-in.
-        GIDSignIn.sharedInstance().delegate = self
-        GIDSignIn.sharedInstance().scopes = scopes
-        GIDSignIn.sharedInstance().language = Locale.current.languageCode
-        
-        // Automatic Google Sign-in if access token saved in Keychain
-        if TimingConstants.saveAuthorization && GIDSignIn.sharedInstance().hasAuthInKeychain() {
-            GIDSignIn.sharedInstance().signInSilently()
-        } else {
-            GIDSignIn.sharedInstance().signOut()
-        }
-        
-        // Configure GTLR services
-        services.forEach { service in
-            service.isRetryEnabled = true
-            service.maxRetryInterval = TimingConstants.googleTimeout
-            service.callbackQueue = DispatchQueue.global()
-        }
-    }
-    
-    // MARK: - GID SignIn Delegate
-    
-    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
-              withError error: Error!) {
-        var userInfo = [String: Any]()
-        if let error = error {
-            userInfo["error"] = error
-            services.forEach { service in service.authorizer = nil }
-        } else {
-            let authorizer = user.authentication.fetcherAuthorizer()
-            services.forEach { service in service.authorizer = authorizer }
-            userInfo["name"] = user.profile.givenName
-        }
-        NotificationCenter.default.post(name: .GoogleSignedIn,
-            object: self, userInfo: userInfo)
-    }
-    
     // MARK: - Private properties and struct
     
     private var dispatchGroupContacts = DispatchGroup()
@@ -98,18 +64,6 @@ class GoogleCalendar: NSObject, GIDSignInDelegate {
     private var contacts = [Contact]()
     private var calendarIds = [String]()
     private var saveError: NSError?
-    
-    // Google GTLR framework
-    // When scopes change, delete access token in Keychain by uninstalling the app
-    private let scopes = [
-        kGTLRAuthScopeCalendarReadonly,
-        kGTLRAuthScopePeopleServiceContactsReadonly,
-        kGTLRAuthScopeDriveReadonly
-    ]
-    private let service = GTLRCalendarService()
-    private let service2 = GTLRPeopleServiceService()
-    private let service3 = GTLRDriveService()
-    private lazy var services: [GTLRService] = { return [service,service2,service3] }()
     
     private var session: URLSession
     private var dataTask: URLSessionDataTask?

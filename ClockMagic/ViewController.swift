@@ -7,13 +7,12 @@
 //
 
 import UIKit
-import GoogleSignIn
 
 extension DateFormatter {
     static let shared = DateFormatter()
 }
 
-class ViewController: UIViewController, GIDSignInUIDelegate {
+class ViewController: UIViewController {
     
     // MARK: - Properties
     
@@ -23,14 +22,14 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     @IBOutlet private weak var spinner: UIActivityIndicatorView!
     @IBOutlet private weak var loginView: UIView!
     
-    private var events = [Event]()
-    private var oldEvents = [Event]()
-    private var currentDate = Date()
-    
     private var embeddedGoogleLogin: GoogleLoginViewController?
     private var googleCalendar = GoogleCalendar()
     private let speaker = Speaker()
     private let dateFormatter = DateFormatter.shared
+    
+    private var events = [Event]()
+    private var oldEvents = [Event]()
+    private var currentDate = Date()
     
     private var eventsObserver: NSObjectProtocol?
     private var signedInObserver: NSObjectProtocol?
@@ -99,9 +98,9 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         
         // Start Google GID Signin and wait for it to complete
         signedInObserver = NotificationCenter.default.addObserver(
-            forName: .GoogleSignedIn, object: googleCalendar, queue: .main)
+            forName: .GoogleSignedIn, object: embeddedGoogleLogin, queue: .main)
             { notification in self.googleSignedIn(userInfo: notification.userInfo) }
-        googleCalendar.setupGIDSignIn()
+        embeddedGoogleLogin?.signIn()
     }
     
     // MARK: - Google signed in
@@ -119,15 +118,20 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
                 signedInObserver = nil
             }
             
-            UIView.transition(with: loginView, duration: 0.5, options: [.transitionCrossDissolve,
+            // Can't get to this function unless embeddedLogin is not nil
+            googleCalendar.service = embeddedGoogleLogin!.service
+            googleCalendar.service2 = embeddedGoogleLogin!.service2
+            googleCalendar.service3 = embeddedGoogleLogin!.service3
+            
+            tableView.isHidden = true
+            spinner.startAnimating()
+            UIView.transition(with: loginView, duration: 1.0, options: [.transitionCrossDissolve,
                 .curveEaseInOut], animations: { self.loginView.isHidden = true })
             
             speaker.userName = userInfo?["name"] as? String
             events = []
             oldEvents = []
             currentDate = Date()
-            tableView.isHidden = true
-            spinner.startAnimating()
             
             // Request events from GoogleCalendar and wait for request to complete
             eventsObserver = NotificationCenter.default.addObserver(
@@ -144,7 +148,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         }
     }
     
-    // MARK: - Events refreshed by model
+    // MARK: - Events refreshed by GoogleCalendar
     
     private func eventsDidChange(userInfo: [AnyHashable: Any]?) {
         currentDate = googleCalendar.currentDate
@@ -259,9 +263,9 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     }
     
     private func googleSignout() {
-        GIDSignIn.sharedInstance().signOut()
+        embeddedGoogleLogin?.signOut()
         signedInObserver = NotificationCenter.default.addObserver(
-            forName: .GoogleSignedIn, object: self.googleCalendar, queue: OperationQueue.main)
+            forName: .GoogleSignedIn, object: self.embeddedGoogleLogin, queue: .main)
             { notification in self.googleSignedIn(userInfo: notification.userInfo) }
         UIView.transition(with: loginView, duration: 0.5, options: [.transitionCrossDissolve,
             .curveEaseInOut], animations: { self.loginView.isHidden = false })
