@@ -16,6 +16,8 @@
 		B14AD80020F57F0F005FFE30 /* ClockMagic.png in Resources */ = {isa = PBXBuildFile; fileRef = B14AD7FF20F57F0E005FFE30 /* ClockMagic.png */; };
 		B14F251420C5A03C0068393F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B14F251620C5A03C0068393F /* InfoPlist.strings */; };
 		B18C012020E3EC0200AFCF45 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B18C011F20E3EC0200AFCF45 /* Settings.bundle */; };
+		B19EB8902104903C00DF63FA /* GoogleLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19EB88F2104903C00DF63FA /* GoogleLoginViewController.swift */; };
+		B19EB8922104ACC100DF63FA /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19EB8912104ACC100DF63FA /* Utilities.swift */; };
 		B1B08A6C20B573FC004DE743 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B08A6B20B573FC004DE743 /* Event.swift */; };
 		B1B08A6E20B57670004DE743 /* GoogleCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B08A6D20B57670004DE743 /* GoogleCalendar.swift */; };
 		B1C6669520A3145100904F2C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B1C6669720A3145100904F2C /* Localizable.strings */; };
@@ -46,6 +48,8 @@
 		B16EEDAA20D2C2EB00F2242A /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B16EEDAB20D2C2EB00F2242A /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B18C011F20E3EC0200AFCF45 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		B19EB88F2104903C00DF63FA /* GoogleLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleLoginViewController.swift; sourceTree = "<group>"; };
+		B19EB8912104ACC100DF63FA /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		B1B08A6B20B573FC004DE743 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		B1B08A6D20B57670004DE743 /* GoogleCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCalendar.swift; sourceTree = "<group>"; };
 		B1C6668E209C732E00904F2C /* ClockMagic-bridging-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ClockMagic-bridging-header.h"; sourceTree = "<group>"; };
@@ -81,6 +85,7 @@
 		B1397E7320E1194500E89E62 /* Supporting files */ = {
 			isa = PBXGroup;
 			children = (
+				B19EB8912104ACC100DF63FA /* Utilities.swift */,
 				B1FD216020971D7F00AF26E0 /* Assets.xcassets */,
 				B1FD216220971D7F00AF26E0 /* LaunchScreen.storyboard */,
 				B1FD216520971D7F00AF26E0 /* Info.plist */,
@@ -145,6 +150,7 @@
 				B1FD215920971D7E00AF26E0 /* AppDelegate.swift */,
 				B1FD215D20971D7E00AF26E0 /* Main.storyboard */,
 				B1FD215B20971D7E00AF26E0 /* ViewController.swift */,
+				B19EB88F2104903C00DF63FA /* GoogleLoginViewController.swift */,
 				B1397E7920E11B5100E89E62 /* Model */,
 				B1397E7820E11B0E00E89E62 /* Views */,
 				B1397E7720E11A7E00E89E62 /* Constants */,
@@ -328,6 +334,7 @@
 				B1FD216E2097206F00AF26E0 /* ClockView.swift in Sources */,
 				B1FD2172209723F900AF26E0 /* Color.swift in Sources */,
 				B1397E6B20DFC74300E89E62 /* Speaker.swift in Sources */,
+				B19EB8922104ACC100DF63FA /* Utilities.swift in Sources */,
 				B1FD215A20971D7E00AF26E0 /* AppDelegate.swift in Sources */,
 				B11CC08B20C2F82B00CB47A2 /* MyUITableView.swift in Sources */,
 				B1B08A6E20B57670004DE743 /* GoogleCalendar.swift in Sources */,
@@ -335,6 +342,7 @@
 				B14AD7FE20F4BE64005FFE30 /* Fonts.swift in Sources */,
 				B1B08A6C20B573FC004DE743 /* Event.swift in Sources */,
 				B1397E6D20E0FE5000E89E62 /* LocalCalendarView.swift in Sources */,
+				B19EB8902104903C00DF63FA /* GoogleLoginViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

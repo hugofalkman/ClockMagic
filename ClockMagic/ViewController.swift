@@ -21,15 +21,13 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
     @IBOutlet private weak var localCalendarView: LocalCalendarView!
     @IBOutlet private weak var tableView: MyUITableView!
     @IBOutlet private weak var spinner: UIActivityIndicatorView!
-    
-    @IBOutlet private weak var loginView: UIStackView!
-    @IBOutlet private weak var startMessage: UITextView!
-    @IBOutlet private weak var signInButton: GIDSignInButton!
+    @IBOutlet private weak var loginView: UIView!
     
     private var events = [Event]()
     private var oldEvents = [Event]()
     private var currentDate = Date()
     
+    private var embeddedGoogleLogin: GoogleLoginViewController?
     private var googleCalendar = GoogleCalendar()
     private let speaker = Speaker()
     private let dateFormatter = DateFormatter.shared
@@ -50,13 +48,7 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
         NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: .main)
             { notification in self.updateConstantsFromDefaults() }
         
-        // Configure Google Sign-in and the sign-in button. Setup Start message.
-        GIDSignIn.sharedInstance().uiDelegate = self
-        signInButton.style = GIDSignInButtonStyle.wide
-        signInButton.colorScheme = GIDSignInButtonColorScheme.dark
-        startMessage.alpha = 1
-        startMessage.text = NSLocalizedString("Logga in på ditt Google-konto",
-            comment: "Initially displayed message")
+        loginView.alpha = 1
         
         // Same process as when (later) returning to foreground from background
         willEnterForeground()
@@ -288,4 +280,13 @@ class ViewController: UIViewController, GIDSignInUIDelegate {
             present(alert, animated: true, completion: nil)
         }
     }
+    
+    // MARK: - Navigation
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "GoogleLogin" {
+            embeddedGoogleLogin = segue.destination.contents as? GoogleLoginViewController
+        }
+    }
 }
+
