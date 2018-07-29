@@ -37,7 +37,3 @@ struct Event: Equatable {
     }
 }
 
-
-
-
-

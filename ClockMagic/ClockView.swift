@@ -256,13 +256,15 @@ class ClockView: UIView {
     }
     
     func getVersion() -> String {
-        var string = ""
+        var string = NSLocalizedString("Magiska Klockan", comment: "The Magic Clock")
         
-        if let displayName = Bundle.main.infoDictionary?["CFBundleDisplayName"] as? String {
-            string += displayName
-        }
+//        var string = ""
+//
+//        if let displayName = Bundle.main.infoDictionary?["CFBundleDisplayName"] as? String {
+//            string += displayName
+//        }
         if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
-            string += "  V(\(version))"
+            string += "  V\(version)"
         }
         if let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String {
             string += "  (\(build))"

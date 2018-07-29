@@ -107,7 +107,7 @@ class ViewController: UIViewController {
     
     private func googleSignedIn(userInfo: [AnyHashable: Any]?) {
         if let error = userInfo?["error"] as? Error {
-            // Ignore errors before viewDidLoad complete
+            // Ignore errors before viewDidLoad complete 
             if self.isViewLoaded && (self.view.window != nil) { showAlert(
                 title: NSLocalizedString("Auktoriseringsfel", comment: "Wrong password or similar"),
                 message: error.localizedDescription, okAction: nil)
@@ -125,7 +125,7 @@ class ViewController: UIViewController {
             
             tableView.isHidden = true
             spinner.startAnimating()
-            UIView.transition(with: loginView, duration: 1.0, options: [.transitionCrossDissolve,
+            UIView.transition(with: loginView, duration: 0.7, options: [.transitionCrossDissolve,
                 .curveEaseInOut], animations: { self.loginView.isHidden = true })
             
             speaker.userName = userInfo?["name"] as? String
