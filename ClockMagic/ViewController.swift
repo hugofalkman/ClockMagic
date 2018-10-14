@@ -82,7 +82,7 @@ class ViewController: UIViewController {
             foregroundObserver = nil
         }
         backgroundObserver = NotificationCenter.default.addObserver(
-            forName: .UIApplicationDidEnterBackground,
+            forName: UIApplication.didEnterBackgroundNotification,
             object: UIApplication.shared, queue: OperationQueue.main)
             { notification in self.didEnterBackgrund() }
         
@@ -188,7 +188,7 @@ class ViewController: UIViewController {
             backgroundObserver = nil
         }
         foregroundObserver = NotificationCenter.default.addObserver(
-            forName: .UIApplicationWillEnterForeground,
+            forName: UIApplication.willEnterForegroundNotification,
             object: UIApplication.shared, queue: OperationQueue.main)
             { notification in self.willEnterForeground() }
         
@@ -277,9 +277,9 @@ class ViewController: UIViewController {
         okAction: ((UIAlertAction) -> Void)?) {
         if presentedViewController == nil {
             let alert = UIAlertController(
-                title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+                title: title, message: message, preferredStyle: UIAlertController.Style.alert)
             let ok = UIAlertAction(
-                title: "OK", style: UIAlertActionStyle.default, handler: okAction)
+                title: "OK", style: UIAlertAction.Style.default, handler: okAction)
             alert.addAction(ok)
             present(alert, animated: true, completion: nil)
         }

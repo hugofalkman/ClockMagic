@@ -27,7 +27,7 @@ class Speaker: NSObject {
                 speakTimeTimer = Timer(fireAt: firingDate,
                     interval: Double(TimingConstants.speakTimeHour) * 3600.0, target: self,
                     selector: #selector(speakTime), userInfo: nil, repeats: true)
-                RunLoop.current.add(speakTimeTimer!, forMode: .commonModes)
+                RunLoop.current.add(speakTimeTimer!, forMode: RunLoop.Mode.common)
             }
         }
     }
@@ -52,7 +52,7 @@ class Speaker: NSObject {
             let date = event.start - TimingConstants.speakEventNoticeTime
             dispatchGroupSpeech.enter()
             speakEventTimer = Timer(fireAt: date, interval: 0, target: self, selector: #selector(speakEvent), userInfo: nil, repeats: false)
-            RunLoop.main.add(speakEventTimer!, forMode: .commonModes)
+            RunLoop.main.add(speakEventTimer!, forMode: RunLoop.Mode.common)
         }
         startTimer()
         

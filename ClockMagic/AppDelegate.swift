@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - Google Id Signin
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         // Prevent screen lock
         application.isIdleTimerDisabled = true
@@ -27,9 +27,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ app: UIApplication, open url: URL,
-        options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
-        let sourceApplication = options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String
-        let annotation = options[UIApplicationOpenURLOptionsKey.annotation]
+        options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
+        let sourceApplication = options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String
+        let annotation = options[UIApplication.OpenURLOptionsKey.annotation]
         return GIDSignIn.sharedInstance().handle(url,
             sourceApplication: sourceApplication,
             annotation: annotation)

@@ -214,6 +214,7 @@
 				TargetAttributes = {
 					B1FD215520971D7E00AF26E0 = {
 						CreatedOnToolsVersion = 9.3;
+						LastSwiftMigration = 1000;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 0;
@@ -530,7 +531,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = ClockMagicDevelopmentProfile;
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "ClockMagic/ClockMagic-bridging-header.h";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -555,7 +556,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = ClockMagicDistributionProfile;
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "ClockMagic/ClockMagic-bridging-header.h";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

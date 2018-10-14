@@ -24,7 +24,7 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        sectionHeaderHeight = UITableViewAutomaticDimension
+        sectionHeaderHeight = UITableView.automaticDimension
         estimatedSectionHeaderHeight = 28
         dataSource = self
         delegate = self
