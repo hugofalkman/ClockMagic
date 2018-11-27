@@ -182,7 +182,13 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
 
         let day = Calendar.current.date(byAdding: .day, value: section, to: currentDate)!
         dateFormatter.setLocalizedDateFormatFromTemplate("EEEE MMMM d")
-        header.text = (header.text! + " " + dateFormatter.string(from: day))
+        // header.text = (header.text! + " " + dateFormatter.string(from: day))
+        let stringDay = dateFormatter.string(from: day)
+        if header.text! == "" {
+            header.text = String(stringDay.first!).capitalized + stringDay.dropFirst()
+        } else {
+            header.text = header.text! + " " + stringDay
+        }
         return header
     }
 }

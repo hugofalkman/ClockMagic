@@ -170,7 +170,7 @@ class GoogleCalendar: NSObject {
             query.timeMin = GTLRDateTime(date: startDate)
             query.timeMax = GTLRDateTime(
                 date: Date(timeInterval: TimingConstants.calendarEventMax, since: startDate))
-            query.fields = "items(start,summary,creator,description,attachments(fileId,title))"
+            query.fields = "items(start,summary,location,creator,description,attachments(fileId,title))"
             query.singleEvents = true
             query.orderBy = kGTLRCalendarOrderByStartTime
             
