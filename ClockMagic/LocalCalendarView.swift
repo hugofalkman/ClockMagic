@@ -34,7 +34,7 @@ class LocalCalendarView: UIStackView {
             dateLabel.font = font
         
         dateFormatter.formattingContext = .standalone
-        dayOfWeekLabel.text = dateFormatter.weekdaySymbols[Calendar.autoupdatingCurrent.component(.weekday, from: currentDate) - 1]
+        dayOfWeekLabel.text = dateFormatter.weekdaySymbols[Calendar.autoupdatingCurrent.component(.weekday, from: currentDate) - 1].capitalized
         
         let hour = Calendar.autoupdatingCurrent.component(.hour, from: currentDate)
         switch hour {
@@ -51,6 +51,7 @@ class LocalCalendarView: UIStackView {
         default:
             timeOfDayLabel.text = nil
         }
+        
         let monthday = Calendar.autoupdatingCurrent.dateComponents([.month, .day], from: currentDate)
         switch (monthday.month ?? 0, monthday.day ?? 0) {
         case (1...4, _), (12, _):
@@ -64,6 +65,8 @@ class LocalCalendarView: UIStackView {
         default:
             seasonLabel.text = nil
         }
+        seasonLabel.text = seasonLabel.text?.capitalized
+        
         dateFormatter.setLocalizedDateFormatFromTemplate("MMMM d, YYYY")
         dateLabel.text = dateFormatter.string(from: currentDate)
     }

@@ -164,6 +164,7 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
         
         let header = UILabel()
         header.font = sectionFont
+        header.backgroundColor = UIColor.groupTableViewBackground
         header.numberOfLines = 0
         header.lineBreakMode = .byWordWrapping
         header.sizeToFit()
@@ -181,7 +182,7 @@ class MyUITableView: UITableView, UITableViewDataSource, UITableViewDelegate {
 
         let day = Calendar.current.date(byAdding: .day, value: section, to: currentDate)!
         dateFormatter.setLocalizedDateFormatFromTemplate("EEEE MMMM d")
-        header.text = (header.text! + " " + dateFormatter.string(from: day)).uppercased()
+        header.text = (header.text! + " " + dateFormatter.string(from: day))
         return header
     }
 }
