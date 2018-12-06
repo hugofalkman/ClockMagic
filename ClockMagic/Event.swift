@@ -14,17 +14,19 @@ struct Event: Equatable {
     var title: String
     var detail: String
     var creator: String
+    var attendee: String
     var photo: UIImage?
     var attachId: [String]
     var attachPhoto: [UIImage]
     
     private let dateFormatter = DateFormatter.shared
     
-    init(start: Date, hasTime: Bool, summary: String, detail: String, creator: String) {
+    init(start: Date, hasTime: Bool, summary: String, detail: String, creator: String, attendee: String) {
         self.start = start
         self.hasTime = hasTime
         self.detail = detail
         self.creator = creator
+        self.attendee = attendee
         self.attachId = []
         self.attachPhoto = []
         

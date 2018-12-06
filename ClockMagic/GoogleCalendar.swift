@@ -94,7 +94,6 @@ class GoogleCalendar: NSObject {
                             }
                         }
                     }
-                    if email == "" { continue loop }
                     
                     var primaryName = ""
                     if let names = connection.names, !names.isEmpty {
@@ -104,6 +103,8 @@ class GoogleCalendar: NSObject {
                             }
                         }
                     }
+                    if email == "" && primaryName == "" { continue loop }
+                    
                     var url = ""
                     if let photos = connection.photos, !photos.isEmpty {
                         for photo in photos {
@@ -194,8 +195,11 @@ class GoogleCalendar: NSObject {
                             let summary = item.summary ?? ""
                             let hasTime = start.hasTime
                             let creator = hasTime ? (item.creator?.email ?? "") : ""
+                            let attendee = hasTime ? (item.location ?? "") : ""
                             
-                            var event = Event(start: start.date, hasTime: hasTime, summary: summary, detail: item.descriptionProperty ?? "", creator: creator)
+                            var event = Event(start: start.date, hasTime: hasTime,
+                                summary: summary, detail: item.descriptionProperty ?? "",
+                                creator: creator, attendee: attendee)
                             
                             if let attachments = item.attachments, !attachments.isEmpty {
                                 for attachment in attachments {
@@ -223,7 +227,7 @@ class GoogleCalendar: NSObject {
                 let summary = NSLocalizedString("Inga kommande händelser",
                     comment: "Message empty calendar")
                 self.events = [Event(start: start, hasTime: true,
-                    summary: summary, detail: "", creator: "")]
+                    summary: summary, detail: "", creator: "", attendee: "")]
             }
             self.getAttachmentPhotos()
         }
@@ -282,32 +286,34 @@ class GoogleCalendar: NSObject {
         guard !contacts.isEmpty else { return }
         guard !events.isEmpty else { return }
         let contactsEmail = contacts.map { $0.email }
+        let contactsName = contacts.map { $0.name }
         for eventIndex in events.indices {
-            if let index = contactsEmail.index(of: events[eventIndex].creator),
+            var urlString = ""
+            if let index = contactsName.firstIndex(of: events[eventIndex].attendee), events[eventIndex].attendee != "" {
+                urlString = contacts[index].photoUrl
+            } else if let index = contactsEmail.firstIndex(of: events[eventIndex].creator),
                 events[eventIndex].creator != "" {
-                let urlString = contacts[index].photoUrl
-                if let url = URL(string: urlString) { // also discards the case urlString == ""
-                    let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: TimingConstants.googleTimeout)
-                    dispatchGroupEvents.enter()
-                    dataTask = session.dataTask(with: urlRequest) {
-                        [weak self] (data, response, error) in
-                        if error != nil {
-                            print((error as NSError?)!.localizedDescription)
-                            // Continue without adding photo to event
-                            return
-                        }
-                        self?.eventsSemaphore.wait()
-                        if let data = data, let photo = UIImage(data: data) {
-                            self?.events[eventIndex].photo = photo
-                        }
-                        self?.eventsSemaphore.signal()
-                        self?.dispatchGroupEvents.leave()
+                urlString = contacts[index].photoUrl
+            }
+            if let url = URL(string: urlString) { // also discards the case urlString == ""
+                let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: TimingConstants.googleTimeout)
+                dispatchGroupEvents.enter()
+                dataTask = session.dataTask(with: urlRequest) {
+                    [weak self] (data, response, error) in
+                    if error != nil {
+                        print((error as NSError?)!.localizedDescription)
+                        // Continue without adding photo to event
+                        return
                     }
-                    dataTask?.resume()
-                    // dispatchGroupEvents.notify is up in the "public" func getEvents
-                } else {
-                    events[eventIndex].photo = nil
+                    self?.eventsSemaphore.wait()
+                    if let data = data, let photo = UIImage(data: data) {
+                        self?.events[eventIndex].photo = photo
+                    }
+                    self?.eventsSemaphore.signal()
+                    self?.dispatchGroupEvents.leave()
                 }
+                dataTask?.resume()
+                // dispatchGroupEvents.notify is up in the "public" func getEvents
             } else {
                 events[eventIndex].photo = nil
             }

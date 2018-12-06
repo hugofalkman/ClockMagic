@@ -257,7 +257,7 @@ class ViewController: UIViewController {
             let detail = NSLocalizedString("Följande händelser kanske inte längre är aktuella.",
                 comment: "Error detail")
             events.insert(Event(start: start, hasTime: true, summary: summary,
-                detail: detail, creator: ""), at: 0)
+                                detail: detail, creator: "", attendee: ""), at: 0)
             tableView.setup(events: events, isRedBackground: true, currentDate: currentDate)
         }
     }
