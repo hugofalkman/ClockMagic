@@ -50,7 +50,7 @@ class ViewController: UIViewController {
         loginView.alpha = 1
         
         // Same process as when (later) returning to foreground from background
-        willEnterForeground()
+        didBecomeActive()
     }
     
     //MARK: - Settings bundle and UserDefault
@@ -75,7 +75,7 @@ class ViewController: UIViewController {
     
     // MARK: - Application Life Cycle, entering foreground
     
-    private func willEnterForeground() {
+    private func didBecomeActive() {
         // Switch background/foreground observer
         if let observer = foregroundObserver {
             NotificationCenter.default.removeObserver(observer)
@@ -188,9 +188,9 @@ class ViewController: UIViewController {
             backgroundObserver = nil
         }
         foregroundObserver = NotificationCenter.default.addObserver(
-            forName: UIApplication.willEnterForegroundNotification,
+            forName: UIApplication.didBecomeActiveNotification,
             object: UIApplication.shared, queue: OperationQueue.main)
-            { notification in self.willEnterForeground() }
+            { notification in self.didBecomeActive() }
         
         // Invalidate timers
         if clockView.clockTimer != nil {
